@@ -45,6 +45,7 @@
     "@storybook/angular": "^9.1.0-beta.1",
     "@storybook/manager-api": "^9.0.0-alpha.1",
     "@storybook/theming": "^9.0.0-alpha.1",
+    "@tailwindcss/cli": "^4.1.11",
     "@tailwindcss/postcss": "^4.1.11",
     "@types/express": "^5.0.1",
     "@types/jasmine": "~5.1.0",
