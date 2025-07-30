@@ -13,7 +13,12 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "ES2022",
-    "module": "preserve"
+    "module": "preserve",
+    "paths": {
+      "ui-lib": [
+        "./dist/ui-lib"
+      ]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
@@ -22,5 +27,19 @@
     "typeCheckHostBindings": true,
     "strictTemplates": true
   },
-  "files": []
+  "files": [],
+  "references": [
+    {
+      "path": "./projects/ui-lib/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/ui-lib/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/devbox/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/devbox/tsconfig.spec.json"
+    }
+  ]
 }

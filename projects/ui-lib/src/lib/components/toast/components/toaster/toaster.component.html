@@ -1,0 +1,14 @@
+<div class="toaster fixed top-1 right-1 px-3 py-2">
+  @for (toast of currentToasts; track toast; let i = $index) {
+    <div>
+      <app-toast
+        [type]="toast.type"
+        [title]="toast.title"
+        [message]="toast.message"
+        [duration]="toast.duration"
+        (disposeEvent)="dispose(i)"
+        [themeType]="toast.themeType ?? 'light'"
+      ></app-toast>
+    </div>
+  }
+</div>

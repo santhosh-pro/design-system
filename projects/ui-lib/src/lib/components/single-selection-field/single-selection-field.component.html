@@ -1,0 +1,95 @@
+<app-base-input [title]="title()" [fullWidth]="fullWidth()" [isRequiredField]="hasRequiredValidator()">
+  <div input class="flex flex-wrap gap-3"
+       [ngClass]="[
+       itemPlacement() == 'start' ? 'justify-start' : '',
+       itemPlacement() == 'space-between' ? 'justify-between' : '']">
+
+    @for (item of getVisibleItems(); track item) {
+      <div
+        class="relative flex items-center justify-center rounded-lg px-3 py-3 gap-4 cursor-pointer border-2 border-neutral-300"
+        tabindex="0"
+        (keydown)="handleKeydown($event, item)"
+        [ngStyle]="{ 'width': itemWidth() ? itemWidth() + 'px' : null }"
+        (click)="onItemClicked(item)"
+        [ngClass]="{
+        'border-primary-600': getPropertyId(item) == formControl.value || selectedItem() == item,
+        'justify-center': isItemCentered()
+      }">
+
+        @if ((getPropertyId(item) == formControl.value || selectedItem() == item) && showSelectionTickMark()) {
+          <div class="absolute -top-[8px] -right-[8px]">
+            <svg class="h-[18px] w-[18px] text-primary-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                 fill="none">
+              <path
+                d="M12 2C10.6868 2 9.38642 2.25866 8.17317 2.7612C6.95991 3.26375 5.85752 4.00035 4.92893 4.92893C3.05357 6.8043 2 9.34784 2 12C2 14.6522 3.05357 17.1957 4.92893 19.0711C5.85752 19.9997 6.95991 20.7362 8.17317 21.2388C9.38642 21.7413 10.6868 22 12 22C14.6522 22 17.1957 20.9464 19.0711 19.0711C20.9464 17.1957 22 14.6522 22 12C22 10.6868 21.7413 9.38642 21.2388 8.17317C20.7362 6.95991 19.9997 5.85752 19.0711 4.92893C18.1425 4.00035 17.0401 3.26375 15.8268 2.7612C14.6136 2.25866 13.3132 2 12 2Z"
+                fill="white"/>
+              <path
+                d="M10 17L5 12L6.41 10.58L10 14.17L17.59 6.58L19 8M12 2C10.6868 2 9.38642 2.25866 8.17317 2.7612C6.95991 3.26375 5.85752 4.00035 4.92893 4.92893C3.05357 6.8043 2 9.34784 2 12C2 14.6522 3.05357 17.1957 4.92893 19.0711C5.85752 19.9997 6.95991 20.7362 8.17317 21.2388C9.38642 21.7413 10.6868 22 12 22C14.6522 22 17.1957 20.9464 19.0711 19.0711C20.9464 17.1957 22 14.6522 22 12C22 10.6868 21.7413 9.38642 21.2388 8.17317C20.7362 6.95991 19.9997 5.85752 19.0711 4.92893C18.1425 4.00035 17.0401 3.26375 15.8268 2.7612C14.6136 2.25866 13.3132 2 12 2Z"
+                fill="currentColor"/>
+            </svg>
+          </div>
+        }
+
+        @if (getDynamicIcon(item)) {
+          @switch (getImageType(item)) {
+            @case ('url') {
+              <img class="object-contain" height="20px" width="20px" [src]="getDynamicIcon(item)" alt="">
+            }
+            @case ('svg') {
+              <app-svg-icon [src]="getDynamicIcon(item)!" [size]="18"
+                            [ngStyle]="{'color': getDynamicIconColor(item)}"></app-svg-icon>
+            }
+          }
+        }
+        <p
+          class="w-full text-caption text-center text-black overflow-hidden text-ellipsis whitespace-nowrap">{{ getDisplayString(item) }}</p>
+        <ng-content select="[post]"></ng-content>
+      </div>
+    }
+
+    @if (showMoreButton()) {
+      <span
+        (click)="showAllItems()"
+        class="relative flex items-center justify-center rounded-lg px-3 py-3 gap-4 cursor-pointer border border-neutral-200 text-info-500">
+          More
+      </span>
+    }
+
+    @if (showLessButton()) {
+      <span
+        (click)="shrinkItems()"
+        class="relative flex items-center justify-center rounded-lg px-3 py-3 gap-4 cursor-pointer border border-neutral-200 text-error-500">
+          Less
+        </span>
+    }
+
+    @if (customActionText()) {
+      <div (click)="customActionClicked()"
+           class="flex items-center rounded-lg px-3 py-3 gap-4 cursor-pointer bg-primary-500">
+        <p class="text-caption text-white">{{ customActionText() }}</p>
+      </div>
+    }
+
+    @if ((state()?.success()) && items().length <= 0) {
+      <p class="text-caption text-red-700">{{ noDataMessage() ?? 'No data found' }}</p>
+    }
+
+    @if ((state()?.error()) && items().length <= 0) {
+      <p
+        class="text-caption text-red-700">{{ (state()?.error() != null || state()?.error() != '') ? state()?.error() : noDataMessage() ?? 'No data found' }}</p>
+    }
+
+    @if (state()?.loading()) {
+      <app-shimmer class="w-full" type="multiline"></app-shimmer>
+    }
+  </div>
+
+  <div error>
+    @if (formControl.errors && hasErrors) {
+      <p class="text-caption text-red-500">
+        {{ formControl.errors | humanizeFormMessages: errorMessages() }}
+      </p>
+    }
+  </div>
+</app-base-input>
+

@@ -1,0 +1,39 @@
+@switch (type()) {
+  @case ('grid') {
+    <div class="space-y-5 rounded-2xl bg-white/1 animate-pulse">
+      <div class="h-24 rounded-lg bg-neutral-400/10"></div>
+      <div class="space-y-3">
+        <div class="h-3 w-3/5 rounded-lg bg-neutral-400/10"></div>
+        <div class="h-3 w-4/5 rounded-lg bg-neutral-400/15"></div>
+        <div class="h-3 w-2/5 rounded-lg bg-neutral-400/15"></div>
+      </div>
+    </div>
+  }
+  @case ('list') {
+    <div class="flex gap-3 rounded-2xl bg-white/1 animate-pulse">
+      <div class="w-24 rounded-lg bg-neutral-400/10"></div>
+      <div class="flex flex-col gap-3 w-full">
+        <div class="h-3 w-full rounded-lg bg-neutral-400/10"></div>
+        <div class="h-2 w-4/5 rounded-lg bg-neutral-400/15"></div>
+        <div class="h-2 w-2/5 rounded-lg bg-neutral-400/15"></div>
+      </div>
+    </div>
+  }
+  @case ('single-line') {
+    <div class="flex gap-3 rounded-2xl bg-white/1 animate-pulse">
+      <div class="flex flex-col gap-3 w-full">
+        <div class="h-3 w-full rounded-lg bg-neutral-400/10"></div>
+      </div>
+    </div>
+  }
+  @case ('multiline') {
+    <div class="flex gap-3 rounded-2xl bg-white/1 animate-pulse">
+      <div class="flex flex-col gap-3 w-full">
+        <div class="h-3 w-full rounded-lg bg-neutral-400/10"></div>
+        <div class="h-2 w-4/5 rounded-lg bg-neutral-400/15"></div>
+      </div>
+    </div>
+  }
+}
+
+

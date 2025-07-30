@@ -1,0 +1,20 @@
+<div class="app-form-control inline-flex items-center cursor-pointer select-none"
+     [ngClass]="fullWidth() ? 'w-full' : ''">
+  <div class="flex gap-6 items-center w-full">
+    <div class="flex flex-col justify-center gap-2 w-full">
+      @if (title()) {
+        <div class="flex gap-1">
+          <span class="text-body2 text-nowrap text-primary-900">{{ title() }}</span>
+          @if (isRequiredField()) {
+            <span class="text-body2 text-error-600">*</span>
+          }
+        </div>
+      }
+      <ng-content class="w-full" select="[input]"></ng-content>
+
+      <ng-content select="[error]"></ng-content>
+
+    </div>
+    <ng-content select="[icon]"></ng-content>
+  </div>
+</div>

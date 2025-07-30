@@ -1,0 +1,65 @@
+<div class="flex w-full items-center justify-between p-4 bg-white border-t border-neutral-50">
+  <div>
+    <!-- Showing items text -->
+    <p class="text-sm text-gray-700 text-nowrap">
+      Showing <span class="font-semibold">{{ startItem }}</span> to <span class="font-semibold">{{ endItem }}</span>
+      of <span class="font-semibold">{{ totalItems() }}</span> results
+    </p>
+  </div>
+
+  <div class="flex items-center space-x-4">
+
+    <span class="text-body2">Items per page:</span>
+
+    <div class="relative inline-block border rounded p-2 text-caption">
+      <select [(ngModel)]="pageSize" (ngModelChange)="changePageSize($event)"
+              class="">
+        @for (size of pageSizeOptions(); track size) {
+          <option [value]="size">{{ size }}</option>
+        }
+      </select>
+    </div>
+
+    <span class="text-caption">{{ startItem }} - {{ endItem }} of  {{ totalItems() }}</span>
+
+    <button
+      class="px-2 py-1 text-neutral-500 rounded disabled:text-neutral-500 disabled:cursor-not-allowed"
+      [ngClass]="{ 'opacity-50': currentPage === 1 }"
+      [disabled]="currentPage === 1"
+      (click)="goToFirstPage()">
+      <svg class="text-neutral-500 h-[18px] w-[18px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+        <path d="M18.41 16.59L13.82 12L18.41 7.41L17 6L11 12L17 18L18.41 16.59ZM6 6H8V18H6V6Z" fill="currentColor"/>
+      </svg>
+    </button>
+
+    <button
+      class="px-2 py-1 text-neutral-500 rounded disabled:text-neutral-500 disabled:cursor-not-allowed"
+      [ngClass]="{ 'opacity-50': currentPage === 1 }"
+      [disabled]="currentPage === 1"
+      (click)="goToPreviousPage()">
+      <svg class="text-neutral-500 h-[18px] w-[18px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+        <path d="M15.41 16.58L10.83 12L15.41 7.41L14 6L8 12L14 18L15.41 16.58Z" fill="black"/>
+      </svg>
+    </button>
+
+    <button
+      class="px-2 py-1 text-neutral-500 rounded disabled:text-neutral-500 disabled:cursor-not-allowed"
+      [ngClass]="{ 'opacity-50': currentPage === totalPages }"
+      [disabled]="currentPage === totalPages"
+      (click)="goToNextPage()">
+      <svg class="text-neutral-500 h-[18px] w-[18px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+        <path d="M8.59 16.58L13.17 12L8.59 7.41L10 6L16 12L10 18L8.59 16.58Z" fill="black"/>
+      </svg>
+    </button>
+
+    <button
+      class="px-2 py-1 text-neutral-500 rounded disabled:text-neutral-500 disabled:cursor-not-allowed"
+      [ngClass]="{ 'opacity-50': currentPage === totalPages }"
+      [disabled]="currentPage === totalPages"
+      (click)="goToLastPage()">
+      <svg class="text-neutral-500 h-[18px] w-[18px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+        <path d="M5.59 7.41L10.18 12L5.59 16.59L7 18L13 12L7 6L5.59 7.41ZM16 6H18V18H16V6Z" fill="black"/>
+      </svg>
+    </button>
+  </div>
+</div>

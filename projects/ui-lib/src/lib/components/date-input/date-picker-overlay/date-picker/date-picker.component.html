@@ -1,0 +1,102 @@
+<div
+  class="flex flex-col gap-3 bg-white rounded-md border border-neutral-100 min-h-96 px-3 py-3 shadow-1 select-none w-min">
+
+  <div class="flex items-center justify-between w-[280px]">
+
+    <div (click)="onYearSelectionPressed()"
+         class="flex items-center gap-1 px-2.5 py-2 hover:bg-neutral-100 rounded-full cursor-pointer">
+      @switch (uiMode()) {
+        @case ('date') {
+          <span class="text-caption text-neutral-900 uppercase">{{ getMMMYYYY() }}</span>
+          <svg class="h-[18px] w-[18px] text-neutral-900" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+               fill="none">
+            <path d="M7 10L12 15L17 10H7Z" fill="currentColor"/>
+          </svg>
+        }
+        @case ('month') {
+          <span class="text-caption text-neutral-900 uppercase">{{ activeYear }}</span>
+        }
+        @case ('year') {
+          <span class="text-caption text-neutral-900 uppercase">{{ getFirstYear() }} - {{ getLastYear() }}</span>
+          <svg class="h-[18px] w-[18px] text-neutral-900" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+               viewBox="0 0 24 24" fill="none">
+            <path d="M7 15L12 10L17 15H7Z" fill="currentColor"/>
+          </svg>
+        }
+      }
+
+    </div>
+
+    <div class="flex items-center gap-2">
+
+      <div (click)="previousMonthPressed()"
+           class="flex items-center justify-center h-[36px] w-[36px] rounded-full hover:bg-neutral-100 cursor-pointer select-none">
+        <svg class="h-[24px] w-[24px] text-neutral-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+             fill="none">
+          <path d="M15.41 16.58L10.83 12L15.41 7.41L14 6L8 12L14 18L15.41 16.58Z" fill="currentColor"/>
+        </svg>
+      </div>
+
+      <div (click)="nextMonthPressed()"
+           class="flex items-center justify-center h-[36px] w-[36px] rounded-full hover:bg-neutral-100 cursor-pointer select-none">
+        <svg class="h-[24px] w-[24px] text-neutral-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+             fill="none">
+          <path d="M8.58997 16.58L13.17 12L8.58997 7.41L9.99997 6L16 12L9.99997 18L8.58997 16.58Z" fill="black"/>
+        </svg>
+      </div>
+
+    </div>
+
+  </div>
+
+  @if (uiMode() == 'date') {
+    <div class="grid grid-cols-7 text-xs text-center text-gray-900 gap-y-1">
+      @for (day of days; track day) {
+        <span
+          class="flex items-center justify-center w-[40px] h-[40px] font-semibold rounded-lg">{{ day.displayName }}</span>
+      }
+
+      @for (blankDay of blankDays; track blankDay) {
+        <span
+          class="flex items-center justify-center w-[40px] h-[40px] font-semibold rounded-lg text-transparent"></span>
+      }
+
+      @for (day of daysOfMonth; track day) {
+        <span (click)="day.isEnabled ? onDaySelected(day.value) : null"
+              [ngClass]="{
+              'text-neutral-400' : !day.isEnabled,
+             '!bg-primary-500 !text-white': isSelected(day.value),
+             'today-and-selected bg-primary-500 text-white': isToday(day.value) && isSelected(day.value),
+             'border border-primary-500 text-primary-900': isToday(day.value),
+             'not-today-not-selected text-gray-700 hover:bg-primary-50': !isToday(day.value) && !isSelected(day.value) && day.isEnabled,
+             'not-today-selected text-gray-700 hover:bg-primary-500': !isToday(day.value) && isSelected(day.value),
+            }"
+              class="flex items-center justify-center w-[40px] h-[40px] text-gray-700 rounded-lg select-none cursor-pointer">{{ day.value }}</span>
+      }
+    </div>
+  }
+
+  @if (uiMode() == 'month') {
+    <div class="grid grid-cols-4 text-xs text-center text-gray-900">
+      @for (month of months; track month; let i = $index) {
+        <span (click)="onMonthSelected(i)"
+              [ngClass]="isMonthEnabled(i) ? '' : 'text-neutral-400'"
+              class="flex items-center px-2 py-2.5 justify-center cursor-pointer select-none hover:bg-neutral-100 rounded-lg uppercase">{{ month }}</span>
+      }
+    </div>
+  }
+
+
+  @if (uiMode() == 'year') {
+    <div class="grid grid-cols-4 text-xs text-center text-gray-900">
+      @for (year of years; track year; let i = $index) {
+        <span (click)="year.isEnabled ? onYearSelected(year.value) : null"
+              [ngClass]="{
+                 'text-neutral-400' : !year.isEnabled,
+              }"
+              class="flex items-center px-2 py-2.5 justify-center cursor-pointer select-none hover:bg-neutral-100 rounded-lg">{{ year.value }}</span>
+      }
+    </div>
+  }
+
+</div>

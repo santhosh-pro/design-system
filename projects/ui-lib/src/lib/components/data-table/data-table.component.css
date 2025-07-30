@@ -1,0 +1,11 @@
+/* Highlight selected rows */
+tr.bg-blue-50 {
+  background-color: #eff6ff; /* Tailwind's blue-50 for light theme */
+  transition: background-color 0.2s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  tr.bg-blue-50 {
+    background-color: #1e40af; /* Darker blue for dark theme */
+  }
+}

@@ -3,5 +3,137 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
+    "ui-lib": {
+      "projectType": "library",
+      "root": "projects/ui-lib",
+      "sourceRoot": "projects/ui-lib/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/ui-lib/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/ui-lib/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:karma",
+          "options": {
+            "tsConfig": "projects/ui-lib/tsconfig.spec.json"
+          }
+        },
+        "storybook": {
+          "builder": "@storybook/angular:start-storybook",
+          "options": {
+            "configDir": "projects/ui-lib/.storybook",
+            "browserTarget": "ui-lib:build",
+            "styles": ["projects/ui-lib/src/styles.css"],
+            "compodoc": false,
+            "port": 6006
+          }
+        },
+        "build-storybook": {
+          "builder": "@storybook/angular:build-storybook",
+          "options": {
+            "configDir": "projects/ui-lib/.storybook",
+            "browserTarget": "ui-lib:build",
+            "styles": ["projects/ui-lib/src/styles.css"],
+            "compodoc": false,
+            "outputDir": "storybook-static"
+          }
+        }
+      }
+    },
+    "devbox": {
+      "projectType": "application",
+      "schematics": {},
+      "root": "projects/devbox",
+      "sourceRoot": "projects/devbox/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "projects/devbox/src/main.ts",
+            "tsConfig": "projects/devbox/tsconfig.app.json",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "projects/devbox/public"
+              }
+            ],
+            "styles": [
+              "projects/devbox/src/styles.css"
+            ],
+            "server": "projects/devbox/src/main.server.ts",
+            "outputMode": "server",
+            "ssr": {
+              "entry": "projects/devbox/src/server.ts"
+            }
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "devbox:build:production"
+            },
+            "development": {
+              "buildTarget": "devbox:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular/build:extract-i18n"
+        },
+        "test": {
+          "builder": "@angular/build:karma",
+          "options": {
+            "tsConfig": "projects/devbox/tsconfig.spec.json",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "projects/devbox/public"
+              }
+            ],
+            "styles": [
+              "projects/devbox/src/styles.css"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "analytics": "68344809-d281-4a42-abcf-40a30cc11f94"
   }
 }

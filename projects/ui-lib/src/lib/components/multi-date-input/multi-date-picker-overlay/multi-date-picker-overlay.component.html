@@ -1,0 +1,10 @@
+<app-multi-date-picker
+  [minDate]="data.minDate"
+  [maxDate]="data.maxDate"
+  [allowOnlyPast]="data.allowOnlyPast"
+  [allowOnlyFuture]="data.allowOnlyFuture"
+  [disabledDays]="data.disabledDays"
+  [disabledDates]="data.disabledDates"
+  [(ngModel)]="data.selectedDates"
+  (confirmed)="onDateSelected($event)">
+</app-multi-date-picker>

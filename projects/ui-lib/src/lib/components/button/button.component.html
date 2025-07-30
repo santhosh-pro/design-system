@@ -1,0 +1,19 @@
+<button
+  (click)="onClick()"
+  [type]="type()"
+  class="relative whitespace-nowrap cursor-pointer"
+  [ngClass]="getButtonClass()">
+
+  @if (iconSrc()) {
+    <app-svg-icon [src]="iconSrc()!" [size]="iconSize()" class="mr-3"
+                  [ngClass]="loading() ? 'text-transparent' : getIconClass()"></app-svg-icon>
+  }
+
+  <app-spinner class="w-min absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+               [borderColor]="loading() ? getLoaderColor() : 'border-transparent'"></app-spinner>
+
+  <div [ngClass]="loading() ? 'text-transparent' : 'text-body2'">
+    <ng-content></ng-content>
+  </div>
+
+</button>

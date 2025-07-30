@@ -1,0 +1,8 @@
+<div class="flex px-2.5 py-1.5 border items-center rounded-full gap-2"
+     [ngClass]="[backgroundColorClass() ?? 'bg-neutral-50', borderColorClass() ?? '']">
+  @if(indicatorColor()) {
+    <span class="h-[6px] w-[6px] rounded-full" [ngClass]="indicatorColor() ?? 'bg-neutral-500'"></span>
+  }
+  <span class="text-overline"
+        [ngClass]="[textColorClass() ?? 'text-neutral-500', isUpperCase() ? 'uppercase' : '']">{{ status() ?? 'Unknown' }}</span>
+</div>
