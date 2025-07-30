@@ -14,7 +14,7 @@ export default {
     applicationConfig({
       providers: [
         provideRouter([
-          { path: '**', redirectTo: '' } // Catch-all route for testing
+          { path: '**', redirectTo: '' }
         ]),
       ],
     }),

@@ -9,11 +9,10 @@ import { NgClass } from '@angular/common';
   standalone: true,
   imports: [NgClass],
   templateUrl: './breadcrumb.component.html',
-  styleUrl: './breadcrumb.component.scss'
 })
 export class BreadcrumbComponent implements OnInit, OnDestroy {
   router = inject(Router);
-  baseRoute = input<string>('/main'); // Input for base route, default to '/main'
+  baseRoute = input<string>('/main');
   breadcrumbs: Breadcrumb[] = [];
   private subscription: Subscription | undefined;
 
@@ -31,9 +30,9 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
   }
 
   private generateBreadcrumbs(): void {
-    const url = this.router.url.split('?')[0]; // Remove query parameters
-    const urlSegments = url.split('/').filter((segment) => segment); // Split by '/' and remove empty segments
-    const base = this.baseRoute().replace(/^\//, ''); // Remove leading slash for comparison
+    const url = this.router.url.split('?')[0]; 
+    const urlSegments = url.split('/').filter((segment) => segment); 
+    const base = this.baseRoute().replace(/^\//, ''); 
 
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -51,7 +50,7 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
 
     this.breadcrumbs.push(
       ...urlSegments
-        .filter((segment) => segment !== base && !uuidRegex.test(segment)) // Skip base route and UUIDs
+        .filter((segment) => segment !== base && !uuidRegex.test(segment))
         .map((segment) => {
           accumulatedPath += `/${segment}`;
           return {

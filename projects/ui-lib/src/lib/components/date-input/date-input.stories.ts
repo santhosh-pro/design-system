@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/angular';
 import { DateInputComponent, ViewType, InputDateFormat } from './date-input.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { NgClass } from '@angular/common';
 import { moduleMetadata } from '@storybook/angular';
 import { BaseInputComponent } from '../../core/base-input/base-input.component';
@@ -34,7 +34,13 @@ export default {
     maxDate: { control: 'date', description: 'Maximum selectable date' },
     allowOnlyPast: { control: 'boolean', description: 'Allow only past dates' },
     allowOnlyFuture: { control: 'boolean', description: 'Allow only future dates' },
-    disabledDays: { control: 'object', description: 'Array of disabled weekdays' },
+    disabledDays: {
+      control: {
+        type: 'multi-select',
+        options: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'],
+      },
+      description: 'Array of disabled weekdays',
+    },
     disabledDates: { control: 'object', description: 'Array of disabled specific dates' },
     inputDateFormat: {
       control: 'select',
@@ -46,6 +52,7 @@ export default {
       options: ['picker', 'calendar'],
       description: 'Display mode: "picker" for input with dropdown, "calendar" for inline calendar',
     },
+    dateChange: { action: 'dateChange' }, // Define action for date changes
   },
 } as Meta<DateInputComponent>;
 
@@ -60,6 +67,35 @@ export const Default: Story = {
     inputDateFormat: InputDateFormat.mmddyyyy,
     viewType: 'picker',
   },
+  render: (args) => {
+    const dateControl = new FormControl(null); // Fresh FormControl for single date
+    return {
+      props: {
+        ...args,
+        dateControl,
+        onDateChange: ($event: any) => {
+          console.log('dateChange event emitted:', $event);
+        },
+      },
+      template: `
+        <div>
+          <app-date-input
+            [formControl]="dateControl"
+            [label]="label"
+            [showDatePickerIcon]="showDatePickerIcon"
+            [fullWidth]="fullWidth"
+            [showErrorSpace]="showErrorSpace"
+            [inputDateFormat]="inputDateFormat"
+            [viewType]="viewType"
+            (dateChange)="onDateChange($event)"
+          ></app-date-input>
+          <div style="margin-top: 20px;">
+            <strong>FormControl Value:</strong> {{ dateControl.value | json }}
+          </div>
+        </div>
+      `,
+    };
+  },
 };
 
 export const WithIcon: Story = {
@@ -72,6 +108,36 @@ export const WithIcon: Story = {
     inputDateFormat: InputDateFormat.mmddyyyy,
     viewType: 'picker',
   },
+  render: (args) => {
+    const dateControl = new FormControl(null);
+    return {
+      props: {
+        ...args,
+        dateControl,
+        onDateChange: ($event: any) => {
+          console.log('dateChange event emitted:', $event);
+        },
+      },
+      template: `
+        <div>
+          <app-date-input
+            [formControl]="dateControl"
+            [label]="label"
+            [iconSrc]="iconSrc"
+            [showDatePickerIcon]="showDatePickerIcon"
+            [fullWidth]="fullWidth"
+            [showErrorSpace]="showErrorSpace"
+            [inputDateFormat]="inputDateFormat"
+            [viewType]="viewType"
+            (dateChange)="onDateChange($event)"
+          ></app-date-input>
+          <div style="margin-top: 20px;">
+            <strong>FormControl Value:</strong> {{ dateControl.value | json }}
+          </div>
+        </div>
+      `,
+    };
+  },
 };
 
 export const FullWidth: Story = {
@@ -82,6 +148,35 @@ export const FullWidth: Story = {
     showErrorSpace: true,
     inputDateFormat: InputDateFormat.mmddyyyy,
     viewType: 'picker',
+  },
+  render: (args) => {
+    const dateControl = new FormControl(null);
+    return {
+      props: {
+        ...args,
+        dateControl,
+        onDateChange: ($event: any) => {
+          console.log('dateChange event emitted:', $event);
+        },
+      },
+      template: `
+        <div>
+          <app-date-input
+            [formControl]="dateControl"
+            [label]="label"
+            [showDatePickerIcon]="showDatePickerIcon"
+            [fullWidth]="fullWidth"
+            [showErrorSpace]="showErrorSpace"
+            [inputDateFormat]="inputDateFormat"
+            [viewType]="viewType"
+            (dateChange)="onDateChange($event)"
+          ></app-date-input>
+          <div style="margin-top: 20px;">
+            <strong>FormControl Value:</strong> {{ dateControl.value | json }}
+          </div>
+        </div>
+      `,
+    };
   },
 };
 
@@ -95,6 +190,36 @@ export const PastDatesOnly: Story = {
     inputDateFormat: InputDateFormat.mmddyyyy,
     viewType: 'picker',
   },
+  render: (args) => {
+    const dateControl = new FormControl(null);
+    return {
+      props: {
+        ...args,
+        dateControl,
+        onDateChange: ($event: any) => {
+          console.log('dateChange event emitted:', $event);
+        },
+      },
+      template: `
+        <div>
+          <app-date-input
+            [formControl]="dateControl"
+            [label]="label"
+            [showDatePickerIcon]="showDatePickerIcon"
+            [fullWidth]="fullWidth"
+            [showErrorSpace]="showErrorSpace"
+            [allowOnlyPast]="allowOnlyPast"
+            [inputDateFormat]="inputDateFormat"
+            [viewType]="viewType"
+            (dateChange)="onDateChange($event)"
+          ></app-date-input>
+          <div style="margin-top: 20px;">
+            <strong>FormControl Value:</strong> {{ dateControl.value | json }}
+          </div>
+        </div>
+      `,
+    };
+  },
 };
 
 export const FutureDatesOnly: Story = {
@@ -107,6 +232,36 @@ export const FutureDatesOnly: Story = {
     inputDateFormat: InputDateFormat.mmddyyyy,
     viewType: 'picker',
   },
+  render: (args) => {
+    const dateControl = new FormControl(null);
+    return {
+      props: {
+        ...args,
+        dateControl,
+        onDateChange: ($event: any) => {
+          console.log('dateChange event emitted:', $event);
+        },
+      },
+      template: `
+        <div>
+          <app-date-input
+            [formControl]="dateControl"
+            [label]="label"
+            [showDatePickerIcon]="showDatePickerIcon"
+            [fullWidth]="fullWidth"
+            [showErrorSpace]="showErrorSpace"
+            [allowOnlyFuture]="allowOnlyFuture"
+            [inputDateFormat]="inputDateFormat"
+            [viewType]="viewType"
+            (dateChange)="onDateChange($event)"
+          ></app-date-input>
+          <div style="margin-top: 20px;">
+            <strong>FormControl Value:</strong> {{ dateControl.value | json }}
+          </div>
+        </div>
+      `,
+    };
+  },
 };
 
 export const DDMMYYYYFormat: Story = {
@@ -117,6 +272,35 @@ export const DDMMYYYYFormat: Story = {
     showErrorSpace: true,
     inputDateFormat: InputDateFormat.ddmmyyyy,
     viewType: 'picker',
+  },
+  render: (args) => {
+    const dateControl = new FormControl(null);
+    return {
+      props: {
+        ...args,
+        dateControl,
+        onDateChange: ($event: any) => {
+          console.log('dateChange event emitted:', $event);
+        },
+      },
+      template: `
+        <div>
+          <app-date-input
+            [formControl]="dateControl"
+            [label]="label"
+            [showDatePickerIcon]="showDatePickerIcon"
+            [fullWidth]="fullWidth"
+            [showErrorSpace]="showErrorSpace"
+            [inputDateFormat]="inputDateFormat"
+            [viewType]="viewType"
+            (dateChange)="onDateChange($event)"
+          ></app-date-input>
+          <div style="margin-top: 20px;">
+            <strong>FormControl Value:</strong> {{ dateControl.value | json }}
+          </div>
+        </div>
+      `,
+    };
   },
 };
 
@@ -131,6 +315,37 @@ export const WithMinMaxDates: Story = {
     inputDateFormat: InputDateFormat.mmddyyyy,
     viewType: 'picker',
   },
+  render: (args) => {
+    const dateControl = new FormControl(null);
+    return {
+      props: {
+        ...args,
+        dateControl,
+        onDateChange: ($event: any) => {
+          console.log('dateChange event emitted:', $event);
+        },
+      },
+      template: `
+        <div>
+          <app-date-input
+            [formControl]="dateControl"
+            [label]="label"
+            [showDatePickerIcon]="showDatePickerIcon"
+            [fullWidth]="fullWidth"
+            [showErrorSpace]="showErrorSpace"
+            [minDate]="minDate"
+            [maxDate]="maxDate"
+            [inputDateFormat]="inputDateFormat"
+            [viewType]="viewType"
+            (dateChange)="onDateChange($event)"
+          ></app-date-input>
+          <div style="margin-top: 20px;">
+            <strong>FormControl Value:</strong> {{ dateControl.value | json }}
+          </div>
+        </div>
+      `,
+    };
+  },
 };
 
 export const WithDisabledDays: Story = {
@@ -142,6 +357,36 @@ export const WithDisabledDays: Story = {
     disabledDays: ['sunday', 'saturday'],
     inputDateFormat: InputDateFormat.mmddyyyy,
     viewType: 'picker',
+  },
+  render: (args) => {
+    const dateControl = new FormControl(null);
+    return {
+      props: {
+        ...args,
+        dateControl,
+        onDateChange: ($event: any) => {
+          console.log('dateChange event emitted:', $event);
+        },
+      },
+      template: `
+        <div>
+          <app-date-input
+            [formControl]="dateControl"
+            [label]="label"
+            [showDatePickerIcon]="showDatePickerIcon"
+            [fullWidth]="fullWidth"
+            [showErrorSpace]="showErrorSpace"
+            [disabledDays]="disabledDays"
+            [inputDateFormat]="inputDateFormat"
+            [viewType]="viewType"
+            (dateChange)="onDateChange($event)"
+          ></app-date-input>
+          <div style="margin-top: 20px;">
+            <strong>FormControl Value:</strong> {{ dateControl.value | json }}
+          </div>
+        </div>
+      `,
+    };
   },
 };
 
@@ -155,6 +400,36 @@ export const WithDisabledDates: Story = {
     inputDateFormat: InputDateFormat.mmddyyyy,
     viewType: 'picker',
   },
+  render: (args) => {
+    const dateControl = new FormControl(null);
+    return {
+      props: {
+        ...args,
+        dateControl,
+        onDateChange: ($event: any) => {
+          console.log('dateChange event emitted:', $event);
+        },
+      },
+      template: `
+        <div>
+          <app-date-input
+            [formControl]="dateControl"
+            [label]="label"
+            [showDatePickerIcon]="showDatePickerIcon"
+            [fullWidth]="fullWidth"
+            [showErrorSpace]="showErrorSpace"
+            [disabledDates]="disabledDates"
+            [inputDateFormat]="inputDateFormat"
+            [viewType]="viewType"
+            (dateChange)="onDateChange($event)"
+          ></app-date-input>
+          <div style="margin-top: 20px;">
+            <strong>FormControl Value:</strong> {{ dateControl.value | json }}
+          </div>
+        </div>
+      `,
+    };
+  },
 };
 
 export const InlineCalendar: Story = {
@@ -164,5 +439,33 @@ export const InlineCalendar: Story = {
     showErrorSpace: true,
     inputDateFormat: InputDateFormat.mmddyyyy,
     viewType: 'calendar',
+  },
+  render: (args) => {
+    const dateControl = new FormControl(null);
+    return {
+      props: {
+        ...args,
+        dateControl,
+        onDateChange: ($event: any) => {
+          console.log('dateChange event emitted:', $event);
+        },
+      },
+      template: `
+        <div>
+          <app-date-input
+            [formControl]="dateControl"
+            [label]="label"
+            [fullWidth]="fullWidth"
+            [showErrorSpace]="showErrorSpace"
+            [inputDateFormat]="inputDateFormat"
+            [viewType]="viewType"
+            (dateChange)="onDateChange($event)"
+          ></app-date-input>
+          <div style="margin-top: 20px;">
+            <strong>FormControl Value:</strong> {{ dateControl.value | json }}
+          </div>
+        </div>
+      `,
+    };
   },
 };

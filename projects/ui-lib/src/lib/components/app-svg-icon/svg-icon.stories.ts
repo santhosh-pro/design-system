@@ -35,7 +35,7 @@ type Story = StoryObj<AppSvgIconComponent>;
 
 export const Default: Story = {
   args: {
-    src: 'assets/icons/calendar.svg',
+    src: 'icons/calendar.svg', 
     stretch: false,
     size: 24,
     svgStyle: {},
@@ -44,7 +44,7 @@ export const Default: Story = {
 
 export const Stretched: Story = {
   args: {
-    src: 'assets/icons/calendar.svg',
+    src: 'icons/calendar.svg',
     stretch: true,
     size: 24,
     svgStyle: {},
@@ -53,7 +53,7 @@ export const Stretched: Story = {
 
 export const LargeSize: Story = {
   args: {
-    src: 'assets/icons/calendar.svg',
+    src: 'icons/calendar.svg',
     stretch: false,
     size: 48,
     svgStyle: {},
@@ -62,7 +62,7 @@ export const LargeSize: Story = {
 
 export const WithCustomStyles: Story = {
   args: {
-    src: 'assets/icons/calendar.svg',
+    src: 'icons/calendar.svg',
     stretch: false,
     size: 24,
     svgStyle: { fill: 'blue', stroke: 'black', 'stroke-width': '2px' },
@@ -71,7 +71,7 @@ export const WithCustomStyles: Story = {
 
 export const DifferentIcon: Story = {
   args: {
-    src: 'assets/icons/star.svg',
+    src: 'icons/alarm.svg',
     stretch: false,
     size: 24,
     svgStyle: {},

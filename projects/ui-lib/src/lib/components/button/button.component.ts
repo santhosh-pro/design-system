@@ -1,8 +1,8 @@
-import {Component, ElementRef, EventEmitter, inject, input, Input, OnInit, Output, Renderer2} from '@angular/core';
-import {DOCUMENT, NgClass} from "@angular/common";
-import {SpinnerComponent} from "../spinner/spinner.component";
-import {FormGroup, FormGroupDirective} from "@angular/forms";
-import {AppSvgIconComponent} from "../app-svg-icon/app-svg-icon.component";
+import { Component, ElementRef, EventEmitter, inject, input, Input, OnInit, output, Output, Renderer2 } from '@angular/core';
+import { DOCUMENT, NgClass } from "@angular/common";
+import { SpinnerComponent } from "../spinner/spinner.component";
+import { FormGroup, FormGroupDirective } from "@angular/forms";
+import { AppSvgIconComponent } from "../app-svg-icon/app-svg-icon.component";
 
 @Component({
   selector: 'app-button',
@@ -13,12 +13,13 @@ import {AppSvgIconComponent} from "../app-svg-icon/app-svg-icon.component";
     AppSvgIconComponent
   ],
   templateUrl: './button.component.html',
-  styleUrl: './button.component.css'
 })
 export class ButtonComponent {
   elementRef = inject(ElementRef);
   document = inject(DOCUMENT);
   renderer = inject(Renderer2);
+  formGroupDirective = inject(FormGroupDirective, { optional: true });
+
 
   type = input<'button' | 'submit' | 'reset'>('button');
   disabled = input<boolean>(false);
@@ -33,9 +34,7 @@ export class ButtonComponent {
   textButtonColor = input<string>('text-primary-500');
   size = input<'small' | 'medium' | 'large'>('medium');
 
-  @Output() buttonClick = new EventEmitter<void>();
-
-  formGroupDirective = inject(FormGroupDirective, {optional: true});
+  buttonClick = output<void>();
 
   getButtonClass(): string {
     let base = 'inline-flex items-center justify-center text-button leading-5 transition-all duration-200';
@@ -109,7 +108,9 @@ export class ButtonComponent {
       const formGroup = this.formGroupDirective.form;
       this.validateForm(formGroup);
     }
+    if(!this.disabled()) {
     this.buttonClick.emit();
+    }
   }
 
   validateForm(formGroup: FormGroup) {
