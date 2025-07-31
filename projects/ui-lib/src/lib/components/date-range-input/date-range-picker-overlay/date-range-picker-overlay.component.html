@@ -4,6 +4,9 @@
   [allowOnlyPast]="data.allowOnlyPast"
   [allowOnlyFuture]="data.allowOnlyFuture"
   [allowToday]="data.allowToday"
+  [minDaysRange]="data.minDaysRange"
+  [maxDaysRange]="data.maxDaysRange"
   [(ngModel)]="data.selectedRange"
-  (dateRangeSelected)="onDateRangeSelected($event)">
+  (dateRangeSelected)="onDateRangeSelected($event)"
+>
 </app-date-range-picker>

@@ -3,7 +3,6 @@ import {ShimmerComponent} from "../../shimmer/shimmer.component";
 import {NgClass} from "@angular/common";
 import {PaginationComponent, PaginationEvent} from "../../pagination/pagination.component";
 import { NoDataTableComponent } from '../no-data-table/no-data-table.component';
-import { State } from '../../../core/base-state';
 
 @Component({
   selector: 'app-base-table',
@@ -20,7 +19,6 @@ import { State } from '../../../core/base-state';
 export class BaseTableComponent<T> implements AfterViewInit {
 
   pageSize = input(10);
-  state = input<State<any>>();
   isHorizontallyScrollable = input(false);
   itemsPerPage = input(10);
 

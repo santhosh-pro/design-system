@@ -138,10 +138,6 @@
   --text-overline-font-weight: 500;
 }
 
-
-
-
-
 .app-container {
   @apply w-full p-4 mx-auto flex flex-col h-full;
 }
@@ -166,9 +162,8 @@
   @apply h-[1px] bg-neutral-100 w-full;
 }
 
-
 .cdk-overlay-container:focus,
 .cdk-overlay-pane:focus,
 .cdk-overlay-container *:focus {
-outline: none !important;
+  outline: none !important;
 }

@@ -1,53 +1,55 @@
-import {Component, input, OnInit, output, signal} from '@angular/core';
-import {NgClass} from "@angular/common";
-import { Weekday } from '../../../multi-date-input/multi-date-picker-overlay/multi-date-picker/multi-date-picker.component';
-import { BaseControlValueAccessorV3 } from '../../../../core/base-control-value-accessor-v3';
+import { Component, input, OnInit, output, signal } from "@angular/core";
+import { NgClass } from "@angular/common";
+import { Weekday } from "../../../multi-date-input/multi-date-picker-overlay/multi-date-picker/multi-date-picker.component";
+import { BaseControlValueAccessorV3 } from "../../../../core/base-control-value-accessor-v3";
 
 @Component({
-  selector: 'app-date-range-picker',
-  imports: [
-    NgClass
-  ],
+  selector: "app-date-range-picker",
+  imports: [NgClass],
   standalone: true,
-  templateUrl: './date-range-picker.component.html',
-  styleUrl: './date-range-picker.component.css'
+  templateUrl: "./date-range-picker.component.html",
+  styleUrl: "./date-range-picker.component.css",
 })
-export class DateRangePickerComponent extends BaseControlValueAccessorV3<DateRangeEvent | null> implements OnInit {
-
+export class DateRangePickerComponent
+  extends BaseControlValueAccessorV3<DateRangeEvent | null>
+  implements OnInit
+{
   minDate = input<Date | null>();
   maxDate = input<Date | null>();
   allowOnlyPast = input<boolean>(false);
   allowOnlyFuture = input<boolean>(false);
   allowToday = input<boolean>(false);
+  minDaysRange = input<number | null>(null); // Minimum days between start and end date
+  maxDaysRange = input<number | null>(null); // Maximum days between start and end date
 
   dateRangeSelected = output<DateRangeEvent>();
 
-  days: { day: Weekday, displayName: string }[] = [
-    {day: 'sunday', displayName: 'Su'},
-    {day: 'monday', displayName: 'Mo'},
-    {day: 'tuesday', displayName: 'Tu'},
-    {day: 'wednesday', displayName: 'We'},
-    {day: 'thursday', displayName: 'Th'},
-    {day: 'friday', displayName: 'Fr'},
-    {day: 'saturday', displayName: 'Sa'}
+  days: { day: Weekday; displayName: string }[] = [
+    { day: "sunday", displayName: "Su" },
+    { day: "monday", displayName: "Mo" },
+    { day: "tuesday", displayName: "Tu" },
+    { day: "wednesday", displayName: "We" },
+    { day: "thursday", displayName: "Th" },
+    { day: "friday", displayName: "Fr" },
+    { day: "saturday", displayName: "Sa" },
   ];
 
   months = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec'
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
   ];
 
-  uiMode = signal<'date' | 'month' | 'year'>('date');
+  uiMode = signal<"date" | "month" | "year">("date");
 
   activeMonth!: number;
   activeYear!: number;
@@ -115,10 +117,17 @@ export class DateRangePickerComponent extends BaseControlValueAccessorV3<DateRan
   }
 
   populateDays() {
-    const daysInMonth = new Date(this.activeYear, this.activeMonth + 1, 0).getDate();
-    this.blankDays = Array.from({length: new Date(this.activeYear, this.activeMonth).getDay()}, (_, i) => i + 1);
+    const daysInMonth = new Date(
+      this.activeYear,
+      this.activeMonth + 1,
+      0,
+    ).getDate();
+    this.blankDays = Array.from(
+      { length: new Date(this.activeYear, this.activeMonth).getDay() },
+      (_, i) => i + 1,
+    );
 
-    this.daysOfMonth = Array.from({length: daysInMonth}, (_, i) => {
+    this.daysOfMonth = Array.from({ length: daysInMonth }, (_, i) => {
       const day = i + 1;
       const currentDate = new Date(this.activeYear, this.activeMonth, day);
       let isEnabled = true;
@@ -139,14 +148,34 @@ export class DateRangePickerComponent extends BaseControlValueAccessorV3<DateRan
         isEnabled = isEnabled && currentDate <= this.maxDate()!;
       }
 
-      if(this.allowToday() && this.isToday(day)) {
+      if (this.allowToday() && this.isToday(day)) {
         isEnabled = true;
       }
 
-      return {value: day, isEnabled};
+      // Check if the day is within the allowed range from startDate
+      if (
+        isEnabled &&
+        this.startDate &&
+        !this.endDate &&
+        (this.minDaysRange() || this.maxDaysRange())
+      ) {
+        const minDate = this.minDaysRange() ? new Date(this.startDate) : null;
+        const maxDate = this.maxDaysRange() ? new Date(this.startDate) : null;
+
+        if (minDate) {
+          minDate.setDate(this.startDate.getDate() + this.minDaysRange()!);
+          isEnabled = isEnabled && currentDate >= minDate;
+        }
+
+        if (maxDate) {
+          maxDate.setDate(this.startDate.getDate() + this.maxDaysRange()!);
+          isEnabled = isEnabled && currentDate <= maxDate;
+        }
+      }
+
+      return { value: day, isEnabled };
     });
   }
-
 
   isMonthEnabled(month: number): boolean {
     const monthStartDate = new Date(this.activeYear, month, 1);
@@ -154,15 +183,24 @@ export class DateRangePickerComponent extends BaseControlValueAccessorV3<DateRan
     const todayMonthStart = new Date(today.getFullYear(), today.getMonth(), 1);
 
     if (this.allowOnlyPast() && monthStartDate > todayMonthStart) return false;
-    if (this.allowOnlyFuture() && monthStartDate < todayMonthStart) return false;
+    if (this.allowOnlyFuture() && monthStartDate < todayMonthStart)
+      return false;
 
     if (this.minDate()) {
-      const minMonthStart = new Date(this.minDate()!.getFullYear(), this.minDate()!.getMonth(), 1);
+      const minMonthStart = new Date(
+        this.minDate()!.getFullYear(),
+        this.minDate()!.getMonth(),
+        1,
+      );
       if (monthStartDate < minMonthStart) return false;
     }
 
     if (this.maxDate()) {
-      const maxMonthStart = new Date(this.maxDate()!.getFullYear(), this.maxDate()!.getMonth(), 1);
+      const maxMonthStart = new Date(
+        this.maxDate()!.getFullYear(),
+        this.maxDate()!.getMonth(),
+        1,
+      );
       if (monthStartDate > maxMonthStart) return false;
     }
 
@@ -171,12 +209,12 @@ export class DateRangePickerComponent extends BaseControlValueAccessorV3<DateRan
 
   onYearSelected(year: number): void {
     this.activeYear = year;
-    this.uiMode.set('month');
+    this.uiMode.set("month");
   }
 
   onMonthSelected(month: number): void {
     this.activeMonth = month;
-    this.uiMode.set('date');
+    this.uiMode.set("date");
     this.populateDays();
   }
 
@@ -194,17 +232,36 @@ export class DateRangePickerComponent extends BaseControlValueAccessorV3<DateRan
       this.endDate = null;
       this.hoveredDate = null;
       this.selectingStart = false;
+      this.populateDays(); // Update enabled days based on new start date
     } else {
-      this.endDate = selectedDate;
+      // Validate the range against minDaysRange and maxDaysRange
+      const diffTime = Math.abs(
+        selectedDate.getTime() - this.startDate!.getTime(),
+      );
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-      let event: DateRangeEvent = {startDate: this.startDate, endDate: this.endDate};
+      if (this.minDaysRange() && diffDays < this.minDaysRange()!) {
+        // Adjust endDate to meet minDaysRange
+        this.endDate = new Date(this.startDate!);
+        this.endDate.setDate(this.startDate!.getDate() + this.minDaysRange()!);
+      } else if (this.maxDaysRange() && diffDays > this.maxDaysRange()!) {
+        // Adjust endDate to meet maxDaysRange
+        this.endDate = new Date(this.startDate!);
+        this.endDate.setDate(this.startDate!.getDate() + this.maxDaysRange()!);
+      } else {
+        this.endDate = selectedDate;
+      }
+
+      let event: DateRangeEvent = {
+        startDate: this.startDate!,
+        endDate: this.endDate!,
+      };
       this.dateRangeSelected.emit(event);
       this.selectingStart = true;
     }
 
-
     if (this.startDate && this.endDate) {
-      this.onValueChange({startDate: this.startDate, endDate: this.endDate});
+      this.onValueChange({ startDate: this.startDate, endDate: this.endDate });
     }
   }
 
@@ -216,9 +273,7 @@ export class DateRangePickerComponent extends BaseControlValueAccessorV3<DateRan
     }
   }
 
-
   isDateInSelectionRange(day: number): boolean {
-
     let date = new Date(this.activeYear, this.activeMonth, day);
     if (this.startDate && this.endDate) {
       return date >= this.startDate && date <= this.endDate;
@@ -232,10 +287,7 @@ export class DateRangePickerComponent extends BaseControlValueAccessorV3<DateRan
     if (this.startDate && this.hoveredDate && !this.endDate) {
       const adjustedHoveredDate = new Date(this.hoveredDate);
       adjustedHoveredDate.setDate(this.hoveredDate.getDate() - 1);
-      return (
-        date > this.startDate &&
-        date < this.hoveredDate
-      );
+      return date > this.startDate && date < this.hoveredDate;
     }
     return false;
   }
@@ -252,30 +304,32 @@ export class DateRangePickerComponent extends BaseControlValueAccessorV3<DateRan
 
   isSelectionStartDate(day: number): boolean | null | undefined {
     const date = new Date(this.activeYear, this.activeMonth, day);
-    return (this.startDate && date.toDateString() === this.startDate.toDateString());
+    return (
+      this.startDate && date.toDateString() === this.startDate.toDateString()
+    );
   }
 
   isSelectionEndDate(day: number): boolean | null | undefined {
     const date = new Date(this.activeYear, this.activeMonth, day);
-    return (this.endDate && date.toDateString() === this.endDate.toDateString());
+    return this.endDate && date.toDateString() === this.endDate.toDateString();
   }
 
   previousMonthPressed() {
     switch (this.uiMode()) {
-      case 'year':
+      case "year":
         if (this.activeYear > 24) {
           this.activeYear -= 24;
           this.populateYears();
         }
         break;
 
-      case 'month':
+      case "month":
         if (this.activeYear > 1) {
           this.activeYear--;
         }
         break;
 
-      case 'date':
+      case "date":
         if (this.activeMonth === 0) {
           if (this.activeYear > 1) {
             this.activeYear--;
@@ -288,22 +342,22 @@ export class DateRangePickerComponent extends BaseControlValueAccessorV3<DateRan
         break;
 
       default:
-        console.warn('Unknown mode:', this.uiMode());
+        console.warn("Unknown mode:", this.uiMode());
     }
   }
 
   nextMonthPressed() {
     switch (this.uiMode()) {
-      case 'year':
+      case "year":
         this.activeYear += 24;
         this.populateYears();
         break;
 
-      case 'month':
+      case "month":
         this.activeYear++;
         break;
 
-      case 'date':
+      case "date":
         if (this.activeMonth === 11) {
           this.activeYear++;
           this.activeMonth = 0;
@@ -314,24 +368,23 @@ export class DateRangePickerComponent extends BaseControlValueAccessorV3<DateRan
         break;
 
       default:
-        console.warn('Unknown mode:', this.uiMode());
+        console.warn("Unknown mode:", this.uiMode());
     }
   }
 
   onYearSelectionPressed() {
     switch (this.uiMode()) {
-      case 'year':
-        this.uiMode.set('date');
+      case "year":
+        this.uiMode.set("date");
         break;
       case "month":
-        this.uiMode.set('year');
+        this.uiMode.set("year");
         break;
       case "date":
         this.populateYears();
-        this.uiMode.set('year');
+        this.uiMode.set("year");
         break;
     }
-
   }
 
   getFirstYear() {

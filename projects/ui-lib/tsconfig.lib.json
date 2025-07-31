@@ -6,8 +6,13 @@
     "outDir": "../../out-tsc/lib",
     "declaration": true,
     "declarationMap": true,
-    "inlineSources": true,
-    "types": []
+    "types": [],
+    "baseUrl": ".",
+    "paths": {
+      "@santhoshsept94.pro/ui-lib": [
+        "dist/ui-lib"
+      ]
+    }
   },
   "include": [
     "src/**/*.ts"

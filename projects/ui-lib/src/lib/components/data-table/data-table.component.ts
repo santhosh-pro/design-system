@@ -24,7 +24,6 @@ import { TableResizableColumnsDirective } from './base-table/table-resizable-col
 import { Overlay, OverlayConfig } from '@angular/cdk/overlay';
 import { CdkPortal } from '@angular/cdk/portal';
 import { FormsModule, FormControl, ReactiveFormsModule } from '@angular/forms';
-import { TextButtonSmall } from '../text-button-small/text-button-small.component';
 import { DynamicRendererComponent } from '../dynamic-renderer/dynamic-renderer.component';
 import { BaseControlValueAccessorV3 } from '../../core/base-control-value-accessor-v3';
 import { NoDataTableComponent } from './no-data-table/no-data-table.component';
@@ -34,7 +33,6 @@ import { MultiSelectDropdownComponent } from '../multi-select-dropdown/multi-sel
 import { debounceTime } from 'rxjs/operators';
 import { TextInputComponent } from '../text-input/text-input.component';
 import { DateInputComponent, InputDateFormat } from '../date-input/date-input.component';
-import { State } from '../../core/base-state';
 import { resolveTemplateWithObject } from '../../core/template-resolver';
 
 @Component({
@@ -55,7 +53,6 @@ import { resolveTemplateWithObject } from '../../core/template-resolver';
     CheckboxComponent,
     FormsModule,
     TextInputComponent,
-    TextButtonSmall,
     DynamicRendererComponent,
     MultiSelectDropdownComponent,
     ReactiveFormsModule,
@@ -72,7 +69,6 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
   public InputDateFormat = InputDateFormat;
 
   columnGroups = input.required<ColumnGroup[]>();
-  state = input.required<State<any>>();
   pageSize = input(50);
   private internalPageSize: number = this.pageSize();
   enableHorizontallyScrollable = input(false);

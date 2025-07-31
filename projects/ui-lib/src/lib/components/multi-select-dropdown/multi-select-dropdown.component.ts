@@ -15,10 +15,9 @@ import {NgClass} from "@angular/common";
 import {resolveTemplateWithObject} from "../../core/template-resolver";
 import {deepEqual} from "../../core/base-input-utils";
 import {CheckboxComponent} from "../checkbox/checkbox.component";
-import { State } from '@shared/core/base-state';
-import { BaseInputComponent } from '@shared/core/base-input/base-input.component';
-import { HumanizeFormMessagesPipe } from '@shared/core/humanize-form-messages.pipe';
 import { BaseControlValueAccessor } from '../../core/base-control-value-accessor';
+import { BaseInputComponent } from '../../core/base-input/base-input.component';
+import { HumanizeFormMessagesPipe } from '../../core/humanize-form-messages.pipe';
 
 @Component({
     selector: 'app-multi-select-dropdown',
@@ -49,7 +48,6 @@ export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor im
     identifier = input<string>('id');
     searchKeyMatch = input<string | null>();
     noDataMessage = input<string>();
-    state = input<State<any>>();
     fullWidth = input<boolean>(false);
     showErrorSpace = input<boolean>(false);
     enableSearch = input<boolean>(false);

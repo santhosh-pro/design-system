@@ -10,11 +10,10 @@ import {NgClass, NgStyle} from "@angular/common";
 import {FormControl, NgControl, ReactiveFormsModule} from "@angular/forms";
 import {ShimmerComponent} from "../../components/shimmer/shimmer.component";
 import {AppSvgIconComponent} from "../../components/app-svg-icon/app-svg-icon.component";
-import { BaseInputComponent } from '@shared/core/base-input/base-input.component';
-import { HumanizeFormMessagesPipe } from '@shared/core/humanize-form-messages.pipe';
-import { BaseControlValueAccessor } from '@shared/core/base-control-value-accessor';
-import { State } from '@shared/core/base-state';
-import { resolveTemplateWithObject } from '@shared/core/template-resolver';
+import { BaseControlValueAccessor } from '../../core/base-control-value-accessor';
+import { BaseInputComponent } from '../../core/base-input/base-input.component';
+import { HumanizeFormMessagesPipe } from '../../core/humanize-form-messages.pipe';
+import { resolveTemplateWithObject } from '../../core/template-resolver';
 
 @Component({
   selector: 'app-single-selection-field',
@@ -44,7 +43,6 @@ export class SingleSelectionFieldComponent<T> extends BaseControlValueAccessor i
   dynamicIconColor = input<string>();
   value = input<string>();
   noDataMessage = input<string>();
-  state = input<State<any>>();
   customActionText = input<string>();
   fullWidth = input(false);
   itemWidth = input<number | null>(null);

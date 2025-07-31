@@ -70,18 +70,7 @@
       </div>
     }
 
-    @if ((state()?.success()) && items().length <= 0) {
-      <p class="text-caption text-red-700">{{ noDataMessage() ?? 'No data found' }}</p>
-    }
 
-    @if ((state()?.error()) && items().length <= 0) {
-      <p
-        class="text-caption text-red-700">{{ (state()?.error() != null || state()?.error() != '') ? state()?.error() : noDataMessage() ?? 'No data found' }}</p>
-    }
-
-    @if (state()?.loading()) {
-      <app-shimmer class="w-full" type="multiline"></app-shimmer>
-    }
   </div>
 
   <div error>

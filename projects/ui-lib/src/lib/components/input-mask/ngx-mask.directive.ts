@@ -395,12 +395,12 @@ export class NgxMaskDirective implements ControlValueAccessor, OnChanges, Valida
         this._justPasted.set(true);
     }
 
-    @HostListener('focus', ['$event']) public onFocus() {
+    @HostListener('focus', ['$event']) public onFocus(e:any) {
         this._isFocused.set(true);
     }
 
     @HostListener('ngModelChange', ['$event'])
-    public onModelChange(value: string | undefined | null | number): void {
+    public onModelChange(value: string | undefined | null | number | any): void {
         // on form reset we need to update the actualValue
         if (
             (value === MaskExpression.EMPTY_STRING ||
@@ -415,7 +415,7 @@ export class NgxMaskDirective implements ControlValueAccessor, OnChanges, Valida
     }
 
     @HostListener('input', ['$event'])
-    public onInput(e: CustomKeyboardEvent): void {
+    public onInput(e: CustomKeyboardEvent | any): void {
         // If IME is composing text, we wait for the composed text.
         if (this._isComposing()) {
             return;
@@ -692,20 +692,20 @@ export class NgxMaskDirective implements ControlValueAccessor, OnChanges, Valida
 
     // IME starts
     @HostListener('compositionstart', ['$event'])
-    public onCompositionStart(): void {
+    public onCompositionStart(e:any): void {
         this._isComposing.set(true);
     }
 
     // IME completes
     @HostListener('compositionend', ['$event'])
-    public onCompositionEnd(e: CustomKeyboardEvent): void {
+    public onCompositionEnd(e: CustomKeyboardEvent | any): void {
         this._isComposing.set(false);
         this._justPasted.set(true);
         this.onInput(e);
     }
 
     @HostListener('blur', ['$event'])
-    public onBlur(e: CustomKeyboardEvent): void {
+    public onBlur(e: CustomKeyboardEvent | any): void {
         if (this._maskValue()) {
             const el: HTMLInputElement = e.target as HTMLInputElement;
             if (
@@ -745,7 +745,7 @@ export class NgxMaskDirective implements ControlValueAccessor, OnChanges, Valida
     }
 
     @HostListener('click', ['$event'])
-    public onClick(e: MouseEvent | CustomKeyboardEvent): void {
+    public onClick(e: MouseEvent | CustomKeyboardEvent | any): void {
         if (!this._maskValue()) {
             return;
         }
@@ -817,7 +817,7 @@ export class NgxMaskDirective implements ControlValueAccessor, OnChanges, Valida
     }
 
     @HostListener('keydown', ['$event'])
-    public onKeyDown(e: CustomKeyboardEvent): void {
+    public onKeyDown(e: CustomKeyboardEvent | any): void {
         if (!this._maskValue()) {
             return;
         }
