@@ -1,11 +1,179 @@
-/* Highlight selected rows */
-tr.bg-blue-50 {
-  background-color: #eff6ff; /* Tailwind's blue-50 for light theme */
-  transition: background-color 0.2s ease;
+/* Remove transitions that cause delays and sync hover states */
+
+table {
+  position: relative;
+  table-layout: auto;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  tr.bg-blue-50 {
-    background-color: #1e40af; /* Darker blue for dark theme */
-  }
+/* Base cell styling - remove transitions */
+th, td {
+  min-width: 120px;
+  white-space: nowrap;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  /* Remove any transition properties that cause delays */
+  transition: none !important;
+}
+
+/* Sticky column base styling */
+th.sticky, td.sticky {
+  position: sticky;
+  background: white !important;
+  z-index: 10;
+  /* Remove transitions for instant background changes */
+  transition: none !important;
+}
+
+/* Header rows need higher z-index */
+thead th {
+  background: white !important;
+  transition: none !important;
+}
+
+thead th.sticky {
+  z-index: 20;
+  background: white !important;
+}
+
+/* Filter row styling */
+thead tr:nth-child(2) th {
+  background: #f9fafb !important;
+}
+
+thead tr:nth-child(2) th.sticky {
+  background: #f9fafb !important;
+  z-index: 20;
+}
+
+/* Body row default state */
+tbody td {
+  background: white !important;
+  transition: none !important;
+}
+
+tbody td.sticky {
+  background: white !important;
+  z-index: 10;
+}
+
+/* HOVER STATES - Apply immediately without transitions */
+tbody tr:hover td {
+  background: #eef2ff !important;
+}
+
+tbody tr:hover td.sticky {
+  background: #eef2ff !important;
+}
+
+/* SELECTED ROW STATES */
+tbody tr.bg-blue-50 td,
+tbody tr[class*="bg-blue"] td {
+  background: #dbeafe !important;
+}
+
+tbody tr.bg-blue-50 td.sticky,
+tbody tr[class*="bg-blue"] td.sticky {
+  background: #dbeafe !important;
+}
+
+/* Combined hover + selected state */
+tbody tr.bg-blue-50:hover td,
+tbody tr[class*="bg-blue"]:hover td {
+  background: #bfdbfe !important;
+}
+
+tbody tr.bg-blue-50:hover td.sticky,
+tbody tr[class*="bg-blue"]:hover td.sticky {
+  background: #bfdbfe !important;
+}
+
+/* Pin shadows - only apply to pinned columns */
+th.sticky[pinned="left"], td.sticky[pinned="left"] {
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+  border-right: 1px solid #d1d5db;
+}
+
+th.sticky[pinned="right"], td.sticky[pinned="right"] {
+  box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
+  border-left: 1px solid #d1d5db;
+}
+
+/* Checkbox column specific */
+.w-12 {
+  width: 48px !important;
+  min-width: 48px !important;
+  max-width: 48px !important;
+  padding: 12px !important;
+}
+
+/* Remove the transition classes that Angular might be adding */
+.transition-colors,
+.duration-200 {
+  transition: none !important;
+}
+
+/* Ensure hover class from template doesn't add transitions */
+.hover\:bg-indigo-50:hover {
+  background-color: #eef2ff !important;
+  transition: none !important;
+}
+
+/* Override any Tailwind transitions */
+tbody tr {
+  transition: none !important;
+}
+
+tbody tr td {
+  transition: none !important;
+}
+
+/* Pin toggle improvements */
+.pin-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.pin-toggle svg {
+  flex-shrink: 0;
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 2px;
+  /* Keep only opacity transition for pin button */
+  transition: background-color 0.1s ease;
+}
+
+.pin-toggle svg:hover {
+  background-color: rgba(79, 70, 229, 0.1);
+}
+
+.pin-toggle svg.text-primary-600 {
+  color: #4f46e5;
+}
+
+.pin-toggle svg.text-neutral-500 {
+  color: #6b7280;
+}
+
+/* Scrollbar styling */
+.overflow-x-auto::-webkit-scrollbar {
+  height: 8px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }

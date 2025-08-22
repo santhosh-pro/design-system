@@ -1,6 +1,5 @@
-import {AbstractControl, ControlValueAccessor, FormControl, NgControl} from "@angular/forms";
-import {AfterContentInit, Component, inject, input, output, signal} from "@angular/core";
-
+import { AbstractControl, ControlValueAccessor, FormControl, NgControl } from "@angular/forms";
+import { AfterContentInit, Component, EventEmitter, inject, input, Output, signal } from "@angular/core";
 
 @Component({
   template: '',
@@ -8,13 +7,14 @@ import {AfterContentInit, Component, inject, input, output, signal} from "@angul
 export abstract class BaseControlValueAccessorV3<T> implements ControlValueAccessor, AfterContentInit {
   errorMessages = input<{ [key: string]: string }>({});
 
-  valueChanged = output<T>();
+  @Output() valueChanged = new EventEmitter<T>();
+  @Output() userChanged = new EventEmitter<T>(); // New output for user-initiated changes
 
   disabled = signal(false);
   touched = signal(false);
   public formControl = new FormControl();
 
-  ngControl = inject(NgControl, {optional: true, self: true});
+  ngControl = inject(NgControl, { optional: true, self: true });
 
   actualValue: T | undefined;
 
@@ -41,11 +41,9 @@ export abstract class BaseControlValueAccessorV3<T> implements ControlValueAcces
     return this.formControl && this.formControl.touched && this.formControl.errors;
   }
 
-  private onChange: any = () => {
-  };
+  private onChange: any = () => {};
 
-  onTouched: any = () => {
-  };
+  onTouched: any = () => {};
 
   writeValue(value: T): void {
     if (value != this.formControl.value) {
@@ -57,11 +55,15 @@ export abstract class BaseControlValueAccessorV3<T> implements ControlValueAcces
     });
   }
 
-
   onValueChange(value: T) {
-    this.valueChanged.emit(value);
+    this.valueChanged.emit(value); // Emit for all changes
     this.actualValue = value;
     this.onChange(value);
+  }
+
+  onUserValueChange(value: T) {
+    this.userChanged.emit(value); // Emit for user-initiated changes
+    this.onValueChange(value); // Also trigger valueChanged for consistency
   }
 
   registerOnChange(fn: any): void {

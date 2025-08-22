@@ -4,7 +4,7 @@
   @if (enableSearch() || headerComponents.length > 0) {
   <div class="flex px-6 py-5 border-b border-neutral-100 justify-between">
     @if (enableSearch()) {
-    <app-text-input [iconSrc]="'icons/search.svg'" placeholder="Search..." type="search" [fullWidth]="false"
+    <app-text-input placeholder="Search..." type="search" [fullWidth]="false"
       (changeValue)="onSearchTextChanged($event)"></app-text-input>
     }
     <div>
@@ -14,100 +14,106 @@
   }
 
   <!-- Table Container -->
-  <div class="flex-1 overflow-y-auto relative">
-    <table class="w-full table-auto" [ngClass]="[enableHorizontallyScrollable() ? 'overflow-x-auto' : '']"
-      [appTableResizableColumns]="enableResizableColumns()">
+  <div class="flex-1 overflow-y-auto relative" [ngClass]="{'overflow-x-auto': enableHorizontallyScrollable()}">
+    <table #table class="w-full table-auto" [appTableResizableColumns]="enableResizableColumns()">
       <!-- Table Header -->
-      <thead class="sticky top-0 bg-white z-10">
+      <thead class="sticky top-0 bg-white z-60">
         <!-- Main Heading Row -->
         <tr sortableTable (sortChange)="onSortChanged($event)"
           class="text-overline text-neutral-500 text-nowrap border-b border-gray-200">
           <!-- Checkbox Column Header -->
           @if (enableRowSelection()) {
-          <th class="w-12 px-4 py-3 border-b border-gray-200">
-            <app-checkbox [ngModel]="isAllSelected()" (valueChanged)="onSelectAllRows($event)"
-              [disabled]="!enableRowSelection()"></app-checkbox>
+          <th class="w-12 px-4 py-3 border-b border-gray-200 sticky z-20 bg-white" attr.pinned="left"
+            [style.left]="getCheckboxColumnOffset()">
+            <app-checkbox [ngModel]="isAllSelected()" (valueChanged)="onSelectAllRows($event)"></app-checkbox>
           </th>
           }
-          @for (group of columnGroups(); track group; let groupIndex = $index) {
+          @for (group of columnGroupsSignal(); track group; let groupIndex = $index) {
           @for (column of group.columns; track column; let colIndex = $index) {
           @let isColumnVisible = column.visible ?? true;
           @if (isColumnVisible) {
           <th [attr.data-sortable-key]="column.sortKey"
             class="relative cursor-pointer px-4 py-3 text-caption font-semibold text-primary-600 uppercase tracking-wider border-b border-gray-200 transition-colors duration-200 hover:bg-indigo-50"
             [ngClass]="[
-                    getThTrClass(column),
-                    colIndex < group.columns.length - 1 ? 'border-r border-gray-200' : '',
-                    colIndex === group.columns.length - 1 && groupIndex < columnGroups().length - 1 && !enableColumnsConfig() ? 'border-r border-gray-200' : '',
-                    colIndex === group.columns.length - 1 && groupIndex < columnGroups().length - 2 && enableColumnsConfig() ? 'border-r border-gray-200' : ''
-                  ]">
-            {{ column.title }}
-          </th>
-          }
-          }
-          }
-          @if (enableColumnsConfig()) {
-          <th
-            class="sticky right-0 bg-white flex justify-center cursor-pointer items-center px-1.5 py-3 border-b border-gray-200">
-            <div #columnsConfigTriggerElement (click)="onColumnSettingsClicked(columnsConfigTriggerElement)"
-              class="flex justify-center items-center h-7 w-7 cursor-pointer rounded-full hover:bg-neutral-100 transition-all duration-500">
-              <svg class="h-4 w-4 text-neutral-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M12 8C13.0608 8 14.0782 8.42143 14.8284 9.17157C15.5785 9.92172 16 10.9391 16 12C16 13.0609 15.5785 14.0783 14.8284 14.8284C14.0782 15.5786 13.0608 16 12 16C10.9391 16 9.92168 15.5786 9.17153 14.8284C8.42139 14.0783 7.99996 13.0609 7.99996 12C7.99996 10.9391 8.42139 9.92172 9.17153 9.17157C9.92168 8.42143 10.9391 8 12 8ZM12 10C11.4695 10 10.9608 10.2107 10.5857 10.5858C10.2107 10.9609 9.99996 11.4696 9.99996 12C9.99996 12.5304 10.2107 13.0391 10.5857 13.4142C10.9608 13.7893 11.4695 14 12 14C12.5304 14 13.0391 13.7893 13.4142 13.4142C13.7892 13.0391 14 12.5304 14 12C14 11.4696 13.7892 10.9609 13.4142 10.5858C13.0391 10.2107 12.5304 10 12 10ZM9.99996 22C9.74996 22 9.53996 21.82 9.49996 21.58L9.12996 18.93C8.49996 18.68 7.95996 18.34 7.43996 17.94L4.94996 18.95C4.72996 19.03 4.45996 18.95 4.33996 18.73L2.33996 15.27C2.20996 15.05 2.26996 14.78 2.45996 14.63L4.56996 12.97L4.49996 12L4.56996 11L2.45996 9.37C2.26996 9.22 2.20996 8.95 2.33996 8.73L4.33996 5.27C4.45996 5.05 4.72996 4.96 4.94996 5.05L7.43996 6.05C7.95996 5.66 8.49996 5.32 9.12996 5.07L9.49996 2.42C9.53996 2.18 9.74996 2 9.99996 2H14C14.25 2 14.46 2.18 14.5 2.42L14.87 5.07C15.5 5.32 16.04 5.66 16.56 6.05L19.05 5.05C19.27 4.96 19.54 5.05 19.66 5.27L21.66 8.73C21.79 8.95 21.73 9.22 21.54 9.37L19.43 11L19.5 12L19.43 13L21.54 14.63C21.73 14.78 21.79 15.05 21.66 15.27L19.66 18.73C19.54 18.95 19.27 19.04 19.05 18.95L16.56 17.95C16.04 18.34 15.5 18.68 14.87 18.93L14.5 21.58C14.46 21.82 14.25 22 14 22H9.99996ZM11.25 4L10.88 6.61C9.67996 6.86 8.61996 7.5 7.84996 8.39L5.43996 7.35L4.68996 8.65L6.79996 10.2C6.39996 11.37 6.39996 12.64 6.79996 13.8L4.67996 15.36L5.42996 16.66L7.85996 15.62C8.62996 16.5 9.67996 17.14 10.87 17.38L11.24 20H12.76L13.13 17.39C14.32 17.14 15.37 16.5 16.14 15.62L18.57 16.66L19.32 15.36L17.2 13.81C17.6 12.64 17.6 11.37 17.2 10.2L19.31 8.65L18.56 7.35L16.15 8.39C15.38 7.5 14.32 6.86 13.12 6.62L12.75 4H11.25Z"
-                  fill="currentColor" />
-              </svg>
+              getThTrClass(column),
+              colIndex < group.columns.length - 1 ? 'border-r border-gray-200' : '',
+              colIndex === group.columns.length - 1 && groupIndex < columnGroupsSignal().length - 1 ? 'border-r border-gray-200' : '',
+              column.pinned ? 'sticky z-20 bg-white' : ''
+            ]" [attr.pinned]="column.pinned"
+            [style.left]="column.pinned === 'left' ? getPinnedLeftOffset(column, group) : ''"
+            [style.right]="column.pinned === 'right' ? getPinnedRightOffset(column, group) : ''"
+            [style.zIndex]="column.pinned ? getPinnedZIndex(column, group) : ''">
+            <div class="flex items-center gap-2">
+              <div class="pin-toggle">
+
+                <!-- Pin Toggle Icon (Always shown, primary color when pinned, gray when unpinned) -->
+                <svg (click)="onPinToggle(column)" fill="currentColor" stroke="currentColor" width="16px" height="16px"
+                  version="1.1" viewBox="144 144 512 512" xmlns="http://www.w3.org/2000/svg"
+                  [ngClass]="column.pinned ? 'text-primary-600' : 'text-neutral-500'" class="cursor-pointer">
+                  <g>
+                    <path
+                      d="m525.64 448.04-29.535-200.94h29.93v-23.617h-252.08v23.617h29.945l-29.539 200.94h-28.496v23.617h142.31v104.87h23.617v-104.87h142.33v-23.617zm-227.41 0 29.535-200.94h144.47l29.52 200.94z" />
+                  </g>
+                </svg>
+              </div>
+              <!-- Column Title -->
+              <span>{{ column.title }}</span>
+              <!-- Sorting Icon (Right, managed by SortableTableDirective) -->
+              <span class="sort-icon"></span>
             </div>
           </th>
+          }
+          }
           }
         </tr>
 
         <!-- Filter Row -->
         @if (hasFilterConfig()) {
         <tr class="bg-neutral-50">
-          <!-- Checkbox Column Filter (Empty) -->
           @if (enableRowSelection()) {
-          <th class="w-12 px-4 py-3 border-b border-gray-200"></th>
+          <th class="w-12 px-4 py-3 border-b border-gray-200 sticky z-20 bg-neutral-50" attr.pinned="left"
+            [style.left]="getCheckboxColumnOffset()"></th>
           }
-          @for (group of columnGroups(); track group; let groupIndex = $index) {
+          @for (group of columnGroupsSignal(); track group; let groupIndex = $index) {
           @for (column of group.columns; track column; let colIndex = $index) {
           @let isColumnVisible = column.visible ?? true;
           @if (isColumnVisible) {
           <th class="border-b border-gray-200 px-4 py-3" [ngClass]="[
-                      getThTrClass(column),
-                      colIndex < group.columns.length - 1 ? 'border-r border-gray-200' : '',
-                      colIndex === group.columns.length - 1 && groupIndex < columnGroups().length - 1 && !enableColumnsConfig() ? 'border-r border-gray-200' : '',
-                      colIndex === group.columns.length - 1 && groupIndex < columnGroups().length - 2 && enableColumnsConfig() ? 'border-r border-gray-200' : ''
-                    ]">
+              getThTrClass(column),
+              colIndex < group.columns.length - 1 ? 'border-r border-gray-200' : '',
+              colIndex === group.columns.length - 1 && groupIndex < columnGroupsSignal().length - 1 ? 'border-r border-gray-200' : '',
+              column.pinned ? 'sticky z-20 bg-neutral-50' : ''
+            ]" [attr.pinned]="column.pinned"
+            [style.left]="column.pinned === 'left' ? getPinnedLeftOffset(column, group) : ''"
+            [style.right]="column.pinned === 'right' ? getPinnedRightOffset(column, group) : ''"
+            [style.zIndex]="column.pinned ? getPinnedZIndex(column, group) : ''">
             @if (column.filterConfig) {
             <div class="flex flex-col sm:flex-row sm:items-center gap-2 min-w-0">
-
               @switch (column.filterConfig.type) {
               @case ('text') {
               <div class="flex items-center w-full min-w-[120px]">
                 <app-text-input [placeholder]="column.filterConfig.placeholder || 'Filter...'"
                   [formControl]="getFilterControl(column, 'value')" [fullWidth]="true" [isPrefixSelect]="true"
                   (prefixChanged)="onFilterOperationChanged($event, column)"
-                  [prefixOptions]="getFilterOperations(column.filterConfig.type)"
-                  [defaultPrefixValue]="'contains'"
+                  [prefixOptions]="getFilterOperations(column.filterConfig.type)" [defaultPrefixValue]="'contains'"
                   class="flex-1 min-w-[120px]"></app-text-input>
               </div>
-
               }
-              <!-- [defaultPrefixValue]="columnFilters[getFilterKey(column)].operation || getDefaultOperation(column.filterConfig.type)" -->
               @case ('number') {
               <div class="flex items-center w-full min-w-[120px]">
                 <app-text-input type="number" [placeholder]="column.filterConfig.placeholder || 'Filter...'"
                   [formControl]="getFilterControl(column, 'value')"
-                  (valueChanged)="onFilterChanged($event, null, null, column)" [fullWidth]="true" [isPrefixSelect]="true"
-                  (prefixChanged)="onFilterOperationChanged($event, column)" [defaultPrefixValue]="'equals'"
-                  [prefixOptions]="getFilterOperations(column.filterConfig.type)"
+                  (valueChanged)="onFilterChanged($event, null, null, column)" [fullWidth]="true"
+                  [isPrefixSelect]="true" (prefixChanged)="onFilterOperationChanged($event, column)"
+                  [defaultPrefixValue]="'equals'" [prefixOptions]="getFilterOperations(column.filterConfig.type)"
                   class="flex-1 min-w-[120px]"></app-text-input>
               </div>
               }
               @case ('date') {
               <div class="flex items-center w-full min-w-[120px]">
                 <app-date-input [formControl]="getFilterControl(column, 'value')"
-                  (valueChanged)="onFilterChanged($event, null, null, column)" [fullWidth]="true" [showDatePickerIcon]="true"
+                  (valueChanged)="onFilterChanged($event, null, null, column)" [fullWidth]="true"
+                  [showDatePickerIcon]="true"
                   [inputDateFormat]="column.filterConfig.dateFormat === 'dd/MM/yyyy' ? InputDateFormat.ddmmyyyy : InputDateFormat.mmddyyyy"
                   class="flex-1 min-w-[120px]"></app-date-input>
               </div>
@@ -116,7 +122,7 @@
               <div class="flex items-center w-full min-w-[120px]">
                 <app-multi-select-dropdown [items]="column.filterConfig.options || []" [fullWidth]="true"
                   [placeholder]="column.filterConfig.placeholder || 'Select...'" [display]="'label'" [value]="'value'"
-                  identifier="value" (valueChanged)="onFilterChanged($event, null,  null, column)"
+                  identifier="value" [formControl]="getFilterControl(column, 'value')"
                   class="flex-1 min-w-[120px]"></app-multi-select-dropdown>
               </div>
               }
@@ -127,9 +133,6 @@
           }
           }
           }
-          @if (enableColumnsConfig()) {
-          <th class="sticky right-0 bg-neutral-50 border-b border-gray-200 px-1.5 py-3"></th>
-          }
         </tr>
         }
       </thead>
@@ -139,145 +142,125 @@
         <ng-content select="[body]"></ng-content>
       </tbody>
 
-
-  <!-- Data Rows -->
-  @if ((state().response()?.data ?? []).length > 0) {
-  <tbody>
-    @for (item of state().response()?.data ?? []; track $index; let i = $index) {
-    <tr (click)="_onRowClicked(item)" class="transition-colors duration-200 hover:bg-indigo-50"
-      [ngClass]="[enableClickableRows() ? 'cursor-pointer' : '', isRowSelected(item) ? 'bg-blue-50' : '']">
-      <!-- Checkbox Column -->
-      @if (enableRowSelection()) {
-      <td class="w-12 px-4 py-3 border-b border-gray-200">
-        <app-checkbox [ngModel]="isRowSelected(item)" (valueChanged)="onRowSelectionChange($event, item)"
-          [disabled]="!enableRowSelection()"></app-checkbox>
-      </td>
-      }
-      @for (group of columnGroups(); track group; let groupIndex = $index) {
-      @for (column of group.columns; track column; let colIndex = $index) {
-      @let isColumnVisible = column.visible ?? true;
-      @if (isColumnVisible) {
-      <td class="px-4 py-3 border-b border-gray-100 relative text-body2 text-gray-800" [ngClass]="[
-                        getThTrClass(column),
-                        colIndex < group.columns.length - 1 ? 'border-r border-gray-200' : '',
-                        colIndex === group.columns.length - 1 && groupIndex < columnGroups().length - 1 && !enableColumnsConfig() ? 'border-r border-gray-200' : '',
-                        colIndex === group.columns.length - 1 && groupIndex < columnGroups().length - 2 && enableColumnsConfig() ? 'border-r border-gray-200' : ''
-                      ]">
-        @switch (column.type) {
-        @default {
-        <span class="text-body2 text-neutral-700" [ngClass]="column.textConfig?.textColorClass">{{
-          getPropertyValue(item, column) }}</span>
-        }
-        @case ('text') {
-        <span class="text-body2 text-neutral-700 text-nowrap" [ngClass]="column.textConfig?.textColorClass">{{
-          getPropertyValue(item, column) }}</span>
-        }
-        @case ('date') {
-        <div class="flex items-center gap-3" [ngClass]="getFlexJustify(column)">
-          @if (column.dateConfig?.showIcon ?? true) {
-          <svg class="h-4 w-4 text-neutral-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M19 19H5V8H19M16 1V3H8V1H6V3H5C3.89 3 3 3.89 3 5V19C3 19.5304 3.21071 20.0391 3.58579 20.4142C3.96086 20.7893 4.46957 21 5 21H19C19.5304 21 20.0391 20.7893 20.4142 20.4142C20.7893 20.0391 21 19.5304 21 19V5C21 3.89 20.1 3 19 3H18V1M17 12H12V17H17V12Z"
-              fill="currentColor" />
-          </svg>
+      <!-- Data Rows -->
+      @if (data().length > 0) {
+      <tbody>
+        @for (item of data(); track $index; let i = $index) {
+        <tr (click)="_onRowClicked(item)" class="transition-colors duration-200 hover:bg-indigo-50"
+          [ngClass]="[enableClickableRows() ? 'cursor-pointer' : '', isRowSelected(item) ? 'bg-blue-50' : '']">
+          <!-- Checkbox Column -->
+          @if (enableRowSelection()) {
+          <td class="w-12 px-4 py-3 border-b border-gray-200 sticky z-20 bg-white" attr.pinned="left"
+            [style.left]="getCheckboxColumnOffset()">
+            <app-checkbox [ngModel]="isRowSelected(item)" (valueChanged)="onRowSelectionChange($event, item)"
+              [disabled]="!enableRowSelection()"></app-checkbox>
+          </td>
           }
-          @let date = getPropertyValue(item, column);
-          @if (date && date != 'null') {
-          <span class="text-body2 text-nowrap">{{
-            date | date: (column.dateConfig?.dateFormat ?? 'MMM d, y, h:mm a')
-            }}</span>
-          }
-        </div>
-        }
-        @case ('badge') {
-        @let badgeProperty = getBadgeProperty(item, column);
-        <div class="flex items-center" [ngClass]="getFlexJustify(column)">
-          <app-status-badge [backgroundColorClass]="badgeProperty?.backgroundColorClass ?? null"
-            [indicatorColor]="badgeProperty?.indicatorColorClass ?? null"
-            [borderColorClass]="badgeProperty?.borderColorClass ?? null"
-            [textColorClass]="badgeProperty?.textColorClass ?? null" [isUpperCase]="true"
-            [status]="badgeProperty?.displayText ?? 'Unknown'"></app-status-badge>
-        </div>
-        }
-        @case ('custom') {
-        @if (column.component) {
-        <div class="flex items-center">
-          <app-dynamic-renderer [component]="column.component" [rowData]="item" [data]="column.customConfig?.data"
-            [rowPosition]="$index + 1" [isLastRow]="$last"
-            (actionPerformed)="onRowActionPerformed($event)"></app-dynamic-renderer>
-        </div>
-        }
-        }
-        @case ('actions') {
-        <div class="flex items-center gap-3" [ngClass]="getFlexJustify(column)">
-          @if (column.actionsConfig?.iconActions) {
-          @for (iconAction of column.actionsConfig?.iconActions; track iconAction) {
-          <div (click)="_onActionClicked(iconAction.actionKey, item, $event)"
-            class="flex items-center justify-center h-9 w-9 cursor-pointer rounded-full hover:bg-neutral-100">
-            <app-svg-icon class="text-neutral-500" [src]="iconAction.iconPath" [size]="20"></app-svg-icon>
-          </div>
-          }
-          }
-          @if (column.actionsConfig?.threeDotMenuActions) {
-          @let menuActions = getContextMenuActions(column.actionsConfig?.threeDotMenuActions, item);
-          @if (menuActions.length > 0) {
-          <app-context-menu-button (onActionClicked)="_onActionClicked($event, item, null)"
-            [actions]="menuActions"></app-context-menu-button>
-          }
-          }
-          @if (column.actionsConfig?.textMenuActions) {
-          @for (textAction of column.actionsConfig?.textMenuActions; track textAction) {
-          <!-- <app-text-button-small (click)="_onActionClicked(textAction.actionKey, item, $event)">{{ textAction.label
-            }}</app-text-button-small> -->
-          }
-          }
-          @if (column.actionsConfig?.components) {
-          <div class="flex items-center">
-            @for (component of column.actionsConfig?.components; track $index) {
-            <app-dynamic-renderer [component]="component" [rowData]="item" [data]="column.customConfig?.data"
-              [rowPosition]="$index + 1" [isLastRow]="$last"
-              (actionPerformed)="onRowActionPerformed($event)"></app-dynamic-renderer>
+          @for (group of columnGroupsSignal(); track group; let groupIndex = $index) {
+          @for (column of group.columns; track column; let colIndex = $index) {
+          @let isColumnVisible = column.visible ?? true;
+          @if (isColumnVisible) {
+          <td class="px-4 py-3 border-b border-gray-100 relative text-body2 text-gray-800" [ngClass]="[
+              getThTrClass(column),
+              colIndex < group.columns.length - 1 ? 'border-r border-gray-200' : '',
+              colIndex === group.columns.length - 1 && groupIndex < columnGroupsSignal().length - 1 ? 'border-r border-gray-200' : '',
+              column.pinned ? 'sticky z-20 bg-white' : ''
+            ]" [attr.pinned]="column.pinned"
+            [style.left]="column.pinned === 'left' ? getPinnedLeftOffset(column, group) : ''"
+            [style.right]="column.pinned === 'right' ? getPinnedRightOffset(column, group) : ''"
+            [style.zIndex]="column.pinned ? getPinnedZIndex(column, group) : ''">
+            @switch (column.type) {
+            @default {
+            <span class="text-body2 text-neutral-700" [ngClass]="column.textConfig?.textColorClass">{{
+              getPropertyValue(item, column) }}</span>
             }
-          </div>
+            @case ('text') {
+            <span class="text-body2 text-neutral-700 text-nowrap" [ngClass]="column.textConfig?.textColorClass">{{
+              getPropertyValue(item, column) }}</span>
+            }
+            @case ('date') {
+            <div class="flex items-center gap-3" [ngClass]="getFlexJustify(column)">
+              @if (column.dateConfig?.showIcon ?? true) {
+              <svg class="h-4 w-4 text-neutral-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M19 19H5V8H19M16 1V3H8V1H6V3H5C3.89 3 3 3.89 3 5V19C3 19.5304 3.21071 20.0391 3.58579 20.4142C3.96086 20.7893 4.46957 21 5 21H19C19.5304 21 20.0391 20.7893 20.4142 20.4142C20.7893 20.0391 21 19.5304 21 19V5C21 3.89 20.1 3 19 3H18V1M17 12H12V17H17V12Z"
+                  fill="currentColor" />
+              </svg>
+              }
+              @let date = getPropertyValue(item, column);
+              @if (date && date != 'null') {
+              <span class="text-body2 text-nowrap">{{
+                date | date: (column.dateConfig?.dateFormat ?? 'MMM d, y, h:mm a')
+                }}</span>
+              }
+            </div>
+            }
+            @case ('badge') {
+            @let badgeProperty = getBadgeProperty(item, column);
+            <div class="flex items-center" [ngClass]="getFlexJustify(column)">
+              <app-status-badge [backgroundColorClass]="badgeProperty?.backgroundColorClass ?? null"
+                [indicatorColor]="badgeProperty?.indicatorColorClass ?? null"
+                [borderColorClass]="badgeProperty?.borderColorClass ?? null"
+                [textColorClass]="badgeProperty?.textColorClass ?? null" [isUpperCase]="true"
+                [status]="badgeProperty?.displayText ?? 'Unknown'"></app-status-badge>
+            </div>
+            }
+            @case ('custom') {
+            @if (column.component) {
+            <div class="flex items-center">
+              <app-dynamic-renderer [component]="column.component" [rowData]="item" [data]="column.customConfig?.data"
+                [rowPosition]="$index + 1" [isLastRow]="$last"
+                (actionPerformed)="onRowActionPerformed($event)"></app-dynamic-renderer>
+            </div>
+            }
+            }
+            @case ('actions') {
+            <div class="flex items-center gap-3" [ngClass]="getFlexJustify(column)">
+              @if (column.actionsConfig?.iconActions) {
+              @for (iconAction of column.actionsConfig?.iconActions; track iconAction) {
+              <div (click)="_onActionClicked(iconAction.actionKey, item, $event)"
+                class="flex items-center justify-center h-9 w-9 cursor-pointer rounded-full hover:bg-neutral-100">
+                <!-- <app-svg-icon class="text-neutral-500" [src]="iconAction.iconPath" [size]="20"></app-svg-icon> -->
+              </div>
+              }
+              }
+              @if (column.actionsConfig?.threeDotMenuActions) {
+              @let menuActions = getContextMenuActions(column.actionsConfig?.threeDotMenuActions, item);
+              @if (menuActions.length > 0) {
+              <app-context-menu-button (onActionClicked)="_onActionClicked($event, item, null)"
+                [actions]="menuActions"></app-context-menu-button>
+              }
+              }
+              @if (column.actionsConfig?.textMenuActions) {
+              @for (textAction of column.actionsConfig?.textMenuActions; track textAction) {
+              <!-- <app-text-button-small (click)="_onActionClicked(textAction.actionKey, item, $event)">{{ textAction.label
+                }}</app-text-button-small> -->
+              }
+              }
+              @if (column.actionsConfig?.components) {
+              <div class="flex items-center">
+                @for (component of column.actionsConfig?.components; track $index) {
+                <app-dynamic-renderer [component]="component" [rowData]="item" [data]="column.customConfig?.data"
+                  [rowPosition]="$index + 1" [isLastRow]="$last"
+                  (actionPerformed)="onRowActionPerformed($event)"></app-dynamic-renderer>
+                }
+              </div>
+              }
+            </div>
+            }
+            }
+          </td>
           }
-        </div>
+          }
+          }
+        </tr>
         }
-        }
-      </td>
+      </tbody>
       }
-      }
-      }
-      @if (enableColumnsConfig()) {
-      <td class="px-1 py-3 border-b border-gray-100 w-min"></td>
-      }
-    </tr>
-    }
-  </tbody>
-  }
-  </table>
-</div>
-
-<!-- Pagination -->
-<app-pagination [pageSize]="pageSize()" [totalItems]="state().response()?.totalCount ?? 0"
-  (pageChange)="onPageChange($event)"></app-pagination>
-</div>
-
-<!-- Column Config Portal -->
-<ng-template cdkPortal>
-  <div class="flex flex-col gap-3 px-2 py-2 bg-white rounded-md max-h-[400px] border border-neutral-200 shadow-2">
-    <div class="flex flex-col overflow-y-scroll">
-      @for (group of columnGroups(); track group) {
-      @for (column of group.columns; track column) {
-      @if (column.type !== 'actions' && column.type !== 'checkbox') {
-      <div class="grow flex items-center min-w-[200px] px-1">
-        @let isColumnVisible = column.visible ?? true;
-        <app-checkbox [title]="column.title" [ngModel]="isColumnVisible"
-          (valueChanged)="onColumnVisibleOrHide($event, column)"></app-checkbox>
-      </div>
-      }
-      }
-      }
-    </div>
-    <span (click)="onSelectAllColumnClicked()" class="px-4 text-overline text-info-500 cursor-pointer">Select All</span>
+    </table>
   </div>
-</ng-template>
+
+  <!-- Pagination -->
+  <app-pagination [pageSize]="pageSize()" [totalItems]="totalCount()"
+    (pageChange)="onPageChange($event)"></app-pagination>
+</div>

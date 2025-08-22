@@ -1,4 +1,3 @@
-// date-range-input.component.ts
 import {
   Component,
   ElementRef,
@@ -110,7 +109,7 @@ export class DateRangeInputComponent
   selValue(value: DateRangeEvent | null) {
     setTimeout(() => {
       this.textInputValue.set("");
-      this.onValueChange(value);
+      this.onValueChange(value); // Programmatic change, only triggers valueChanged
     }, 100);
   }
 
@@ -194,7 +193,7 @@ export class DateRangeInputComponent
             isValidDate(range.endDate)
           ) {
             this.textInputValue.set("");
-            this.onValueChange(range);
+            this.onUserValueChange(range); // User-initiated change, triggers userChanged
           } else if (
             range.startDate instanceof Date &&
             isValidDate(range.startDate) &&
@@ -202,13 +201,13 @@ export class DateRangeInputComponent
           ) {
             // Prompt to select end date if only start date is set
             console.warn("Please select an end date to complete the range.");
-            this.onValueChange({
+            this.onUserValueChange({
               startDate: range.startDate,
               endDate: new Date(range.startDate),
-            }); // Temporary end date
+            }); // Temporary end date, user-initiated
           }
         } else {
-          this.onValueChange(null);
+          this.onUserValueChange(null); // User-initiated reset
         }
       },
     );
@@ -216,7 +215,7 @@ export class DateRangeInputComponent
 
   clearRange() {
     this.textInputValue.set("");
-    this.onValueChange(null);
+    this.onUserValueChange(null); // User-initiated reset
   }
 
   formatDateRange(range: DateRangeEvent): string {
