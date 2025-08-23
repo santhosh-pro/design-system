@@ -4,14 +4,14 @@ import { moduleMetadata } from '@storybook/angular';
 import { ReactiveFormsModule, FormsModule, FormControl } from '@angular/forms';
 import { NgClass } from '@angular/common';
 import { CommonModule } from '@angular/common';
-import { HumanizeFormMessagesPipe } from '../../core/humanize-form-messages.pipe';
-import { BaseInputComponent } from '../../core/base-input/base-input.component';
-import { AppSvgIconComponent } from '../app-svg-icon/app-svg-icon.component';
-import { NgxMaskDirective } from '../input-mask/ngx-mask.directive';
+import { HumanizeFormMessagesPipe } from '../../../../core/humanize-form-messages.pipe';
+import { BaseInputComponent } from '../../../../core/base-input/base-input.component';
+import { NgxMaskDirective } from '../../input-mask/ngx-mask.directive';
+import { AppSvgIconComponent } from '../../../misc/app-svg-icon/app-svg-icon.component';
 
 // Define the Meta configuration
 export default {
-  title: 'Components/MultiDateInput',
+  title: 'Components/Forms/Date/MultiDateInput',
   component: MultiDateInputComponent,
   decorators: [
     moduleMetadata({

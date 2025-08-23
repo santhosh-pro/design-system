@@ -12,7 +12,7 @@ export * from './lib/components/forms/date/date-range-input/date-range-input.com
 export * from './lib/components/forms/date/date-range-input/date-range-picker-overlay/date-range-picker/date-range-picker.component';
 export * from './lib/components/forms/text-input/text-input.component';
 export * from './lib/components/forms/checkbox/checkbox.component';
-// export * from './lib/components/single-selection-field/single-selection-field.component';
+export * from './lib/components/forms/select/single-selection-field/single-selection-field.component';
 
 export * from './lib/components/display/data-table/data-table.component';
 export * from './lib/components/forms/input-mask/ngx-mask.providers';

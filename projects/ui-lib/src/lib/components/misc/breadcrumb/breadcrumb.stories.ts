@@ -5,7 +5,7 @@ import { provideRouter } from '@angular/router';
 import { moduleMetadata, applicationConfig } from '@storybook/angular';
 
 export default {
-  title: 'Components/Breadcrumb',
+  title: 'Components/Misc/Breadcrumb',
   component: BreadcrumbComponent,
   decorators: [
     moduleMetadata({

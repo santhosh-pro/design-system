@@ -8,10 +8,10 @@ import {
 } from '@angular/core';
 import {NgClass, NgStyle} from "@angular/common";
 import {FormControl, NgControl, ReactiveFormsModule} from "@angular/forms";
-import { BaseControlValueAccessor } from 'src/lib/core/base-control-value-accessor';
-import { BaseInputComponent } from 'src/lib/core/base-input/base-input.component';
-import { HumanizeFormMessagesPipe } from 'src/lib/core/humanize-form-messages.pipe';
-import { resolveTemplateWithObject } from 'src/lib/core/template-resolver';
+import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
+import { BaseInputComponent } from '../../../../core/base-input/base-input.component';
+import { HumanizeFormMessagesPipe } from '../../../../core/humanize-form-messages.pipe';
+import { resolveTemplateWithObject } from '../../../../core/template-resolver';
 import { ShimmerComponent } from '../../../feedback/shimmer/shimmer.component';
 import { AppSvgIconComponent } from '../../../misc/app-svg-icon/app-svg-icon.component';
 

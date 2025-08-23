@@ -1,6 +1,6 @@
 import { Component, input, OnInit, output, signal } from '@angular/core';
 import { NgClass } from '@angular/common';
-import { BaseControlValueAccessorV3 } from '../../../../core/base-control-value-accessor-v3';
+import { BaseControlValueAccessorV3 } from '../../../../../../core/base-control-value-accessor-v3';
 
 export type Weekday = 'sunday' | 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday';
 

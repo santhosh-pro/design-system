@@ -3,10 +3,10 @@ import { ButtonComponent } from './button.component';
 import { FormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
 import { moduleMetadata } from '@storybook/angular';
-import { SpinnerComponent } from '../feedback/spinner/spinner.component';
-import { AppSvgIconComponent } from '../misc/app-svg-icon/app-svg-icon.component';
+import { SpinnerComponent } from '../../feedback/spinner/spinner.component';
+import { AppSvgIconComponent } from '../../misc/app-svg-icon/app-svg-icon.component';
 export default {
-  title: 'Components/Button',
+  title: 'Components/Forms/Button',
   component: ButtonComponent,
   decorators: [
     moduleMetadata({

@@ -4,7 +4,7 @@ import { moduleMetadata } from '@storybook/angular';
 import { SvgIconComponent } from './lib/svg-icon.component';
 
 export default {
-  title: 'Components/SvgIcon',
+  title: 'Components/Misc/SvgIcon',
   component: AppSvgIconComponent,
   decorators: [
     moduleMetadata({
