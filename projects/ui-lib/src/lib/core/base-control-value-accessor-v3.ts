@@ -8,7 +8,6 @@ export abstract class BaseControlValueAccessorV3<T> implements ControlValueAcces
   errorMessages = input<{ [key: string]: string }>({});
 
   @Output() valueChanged = new EventEmitter<T>();
-  @Output() userChanged = new EventEmitter<T>(); // New output for user-initiated changes
 
   disabled = signal(false);
   touched = signal(false);
@@ -46,24 +45,17 @@ export abstract class BaseControlValueAccessorV3<T> implements ControlValueAcces
   onTouched: any = () => {};
 
   writeValue(value: T): void {
-    if (value != this.formControl.value) {
-      this.formControl.setValue(value);
+    if (value !== this.formControl.value) {
+      this.formControl.setValue(value, { emitEvent: false });
     }
     this.actualValue = value;
-    setTimeout(() => {
-      this.onValueReady(value);
-    });
+    this.onValueReady(value); // Removed setTimeout for synchronous updates
   }
 
   onValueChange(value: T) {
-    this.valueChanged.emit(value); // Emit for all changes
+    this.valueChanged.emit(value);
     this.actualValue = value;
     this.onChange(value);
-  }
-
-  onUserValueChange(value: T) {
-    this.userChanged.emit(value); // Emit for user-initiated changes
-    this.onValueChange(value); // Also trigger valueChanged for consistency
   }
 
   registerOnChange(fn: any): void {

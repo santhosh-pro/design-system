@@ -1,0 +1,12 @@
+<form [formGroup]="form">
+      <app-date-range-input
+        formControlName="dateRange"
+        [minDate]="minDate"
+        [maxDate]="maxDate"
+        [allowOnlyPast]="true"
+        [allowToday]="true"
+        [minDaysRange]="3"
+        [maxDaysRange]="7"
+      ></app-date-range-input>
+    </form>
+    <button (click)="setProgrammaticRange()">Set Programmatic Range</button>

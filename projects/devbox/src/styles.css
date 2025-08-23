@@ -139,3 +139,13 @@
   --text-overline-letter-spacing: 0.094rem;
   --text-overline-font-weight: 500;
 }
+
+
+
+
+
+.cdk-overlay-container:focus,
+.cdk-overlay-pane:focus,
+.cdk-overlay-container *:focus {
+outline: none !important;
+}
