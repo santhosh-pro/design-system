@@ -49,7 +49,7 @@ footerMessage = '© 2025 My App. All rights reserved.';
         subMenus: [
           { label: 'Date Input', href: '#/components/forms/date/date-input' },
           { label: 'Date Picker', href: '#/components/forms/date/date-picker' },
-          { label: 'Date Range Picker', href: 'single-select' },
+          { label: 'Date Range Picker', href: 'date-range-picker' },
           { label: 'Multi-Date Picker', href: '#/components/forms/date/multi-date-picker' },
         ],
       },

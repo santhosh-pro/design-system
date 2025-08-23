@@ -1,8 +1,8 @@
 import { Component, signal } from '@angular/core';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
-import { DemoCard, DemoFile } from '../core/demo-card/demo-card'; // Adjust path as needed
-import { DocIoList } from '../core/doc-io-list/doc-io-list'; // Adjust path as needed
-import { ColumnGroup, DataTableComponent, FilterEvent, TableActionEvent, TableStateEvent } from 'projects/ui-lib/src/public-api';
+import { DemoCard, DemoFile } from '../core/demo-card/demo-card';
+import { DocIoList } from '../core/doc-io-list/doc-io-list';
+import { ColumnDef, ColumnGroup, DataTableComponent, TableActionEvent, TableStateEvent } from 'projects/ui-lib/src/public-api';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -12,52 +12,53 @@ import { CommonModule } from '@angular/common';
   templateUrl: './data-table-demo.html',
 })
 export class DataTableDemo {
-  // Signals for demo data
-  basicData = signal<any[]>(
-    Array.from({ length: 50 }, (_, i) => ({
-      id: i + 1,
-      name: `User ${i + 1}`,
-      age: 20 + (i % 30), // random-ish ages between 20–49
-      status: i % 2 === 0 ? 'Active' : 'Inactive',
-      email: `user${i + 1}@example.com`,
-      phone: `+91-98765${10000 + i}`,
-      city: ['New York', 'London', 'Paris', 'Tokyo', 'Berlin'][i % 5],
-      country: ['USA', 'UK', 'France', 'Japan', 'Germany'][i % 5],
-      department: ['HR', 'IT', 'Finance', 'Sales'][i % 4],
-      role: ['Admin', 'User', 'Manager'][i % 3],
-      salary: 3000 + (i % 20) * 100,
-      joinDate: `2023-01-${(i % 28) + 1}`,
-      lastLogin: `2024-08-${(i % 28) + 1}`,
-      verified: i % 2 === 0 ? 'Yes' : 'No',
-      gender: i % 2 === 0 ? 'Male' : 'Female',
-      project: `Project-${(i % 10) + 1}`,
-      level: ['Junior', 'Mid', 'Senior'][i % 3],
-      performance: ['Good', 'Average', 'Excellent'][i % 3],
-      location: ['Remote', 'Onsite'][i % 2],
-      shift: ['Morning', 'Evening', 'Night'][i % 3],
-    }))
-  );
+  // Data for all variants
+  basicData = signal<any[]>(Array.from({ length: 50 }, (_, i) => ({
+    id: i + 1,
+    name: `User ${i + 1}`,
+    age: 20 + (i % 30),
+    status: i % 2 === 0 ? 'Active' : 'Inactive',
+    email: `user${i + 1}@example.com`,
+  })));
 
-  filterData = signal<any[]>([
-    { id: 1, name: 'Alice Brown', age: 28, joined: '2023-01-15', status: 'Active' },
-    { id: 2, name: 'Charlie Davis', age: 35, joined: '2022-06-20', status: 'Inactive' },
-    { id: 3, name: 'Eve Wilson', age: 22, joined: '2024-03-10', status: 'Active' },
-  ]);
+  selectionData = signal<any[]>(Array.from({ length: 50 }, (_, i) => ({
+    id: i + 1,
+    name: `Employee ${i + 1}`,
+    role: ['Admin', 'User', 'Manager'][i % 3],
+    department: ['HR', 'IT', 'Finance', 'Sales'][i % 4],
+  })));
 
-  actionData = signal<any[]>([
-    { id: 1, name: 'Mike Ross', email: 'mike@example.com', role: 'Admin' },
-    { id: 2, name: 'Sarah Connor', email: 'sarah@example.com', role: 'User' },
-    { id: 3, name: 'Tom Hanks', email: 'tom@example.com', role: 'Editor' },
-  ]);
+  actionData = signal<any[]>(Array.from({ length: 50 }, (_, i) => ({
+    id: i + 1,
+    name: `Member ${i + 1}`,
+    email: `member${i + 1}@example.com`,
+    role: ['Editor', 'Viewer', 'Admin'][i % 3],
+  })));
 
-  // Column definitions for demos
+  pinnableData = signal<any[]>(Array.from({ length: 50 }, (_, i) => ({
+    id: i + 1,
+    name: `Staff ${i + 1}`,
+    position: ['Developer', 'Designer', 'Analyst'][i % 3],
+    salary: 3000 + (i % 20) * 100,
+    location: ['Remote', 'Onsite'][i % 2],
+  })));
+
+  expandableData = signal<any[]>(Array.from({ length: 50 }, (_, i) => ({
+    id: i + 1,
+    name: `Project ${i + 1}`,
+    status: ['In Progress', 'Completed', 'Pending'][i % 3],
+    budget: 10000 + (i % 20) * 1000,
+    manager: `Manager ${i + 1}`,
+  })));
+
+  // Column definitions for all variants
   basicColumns = signal<ColumnGroup[]>([
     {
       title: 'User Info',
       columns: [
-        { title: 'ID', key: 'id', type: 'text', alignment: 'left' },
+        { title: 'ID', key: 'id', type: 'text', alignment: 'left', sortKey: 'id' },
         { title: 'Name', key: 'name', type: 'text', alignment: 'left', sortKey: 'name' },
-        { title: 'Age', key: 'age', type: 'text', alignment: 'center' },
+        { title: 'Age', key: 'age', type: 'text', alignment: 'center', sortKey: 'age' },
         {
           title: 'Status',
           key: 'status',
@@ -69,65 +70,19 @@ export class DataTableDemo {
             ],
           },
         },
-        { title: 'Email', key: 'email', type: 'text', alignment: 'left' },
-        { title: 'Phone', key: 'phone', type: 'text', alignment: 'left' },
-        { title: 'City', key: 'city', type: 'text', alignment: 'left' },
-        { title: 'Country', key: 'country', type: 'text', alignment: 'left' },
-        { title: 'Department', key: 'department', type: 'text', alignment: 'left' },
-        { title: 'Role', key: 'role', type: 'text', alignment: 'left' },
-        { title: 'Salary', key: 'salary', type: 'text', alignment: 'right' },
-        { title: 'Join Date', key: 'joinDate', type: 'text', alignment: 'center' },
-        { title: 'Last Login', key: 'lastLogin', type: 'text', alignment: 'center' },
-        { title: 'Verified', key: 'verified', type: 'text', alignment: 'center' },
-        { title: 'Gender', key: 'gender', type: 'text', alignment: 'center' },
-        { title: 'Project', key: 'project', type: 'text', alignment: 'left' },
-        { title: 'Level', key: 'level', type: 'text', alignment: 'center' },
-        { title: 'Performance', key: 'performance', type: 'text', alignment: 'center' },
-        { title: 'Location', key: 'location', type: 'text', alignment: 'center' },
-        { title: 'Shift', key: 'shift', type: 'text', alignment: 'center' },
+        { title: 'Email', key: 'email', type: 'text', alignment: 'left', sortKey: 'email' },
       ],
     },
   ]);
 
-
-  filterColumns = signal<ColumnGroup[]>([
+  selectionColumns = signal<ColumnGroup[]>([
     {
-      title: 'User Details',
+      title: 'Team Members',
       columns: [
-        { title: 'ID', key: 'id', type: 'text', alignment: 'left' },
-        { 
-          title: 'Name', 
-          key: 'name', 
-          type: 'text', 
-          sortKey: 'name', 
-          filterConfig: { type: 'text', placeholder: 'Filter by name', operation: 'contains' },
-        },
-        { 
-          title: 'Age', 
-          key: 'age', 
-          type: 'text', 
-          alignment: 'center', 
-          filterConfig: { type: 'number', placeholder: 'Filter by age', operation: 'equal' },
-        },
-        { 
-          title: 'Joined', 
-          key: 'joined', 
-          type: 'date', 
-          dateConfig: { dateFormat: 'MM/dd/yyyy' }, 
-          filterConfig: { type: 'date', dateFormat: 'mm/dd/yyyy', operation: 'equal' },
-        },
-        { 
-          title: 'Status', 
-          key: 'status', 
-          type: 'text', 
-          filterConfig: { 
-            type: 'select', 
-            options: [
-              { value: 'Active', label: 'Active' },
-              { value: 'Inactive', label: 'Inactive' },
-            ],
-          },
-        },
+        { title: 'ID', key: 'id', type: 'text', alignment: 'left', sortKey: 'id' },
+        { title: 'Name', key: 'name', type: 'text', alignment: 'left', sortKey: 'name' },
+        { title: 'Role', key: 'role', type: 'text', alignment: 'center', sortKey: 'role' },
+        { title: 'Department', key: 'department', type: 'text', alignment: 'left', sortKey: 'department' },
       ],
     },
   ]);
@@ -136,13 +91,13 @@ export class DataTableDemo {
     {
       title: 'User Management',
       columns: [
-        { title: 'ID', key: 'id', type: 'text', alignment: 'left' },
+        { title: 'ID', key: 'id', type: 'text', alignment: 'left', sortKey: 'id' },
         { title: 'Name', key: 'name', type: 'text', alignment: 'left', sortKey: 'name' },
-        { title: 'Email', key: 'email', type: 'text', alignment: 'left' },
-        { 
-          title: 'Actions', 
-          key: 'actions', 
-          type: 'actions', 
+        { title: 'Email', key: 'email', type: 'text', alignment: 'left', sortKey: 'email' },
+        {
+          title: 'Actions',
+          key: 'actions',
+          type: 'actions',
           pinned: 'right',
           actionsConfig: {
             iconActions: [
@@ -159,12 +114,51 @@ export class DataTableDemo {
     },
   ]);
 
+  pinnableColumns = signal<ColumnGroup[]>([
+    {
+      title: 'Staff Details',
+      columns: [
+        { title: 'ID', key: 'id', type: 'text', alignment: 'left', sortKey: 'id', pinned: 'left' },
+        { title: 'Name', key: 'name', type: 'text', alignment: 'left', sortKey: 'name' },
+        { title: 'Position', key: 'position', type: 'text', alignment: 'center', sortKey: 'position' },
+        { title: 'Salary', key: 'salary', type: 'text', alignment: 'right', sortKey: 'salary' },
+        { title: 'Location', key: 'location', type: 'text', alignment: 'center', sortKey: 'location', pinned: 'right' },
+      ],
+    },
+  ]);
+
+  expandableColumns = signal<ColumnGroup[]>([
+    {
+      title: 'Project Overview',
+      columns: [
+        { title: 'ID', key: 'id', type: 'text', alignment: 'left', sortKey: 'id' },
+        { title: 'Project Name', key: 'name', type: 'text', alignment: 'left', sortKey: 'name' },
+        {
+          title: 'Status',
+          key: 'status',
+          type: 'badge',
+          badgeConfig: {
+            properties: [
+              { data: 'In Progress', displayText: 'In Progress', backgroundColorClass: 'bg-yellow-100', textColorClass: 'text-yellow-800' },
+              { data: 'Completed', displayText: 'Completed', backgroundColorClass: 'bg-green-100', textColorClass: 'text-green-800' },
+              { data: 'Pending', displayText: 'Pending', backgroundColorClass: 'bg-gray-100', textColorClass: 'text-gray-800' },
+            ],
+          },
+        },
+        { title: 'Budget', key: 'budget', type: 'text', alignment: 'right', sortKey: 'budget' },
+        { title: 'Manager', key: 'manager', type: 'text', alignment: 'left', sortKey: 'manager' },
+      ],
+    },
+  ]);
+
   // Form controls for table state
   basicControl = new FormControl<TableStateEvent>({ searchText: '' });
-  filterControl = new FormControl<TableStateEvent>({ searchText: '' });
+  selectionControl = new FormControl<TableStateEvent>({ searchText: '' });
   actionControl = new FormControl<TableStateEvent>({ searchText: '' });
+  pinnableControl = new FormControl<TableStateEvent>({ searchText: '' });
+  expandableControl = new FormControl<TableStateEvent>({ searchText: '' });
 
-  // Files for demo-card code viewer
+  // Demo files for code viewer
   basicFiles = signal<DemoFile[]>([
     {
       name: 'basic-demo.component.html',
@@ -172,8 +166,9 @@ export class DataTableDemo {
       code: `<app-data-table
   [columnGroups]="basicColumns()"
   [data]="basicData()"
-  [pageSize]="5"
+  [pageSize]="10"
   [totalCount]="basicData().length"
+  [enableSearch]="true"
   [formControl]="basicControl"
   (tableStateChanged)="onTableStateChanged($event)">
 </app-data-table>`,
@@ -183,21 +178,20 @@ export class DataTableDemo {
       language: 'ts',
       code: `basicControl = new FormControl<TableStateEvent>({ searchText: '' });
 basicData = signal<any[]>([
-  { id: 1, name: 'John Doe', age: 30, status: 'Active' },
-  { id: 2, name: 'Jane Smith', age: 25, status: 'Inactive' },
-  { id: 3, name: 'Bob Johnson', age: 40, status: 'Active' },
+  { id: 1, name: 'User 1', age: 30, status: 'Active', email: 'user1@example.com' },
+  // ... more data
 ]);
 basicColumns = signal<ColumnGroup[]>([
   {
     title: 'User Info',
     columns: [
-      { title: 'ID', key: 'id', type: 'text', alignment: 'left' },
+      { title: 'ID', key: 'id', type: 'text', alignment: 'left', sortKey: 'id' },
       { title: 'Name', key: 'name', type: 'text', alignment: 'left', sortKey: 'name' },
-      { title: 'Age', key: 'age', type: 'text', alignment: 'center' },
-      { 
-        title: 'Status', 
-        key: 'status', 
-        type: 'badge', 
+      { title: 'Age', key: 'age', type: 'text', alignment: 'center', sortKey: 'age' },
+      {
+        title: 'Status',
+        key: 'status',
+        type: 'badge',
         badgeConfig: {
           properties: [
             { data: 'Active', displayText: 'Active', backgroundColorClass: 'bg-green-100', textColorClass: 'text-green-800' },
@@ -205,6 +199,7 @@ basicColumns = signal<ColumnGroup[]>([
           ],
         },
       },
+      { title: 'Email', key: 'email', type: 'text', alignment: 'left', sortKey: 'email' },
     ],
   },
 ]);
@@ -214,77 +209,51 @@ onTableStateChanged(event: TableStateEvent) {
     },
   ]);
 
-  filterFiles = signal<DemoFile[]>([
+  selectionFiles = signal<DemoFile[]>([
     {
-      name: 'filter-demo.component.html',
+      name: 'selection-demo.component.html',
       language: 'html',
       code: `<app-data-table
-  [columnGroups]="filterColumns()"
-  [data]="filterData()"
+  [columnGroups]="selectionColumns()"
+  [data]="selectionData()"
   [pageSize]="5"
-  [totalCount]="filterData().length"
-  [enableSearch]="true"
-  [formControl]="filterControl"
+  [totalCount]="selectionData().length"
+  [enableRowSelection]="true"
+  [rowSelectionKey]="'id'"
+  [enableClickableRows]="true"
+  [formControl]="selectionControl"
   (tableStateChanged)="onTableStateChanged($event)"
-  (filterChanged)="onFilterChanged($event)">
+  (rowSelectionChange)="onRowSelectionChange($event)"
+  (onRowClicked)="onRowClicked($event)">
 </app-data-table>`,
     },
     {
-      name: 'filter-demo.component.ts',
+      name: 'selection-demo.component.ts',
       language: 'ts',
-      code: `filterControl = new FormControl<TableStateEvent>({ searchText: '' });
-filterData = signal<any[]>([
-  { id: 1, name: 'Alice Brown', age: 28, joined: '2023-01-15', status: 'Active' },
-  { id: 2, name: 'Charlie Davis', age: 35, joined: '2022-06-20', status: 'Inactive' },
-  { id: 3, name: 'Eve Wilson', age: 22, joined: '2024-03-10', status: 'Active' },
+      code: `selectionControl = new FormControl<TableStateEvent>({ searchText: '' });
+selectionData = signal<any[]>([
+  { id: 1, name: 'Employee 1', role: 'Admin', department: 'HR' },
+  // ... more data
 ]);
-filterColumns = signal<ColumnGroup[]>([
+selectionColumns = signal<ColumnGroup[]>([
   {
-    title: 'User Details',
+    title: 'Team Members',
     columns: [
-      { title: 'ID', key: 'id', type: 'text', alignment: 'left' },
-      { 
-        title: 'Name', 
-        key: 'name', 
-        type: 'text', 
-        sortKey: 'name', 
-        filterConfig: { type: 'text', placeholder: 'Filter by name', operation: 'contains' },
-      },
-      { 
-        title: 'Age', 
-        key: 'age', 
-        type: 'number', 
-        alignment: 'center', 
-        filterConfig: { type: 'number', placeholder: 'Filter by age', operation: 'equal' },
-      },
-      { 
-        title: 'Joined', 
-        key: 'joined', 
-        type: 'date', 
-        dateConfig: { dateFormat: 'MM/dd/yyyy' }, 
-        filterConfig: { type: 'date', dateFormat: 'mm/dd/yyyy', operation: 'equal' },
-      },
-      { 
-        title: 'Status', 
-        key: 'status', 
-        type: 'select', 
-        filterConfig: { 
-          type: 'select', 
-          options: [
-            { value: 'Active', label: 'Active' },
-            { value: 'Inactive', label: 'Inactive' },
-          ],
-          operation: 'equals',
-        },
-      },
+      { title: 'ID', key: 'id', type: 'text', alignment: 'left', sortKey: 'id' },
+      { title: 'Name', key: 'name', type: 'text', alignment: 'left', sortKey: 'name' },
+      { title: 'Role', key: 'role', type: 'text', alignment: 'center', sortKey: 'role' },
+      { title: 'Department', key: 'department', type: 'text', alignment: 'left', sortKey: 'department' },
     ],
   },
 ]);
 onTableStateChanged(event: TableStateEvent) {
   console.log('Table state changed:', event);
 }
-onFilterChanged(event: FilterEvent) {
-  console.log('Filter changed:', event);
+onRowSelectionChange(event: any[]) {
+  console.log('Row selection changed:', event);
+}
+onRowClicked(event: any) {
+  console.log('Row clicked:', event);
 }`,
     },
   ]);
@@ -311,21 +280,20 @@ onFilterChanged(event: FilterEvent) {
       language: 'ts',
       code: `actionControl = new FormControl<TableStateEvent>({ searchText: '' });
 actionData = signal<any[]>([
-  { id: 1, name: 'Mike Ross', email: 'mike@example.com', role: 'Admin' },
-  { id: 2, name: 'Sarah Connor', email: 'sarah@example.com', role: 'User' },
-  { id: 3, name: 'Tom Hanks', email: 'tom@example.com', role: 'Editor' },
+  { id: 1, name: 'Member 1', email: 'member1@example.com', role: 'Editor' },
+  // ... more data
 ]);
 actionColumns = signal<ColumnGroup[]>([
   {
     title: 'User Management',
     columns: [
-      { title: 'ID', key: 'id', type: 'text', alignment: 'left' },
+      { title: 'ID', key: 'id', type: 'text', alignment: 'left', sortKey: 'id' },
       { title: 'Name', key: 'name', type: 'text', alignment: 'left', sortKey: 'name' },
-      { title: 'Email', key: 'email', type: 'text', alignment: 'left' },
-      { 
-        title: 'Actions', 
-        key: 'actions', 
-        type: 'actions', 
+      { title: 'Email', key: 'email', type: 'text', alignment: 'left', sortKey: 'email' },
+      {
+        title: 'Actions',
+        key: 'actions',
+        type: 'actions',
         pinned: 'right',
         actionsConfig: {
           iconActions: [
@@ -353,20 +321,126 @@ onRowSelectionChange(event: any[]) {
     },
   ]);
 
-  // Event handlers for demo output
+  pinnableFiles = signal<DemoFile[]>([
+    {
+      name: 'pinnable-demo.component.html',
+      language: 'html',
+      code: `<app-data-table
+  [columnGroups]="pinnableColumns()"
+  [data]="pinnableData()"
+  [pageSize]="5"
+  [totalCount]="pinnableData().length"
+  [enableHorizontallyScrollable]="true"
+  [enableResizableColumns]="true"
+  [maxPinnedLeft]="2"
+  [maxPinnedRight]="2"
+  [formControl]="pinnableControl"
+  (tableStateChanged)="onTableStateChanged($event)"
+  (pinChanged)="onPinChanged($event)">
+</app-data-table>`,
+    },
+    {
+      name: 'pinnable-demo.component.ts',
+      language: 'ts',
+      code: `pinnableControl = new FormControl<TableStateEvent>({ searchText: '' });
+pinnableData = signal<any[]>([
+  { id: 1, name: 'Staff 1', position: 'Developer', salary: 3000, location: 'Remote' },
+  // ... more data
+]);
+pinnableColumns = signal<ColumnGroup[]>([
+  {
+    title: 'Staff Details',
+    columns: [
+      { title: 'ID', key: 'id', type: 'text', alignment: 'left', sortKey: 'id', pinned: 'left' },
+      { title: 'Name', key: 'name', type: 'text', alignment: 'left', sortKey: 'name' },
+      { title: 'Position', key: 'position', type: 'text', alignment: 'center', sortKey: 'position' },
+      { title: 'Salary', key: 'salary', type: 'text', alignment: 'right', sortKey: 'salary' },
+      { title: 'Location', key: 'location', type: 'text', alignment: 'center', sortKey: 'location', pinned: 'right' },
+    ],
+  },
+]);
+onTableStateChanged(event: TableStateEvent) {
+  console.log('Table state changed:', event);
+}
+onPinChanged(event: { column: ColumnDef; pinned: 'left' | 'right' | null }) {
+  console.log('Pin changed:', event);
+}`,
+    },
+  ]);
+
+  expandableFiles = signal<DemoFile[]>([
+    {
+      name: 'expandable-demo.component.html',
+      language: 'html',
+      code: `<app-data-table
+  [columnGroups]="expandableColumns()"
+  [data]="expandableData()"
+  [pageSize]="5"
+  [totalCount]="expandableData().length"
+  [enableSearch]="true"
+  [formControl]="expandableControl"
+  [expandableComponent]="expandableComponent"
+  (tableStateChanged)="onTableStateChanged($event)">
+</app-data-table>`,
+    },
+    {
+      name: 'expandable-demo.component.ts',
+      language: 'ts',
+      code: `expandableControl = new FormControl<TableStateEvent>({ searchText: '' });
+expandableData = signal<any[]>([
+  { id: 1, name: 'Project 1', status: 'In Progress', budget: 10000, manager: 'Manager 1' },
+  // ... more data
+]);
+expandableColumns = signal<ColumnGroup[]>([
+  {
+    title: 'Project Overview',
+    columns: [
+      { title: 'ID', key: 'id', type: 'text', alignment: 'left', sortKey: 'id' },
+      { title: 'Project Name', key: 'name', type: 'text', alignment: 'left', sortKey: 'name' },
+      {
+        title: 'Status',
+        key: 'status',
+        type: 'badge',
+        badgeConfig: {
+          properties: [
+            { data: 'In Progress', displayText: 'In Progress', backgroundColorClass: 'bg-yellow-100', textColorClass: 'text-yellow-800' },
+            { data: 'Completed', displayText: 'Completed', backgroundColorClass: 'bg-green-100', textColorClass: 'text-green-800' },
+            { data: 'Pending', displayText: 'Pending', backgroundColorClass: 'bg-gray-100', textColorClass: 'text-gray-800' },
+          ],
+        },
+      },
+      { title: 'Budget', key: 'budget', type: 'text', alignment: 'right', sortKey: 'budget' },
+      { title: 'Manager', key: 'manager', type: 'text', alignment: 'left', sortKey: 'manager' },
+    ],
+  },
+]);
+onTableStateChanged(event: TableStateEvent) {
+  console.log('Table state changed:', event);
+}`,
+    },
+  ]);
+
+  // Placeholder for expandable component (assumed to exist)
+  expandableComponent: any = null;
+
+  // Event handlers
   onTableStateChanged(event: TableStateEvent) {
     console.log('Table state changed:', event);
   }
 
-  onFilterChanged(event: FilterEvent) {
-    console.log('Filter changed:', event);
+  onRowSelectionChange(event: any[]) {
+    console.log('Row selection changed:', event);
+  }
+
+  onRowClicked(event: any) {
+    console.log('Row clicked:', event);
   }
 
   onActionPerformed(event: TableActionEvent) {
     console.log('Action performed:', event);
   }
 
-  onRowSelectionChange(event: any[]) {
-    console.log('Row selection changed:', event);
+  onPinChanged(event: { column: ColumnDef; pinned: 'left' | 'right' | null }) {
+    console.log('Pin changed:', event);
   }
 }

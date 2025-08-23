@@ -1,12 +1,114 @@
-<form [formGroup]="form">
+<div class="p-8 mx-auto lg:flex lg:space-x-8">
+  <!-- Main Content -->
+  <div class="space-y-12 space-x-4 w-[1150px]">
+    <!-- Demo 1: Basic Date Range Input -->
+    <app-demo-card
+      title="1. Basic Date Range Input"
+      description="A simple date range input with default settings."
+      [files]="basicFiles()">
       <app-date-range-input
-        formControlName="dateRange"
-        [minDate]="minDate"
-        [maxDate]="maxDate"
+        [label]="'Select Date Range'"
+        [formControl]="basicControl"
+        (valueChange)="onValueChange($event)">
+      </app-date-range-input>
+      <p class="text-sm text-gray-600 mt-2">
+        Selected Range: {{ basicControl.value | json }}
+      </p>
+    </app-demo-card>
+
+    <!-- Demo 2: Date Range with Icon and Full Width -->
+    <app-demo-card
+      title="2. Date Range with Icon and Full Width"
+      description="A date range input with an icon, full-width display, and mm/dd/yyyy format."
+      [files]="iconFullWidthFiles()">
+      <app-date-range-input
+        [label]="'Trip Duration'"
+        [iconSrc]="'calendar'"
+        [fullWidth]="true"
+        [inputDateFormat]="inputDateFormat"
+        [formControl]="iconFullWidthControl"
+        (valueChange)="onValueChange($event)">
+      </app-date-range-input>
+      <p class="text-sm text-gray-600 mt-2">
+        Selected Range: {{ iconFullWidthControl.value | json }}
+      </p>
+    </app-demo-card>
+
+    <!-- Demo 3: Past-Only Date Range with Error Space -->
+    <app-demo-card
+      title="3. Past-Only Date Range with Error Space"
+      description="A date range input restricted to past dates, with error space and today allowed."
+      [files]="pastOnlyFiles()">
+      <app-date-range-input
+        [label]="'Historical Data Range'"
+        [showErrorSpace]="true"
         [allowOnlyPast]="true"
         [allowToday]="true"
+        [formControl]="pastOnlyControl"
+        (valueChange)="onValueChange($event)">
+      </app-date-range-input>
+      <p class="text-sm text-gray-600 mt-2">
+        Selected Range: {{ pastOnlyControl.value | json }}
+      </p>
+    </app-demo-card>
+
+    <!-- Demo 4: Future-Only Date Range with Range Limits -->
+    <app-demo-card
+      title="4. Future-Only Date Range with Range Limits"
+      description="A date range input restricted to future dates with minimum and maximum range limits."
+      [files]="futureOnlyFiles()">
+      <app-date-range-input
+        [label]="'Future Event Range'"
+        [allowOnlyFuture]="true"
         [minDaysRange]="3"
-        [maxDaysRange]="7"
-      ></app-date-range-input>
-    </form>
-    <button (click)="setProgrammaticRange()">Set Programmatic Range</button>
+        [maxDaysRange]="30"
+        [formControl]="futureOnlyControl"
+        (valueChange)="onValueChange($event)">
+      </app-date-range-input>
+      <p class="text-sm text-gray-600 mt-2">
+        Selected Range: {{ futureOnlyControl.value | json }}
+      </p>
+    </app-demo-card>
+
+    <!-- Demo 5: Bounded Date Range with No Picker Icon -->
+    <app-demo-card
+      title="5. Bounded Date Range with No Picker Icon"
+      description="A date range input with specific date boundaries and no date picker icon."
+      [files]="boundedFiles()">
+      <app-date-range-input
+        [label]="'Bounded Date Range'"
+        [showDatePickerIcon]="false"
+        [minDate]="minDate"
+        [maxDate]="maxDate"
+        [formControl]="boundedControl"
+        (valueChange)="onValueChange($event)">
+      </app-date-range-input>
+      <p class="text-sm text-gray-600 mt-2">
+        Selected Range: {{ boundedControl.value | json }}
+      </p>
+    </app-demo-card>
+  </div>
+
+  <!-- Fixed and Scrollable Sidebar -->
+  <div class="lg:w-80 lg:fixed lg:top-8 lg:right-8 lg:max-h-[calc(100vh-4rem)] lg:overflow-y-auto">
+    <app-doc-io-list
+      class="block w-full bg-white shadow-lg p-4 rounded-lg"
+      [items]="[
+        { title: 'label', desc: 'Label for the input field', type: 'input' },
+        { title: 'iconSrc', desc: 'Source path for the input icon', type: 'input' },
+        { title: 'showDatePickerIcon', desc: 'Shows or hides the date picker icon', type: 'input' },
+        { title: 'fullWidth', desc: 'Makes the input full-width', type: 'input' },
+        { title: 'showErrorSpace', desc: 'Reserves space for error messages', type: 'input' },
+        { title: 'minDate', desc: 'Minimum selectable date', type: 'input' },
+        { title: 'maxDate', desc: 'Maximum selectable date', type: 'input' },
+        { title: 'allowOnlyPast', desc: 'Restricts selection to past dates', type: 'input' },
+        { title: 'allowOnlyFuture', desc: 'Restricts selection to future dates', type: 'input' },
+        { title: 'allowToday', desc: 'Allows today’s date in past/future restrictions', type: 'input' },
+        { title: 'minDaysRange', desc: 'Minimum number of days in the range', type: 'input' },
+        { title: 'maxDaysRange', desc: 'Maximum number of days in the range', type: 'input' },
+        { title: 'inputDateFormat', desc: 'Format for date display (mm/dd/yyyy or dd/mm/yyyy)', type: 'input' },
+        { title: 'valueChange', desc: 'Emitted when the date range changes', type: 'output' }
+      ]">
+    </app-doc-io-list>
+  </div>
+</div>

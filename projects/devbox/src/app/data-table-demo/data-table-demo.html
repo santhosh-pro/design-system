@@ -1,16 +1,17 @@
-<div class="p-8  mx-auto lg:flex lg:space-x-8">
+<div class="p-8 mx-auto lg:flex lg:space-x-8">
   <!-- Main Content -->
-  <div class="space-y-12 space-x-4 w-[1150px]">
-    <!-- Demo 1: Basic Table -->
+  <div class="space-y-12 space-x-2 w-[1150px]">
+    <!-- Demo 1: Basic Table with Sorting and Pagination -->
     <app-demo-card
       title="1. Basic Data Table"
-      description="A simple data table with text and badge columns."
+      description="A simple data table with sorting, pagination, and badge columns."
       [files]="basicFiles()">
       <app-data-table
         [columnGroups]="basicColumns()"
         [data]="basicData()"
-        [pageSize]="5"
+        [pageSize]="10"
         [totalCount]="basicData().length"
+        [enableSearch]="true"
         [formControl]="basicControl"
         (tableStateChanged)="onTableStateChanged($event)">
       </app-data-table>
@@ -19,30 +20,33 @@
       </p>
     </app-demo-card>
 
-    <!-- Demo 2: Table with Filters and Sorting -->
+    <!-- Demo 2: Table with Row Selection and Clickable Rows -->
     <app-demo-card
-      title="2. Table with Filters and Sorting"
-      description="A data table with filtering and sorting capabilities."
-      [files]="filterFiles()">
+      title="2. Table with Row Selection and Clickable Rows"
+      description="A data table with row selection and clickable rows for user interaction."
+      [files]="selectionFiles()">
       <app-data-table
-        [columnGroups]="filterColumns()"
-        [data]="filterData()"
+        [columnGroups]="selectionColumns()"
+        [data]="selectionData()"
         [pageSize]="5"
-        [totalCount]="filterData().length"
-        [enableSearch]="true"
-        [formControl]="filterControl"
+        [totalCount]="selectionData().length"
+        [enableRowSelection]="true"
+        [rowSelectionKey]="'id'"
+        [enableClickableRows]="true"
+        [formControl]="selectionControl"
         (tableStateChanged)="onTableStateChanged($event)"
-        (filterChanged)="onFilterChanged($event)">
+        (rowSelectionChange)="onRowSelectionChange($event)"
+        (onRowClicked)="onRowClicked($event)">
       </app-data-table>
       <p class="text-sm text-gray-600 mt-2">
-        Table State: {{ filterControl.value | json }}
+        Table State: {{ selectionControl.value | json }}
       </p>
     </app-demo-card>
 
-    <!-- Demo 3: Table with Row Selection and Actions -->
+    <!-- Demo 3: Table with Actions and Row Selection -->
     <app-demo-card
-      title="3. Table with Row Selection and Actions"
-      description="A data table with row selection and action buttons."
+      title="3. Table with Actions and Row Selection"
+      description="A data table with action buttons and row selection."
       [files]="actionFiles()">
       <app-data-table
         [columnGroups]="actionColumns()"
@@ -60,6 +64,49 @@
         Table State: {{ actionControl.value | json }}
       </p>
     </app-demo-card>
+
+    <!-- Demo 4: Table with Pinnable and Resizable Columns -->
+    <app-demo-card
+      title="4. Table with Pinnable and Resizable Columns"
+      description="A data table with pinnable and resizable columns for flexible layout."
+      [files]="pinnableFiles()">
+      <app-data-table
+        [columnGroups]="pinnableColumns()"
+        [data]="pinnableData()"
+        [pageSize]="5"
+        [totalCount]="pinnableData().length"
+        [enableHorizontallyScrollable]="true"
+        [enableResizableColumns]="true"
+        [maxPinnedLeft]="2"
+        [maxPinnedRight]="2"
+        [formControl]="pinnableControl"
+        (tableStateChanged)="onTableStateChanged($event)"
+        (pinChanged)="onPinChanged($event)">
+      </app-data-table>
+      <p class="text-sm text-gray-600 mt-2">
+        Table State: {{ pinnableControl.value | json }}
+      </p>
+    </app-demo-card>
+
+    <!-- Demo 5: Table with Expandable Rows -->
+    <app-demo-card
+      title="5. Table with Expandable Rows"
+      description="A data table with expandable rows for additional details."
+      [files]="expandableFiles()">
+      <app-data-table
+        [columnGroups]="expandableColumns()"
+        [data]="expandableData()"
+        [pageSize]="5"
+        [totalCount]="expandableData().length"
+        [enableSearch]="true"
+        [expandableComponent]="expandableComponent"
+        [formControl]="expandableControl"
+        (tableStateChanged)="onTableStateChanged($event)">
+      </app-data-table>
+      <p class="text-sm text-gray-600 mt-2">
+        Table State: {{ expandableControl.value | json }}
+      </p>
+    </app-demo-card>
   </div>
 
   <!-- Fixed and Scrollable Sidebar -->
@@ -73,13 +120,9 @@
         { title: 'enableResizableColumns', desc: 'Enables column resizing', type: 'input' },
         { title: 'enableClickableRows', desc: 'Enables row click events', type: 'input' },
         { title: 'expandableComponent', desc: 'Component for expandable rows', type: 'input' },
-        { title: 'filterComponent', desc: 'Custom filter component', type: 'input' },
         { title: 'enableSearch', desc: 'Enables search input', type: 'input' },
-        { title: 'disableInitialLoad', desc: 'Disables initial data load', type: 'input' },
         { title: 'rowSelectionKey', desc: 'Key for row selection', type: 'input' },
         { title: 'enableRowSelection', desc: 'Enables row selection', type: 'input' },
-        { title: 'defaultSelectedKeys', desc: 'Default selected row keys', type: 'input' },
-        { title: 'initialValue', desc: 'Initial table state', type: 'input' },
         { title: 'data', desc: 'Array of data to display', type: 'input' },
         { title: 'totalCount', desc: 'Total number of data items', type: 'input' },
         { title: 'maxPinnedLeft', desc: 'Maximum number of left-pinned columns', type: 'input' },
@@ -88,7 +131,6 @@
         { title: 'sortChanged', desc: 'Emitted when sorting changes', type: 'output' },
         { title: 'tableStateChanged', desc: 'Emitted when table state changes', type: 'output' },
         { title: 'onActionPerformed', desc: 'Emitted when an action is performed', type: 'output' },
-        { title: 'filterChanged', desc: 'Emitted when filters change', type: 'output' },
         { title: 'onRowClicked', desc: 'Emitted when a row is clicked', type: 'output' },
         { title: 'rowSelectionChange', desc: 'Emitted when row selection changes', type: 'output' },
         { title: 'pinChanged', desc: 'Emitted when column pinning changes', type: 'output' }
