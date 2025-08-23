@@ -1,14 +1,13 @@
 import {
   AfterContentInit,
   Component,
-  inject,
   input,
   output,
   signal
 } from '@angular/core';
 import {NgClass, NgStyle} from "@angular/common";
-import {FormControl, NgControl, ReactiveFormsModule} from "@angular/forms";
-import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
+import {ReactiveFormsModule} from "@angular/forms";
+import { BaseControlValueAccessorV3 } from '../../../../core/base-control-value-accessor-v3';
 import { BaseInputComponent } from '../../../../core/base-input/base-input.component';
 import { HumanizeFormMessagesPipe } from '../../../../core/humanize-form-messages.pipe';
 import { resolveTemplateWithObject } from '../../../../core/template-resolver';
@@ -30,7 +29,7 @@ import { AppSvgIconComponent } from '../../../misc/app-svg-icon/app-svg-icon.com
   templateUrl: './single-selection-field.component.html',
   styleUrl: './single-selection-field.component.scss'
 })
-export class SingleSelectionFieldComponent<T> extends BaseControlValueAccessor implements AfterContentInit {
+export class SingleSelectionFieldComponent<T> extends BaseControlValueAccessorV3<any> {
   title = input<string | null>();
   items = input<T[]>([]);
   display = input<string>();
@@ -51,32 +50,21 @@ export class SingleSelectionFieldComponent<T> extends BaseControlValueAccessor i
   itemPlacement = input<'start' | 'space-between'>('start');
   maximumDisplayItems = input<number | null>(null);
 
-  valueChanged = output<T | null>();
+  // Remove the duplicate valueChanged output since it's now in the base class
   onCustomActionClicked = output<void>();
 
-
   selectedItem = signal<T | null>(null);
-
   showAll = signal(false);
 
-  errorMessages = signal<{ [key: string]: string }>({});
-  ngControl = inject(NgControl, {optional: true, self: true});
-
-  constructor() {
-    super();
-    if (this.ngControl) {
-      this.ngControl!.valueAccessor = this;
-    }
-  }
-
-  override onWriteValue(value: any): void {
-
-  }
-
-  ngAfterContentInit(): void {
-    let formControl = this.ngControl?.control as FormControl;
-    if (formControl) {
-      this.formControl = this.ngControl?.control as FormControl;
+  protected onValueReady(value: any): void {
+    // Find the corresponding item when value is set
+    if (value !== null && value !== undefined) {
+      const matchingItem = this.items().find(item => this.getPropertyId(item) === value);
+      if (matchingItem) {
+        this.selectedItem.set(matchingItem);
+      }
+    } else {
+      this.selectedItem.set(null);
     }
   }
 
@@ -127,7 +115,6 @@ export class SingleSelectionFieldComponent<T> extends BaseControlValueAccessor i
   }
 
   getImageType(item: T): 'svg' | 'url' | null {
-
     if (this.iconSrc() != null && this.iconSrc() != '') {
       return 'svg';
     }
@@ -185,12 +172,14 @@ export class SingleSelectionFieldComponent<T> extends BaseControlValueAccessor i
     this.markAsTouched();
     const value = this.getPropertyId(item);
     this.selectedItem.set(item);
-    if (value == this.formControl.value) {
-      this.onChange(null);
-      this.valueChanged.emit(null);
+    
+    if (value == this.controlValue) {
+      // Deselect if clicking on already selected item
+      this.selectedItem.set(null);
+      this.onValueChange(null);
     } else {
-      this.onChange(value);
-      this.valueChanged.emit(value);
+      // Select new item
+      this.onValueChange(value);
     }
   }
 

@@ -1,0 +1,5 @@
+@media (min-width: 1024px) {
+  .sidebar-open {
+    transform: translateX(0);
+  }
+}

@@ -12,11 +12,11 @@
         [ngStyle]="{ 'width': itemWidth() ? itemWidth() + 'px' : null }"
         (click)="onItemClicked(item)"
         [ngClass]="{
-        'border-primary-600': getPropertyId(item) == formControl.value || selectedItem() == item,
+        'border-primary-600': getPropertyId(item) == controlValue || selectedItem() == item,
         'justify-center': isItemCentered()
       }">
 
-        @if ((getPropertyId(item) == formControl.value || selectedItem() == item) && showSelectionTickMark()) {
+        @if ((getPropertyId(item) == controlValue || selectedItem() == item) && showSelectionTickMark()) {
           <div class="absolute -top-[8px] -right-[8px]">
             <svg class="h-[18px] w-[18px] text-primary-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
                  fill="none">
@@ -70,7 +70,6 @@
       </div>
     }
 
-
   </div>
 
   <div error>
@@ -81,4 +80,3 @@
     }
   </div>
 </app-base-input>
-

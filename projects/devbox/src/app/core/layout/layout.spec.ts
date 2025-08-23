@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { UiLib } from './ui-lib';
+import { Layout } from './layout';
 
-describe('UiLib', () => {
-  let component: UiLib;
-  let fixture: ComponentFixture<UiLib>;
+describe('Layout', () => {
+  let component: Layout;
+  let fixture: ComponentFixture<Layout>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UiLib]
+      imports: [Layout]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(UiLib);
+    fixture = TestBed.createComponent(Layout);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

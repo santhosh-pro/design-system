@@ -1,0 +1,88 @@
+<div class="p-8 max-w-6xl mx-auto lg:flex lg:space-x-8">
+  <!-- Main Content -->
+  <div class="space-y-12 space-x-4 lg:flex-1">
+
+    <!-- Demo 1 -->
+    <app-demo-card
+      title="1. Basic String Array Selection"
+      description="Select your favorite color from a simple string array."
+      [files]="basicFiles()">
+      <app-single-selection-field
+        [formControl]="basicControl"
+        title="Select Your Favorite Color"
+        [items]="colors()"
+        [fullWidth]="true">
+      </app-single-selection-field>
+      <p class="text-sm text-gray-600 mt-2">
+        Selected: {{ basicControl.value || 'None' }}
+      </p>
+    </app-demo-card>
+
+    <!-- Demo 2 -->
+    <app-demo-card
+      title="2. Object Array Selection"
+      description="Select a country with label/value object pairs."
+      [files]="countryFiles()">
+      <app-single-selection-field
+        [formControl]="countryControl"
+        title="Select Country"
+        [items]="countries()"
+        [fullWidth]="true"
+        labelKey="name"
+        valueKey="code">
+      </app-single-selection-field>
+      <p class="text-sm text-gray-600 mt-2">
+        Selected Country Code: {{ countryControl.value || 'None' }}
+      </p>
+    </app-demo-card>
+
+    <!-- Demo 3 -->
+    <app-demo-card
+      title="3. With Categories"
+      description="Items grouped into categories."
+      [files]="categoryFiles()">
+      <app-single-selection-field
+        [formControl]="categoryControl"
+        title="Select a Fruit"
+        [items]="categories()"
+        [fullWidth]="true"
+        labelKey="name"
+        categoryKey="category">
+      </app-single-selection-field>
+      <p class="text-sm text-gray-600 mt-2">
+        Selected Fruit: {{ categoryControl.value || 'None' }}
+      </p>
+    </app-demo-card>
+
+    <!-- … demos 4–11 follow same pattern -->
+  </div>
+
+  <!-- Fixed and Scrollable Sidebar -->
+  <div class="lg:w-80 lg:fixed lg:top-8 lg:right-8 lg:max-h-[calc(100vh-4rem)] lg:overflow-y-auto">
+    <app-doc-io-list
+      class="block w-full bg-white shadow-lg p-4 rounded-lg"
+      [items]="[
+        { title: 'title', desc: 'Section title or header text', type: 'input' },
+        { title: 'items', desc: 'List of items to display', type: 'input' },
+        { title: 'display', desc: 'Field name in item to display as text', type: 'input' },
+        { title: 'displayTemplate', desc: 'Custom template reference for item display', type: 'input' },
+        { title: 'iconSrc', desc: 'Static icon source URL for item icon', type: 'input' },
+        { title: 'dynamicIconPath', desc: 'Key path in item object to resolve icon dynamically', type: 'input' },
+        { title: 'imageUrl', desc: 'Static image URL for item image', type: 'input' },
+        { title: 'dynamicImageUrlPath', desc: 'Key path in item object to resolve image dynamically', type: 'input' },
+        { title: 'iconColor', desc: 'Static color for icons', type: 'input' },
+        { title: 'dynamicIconColor', desc: 'Key path in item object to resolve icon color dynamically', type: 'input' },
+        { title: 'value', desc: 'Current selected value', type: 'input' },
+        { title: 'noDataMessage', desc: 'Message to display when there are no items', type: 'input' },
+        { title: 'customActionText', desc: 'Label text for custom action button', type: 'input' },
+        { title: 'fullWidth', desc: 'If true, component stretches to full width', type: 'input' },
+        { title: 'itemWidth', desc: 'Fixed width of each item (in px)', type: 'input' },
+        { title: 'isItemCentered', desc: 'If true, items are horizontally centered', type: 'input' },
+        { title: 'showSelectionTickMark', desc: 'If true, a tick mark is shown for selected items', type: 'input' },
+        { title: 'itemPlacement', desc: 'Defines alignment of items (start or space-between)', type: 'input' },
+        { title: 'maximumDisplayItems', desc: 'Maximum number of items to render (null = unlimited)', type: 'input' },
+        { title: 'onCustomActionClicked', desc: 'Event emitted when the custom action button is clicked', type: 'output' }
+      ]">
+    </app-doc-io-list>
+  </div>
+</div>

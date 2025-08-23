@@ -1,0 +1,78 @@
+<div class="flex flex-col h-screen">
+  <!-- Mobile Header -->
+  <header class="lg:hidden bg-gray-700 text-white p-4 flex justify-between items-center z-20">
+    <h1 class="text-lg font-semibold">My App</h1>
+    <button (click)="toggleSidebar()" class="text-white focus:outline-none">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 6h16M4 12h16m-7 6h7"></path>
+      </svg>
+    </button>
+  </header>
+
+  <div class="flex flex-1 overflow-hidden">
+    <!-- Sidebar -->
+    <aside
+      class="fixed top-0 left-0 h-screen w-64 bg-gray-700 text-white shadow-lg overflow-y-auto
+             transition-transform duration-300 ease-in-out z-99
+             lg:static lg:translate-x-0 lg:w-72"
+      [ngClass]="{
+        '-translate-x-full': !isSidebarOpen,
+        'translate-x-0': isSidebarOpen
+      }">
+      <div class="p-4 lg:p-6">
+        <nav>
+          <ul>
+            @for (menu of menus; track menu) {
+              <li class="mb-2">
+                <a [routerLink]="menu.href || '/#'" routerLinkActive="bg-primary-600"
+                   class="flex items-center p-3 rounded-lg hover:bg-primary-600 transition-colors text-base">
+                  {{ menu.label }}
+                </a>
+                @if (menu.subMenus) {
+                  <ul class="ml-6 mt-2">
+                    @for (subMenu of menu.subMenus; track subMenu) {
+                      <li class="mb-2">
+                        <a [routerLink]="subMenu.href || '/#'" routerLinkActive="bg-primary-500"
+                           class="flex items-center p-2 rounded-lg hover:bg-primary-500 transition-colors text-sm">
+                          {{ subMenu.label }}
+                        </a>
+                        @if (subMenu.subMenus) {
+                          <ul class="ml-6 mt-2">
+                            @for (child of subMenu.subMenus; track child) {
+                              <li class="mb-2">
+                                <a [routerLink]="child.href || '/#'" routerLinkActive="bg-primary-400"
+                                   class="flex items-center p-2 rounded-lg hover:bg-primary-400 transition-colors text-sm">
+                                  {{ child.label }}
+                                </a>
+                              </li>
+                            }
+                          </ul>
+                        }
+                      </li>
+                    }
+                  </ul>
+                }
+              </li>
+            }
+          </ul>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main
+      class="min-w-0 p-4 bg-gray-100 overflow-y-auto transition-all duration-300"
+      [ngClass]="{
+        'lg:ml-72': isSidebarOpen,
+        'ml-0': !isSidebarOpen
+      }">
+      <ng-content></ng-content>
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer class="h-6 bg-gray-800 text-white flex items-center justify-center z-60">
+    <p class="text-sm">{{ footerMessage }}</p>
+  </footer>
+</div>

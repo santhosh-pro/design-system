@@ -1,3 +1,5 @@
-<!-- <app-data-table-demo></app-data-table-demo> -->
-<app-date-range-picker-demo></app-date-range-picker-demo>
-<router-outlet></router-outlet>
+<app-layout [menus]="menus" [footerMessage]="footerMessage">
+  <main class="h-screen">
+  <router-outlet></router-outlet>
+  </main>
+</app-layout>

@@ -1,32 +1,98 @@
-<div class="p-4">
-  <h1 class="text-2xl font-bold mb-4">User Data Table</h1>
-  <app-data-table
-    [data]="tableData"
-    [totalCount]="totalItems"
-    [columnGroups]="columnGroups"
-    [pageSize]="5"
-    [enableSearch]="true"
-    [enableRowSelection]="true"
-    [rowSelectionKey]="'id'"
-    [defaultSelectedKeys]="defaultSelectedKeys"
-    [enableHorizontallyScrollable]="true"
-    [enableClickableRows]="true"
-    (pageChange)="onPageChange($event)"
-    (sortChanged)="onSortChanged($event)"
-    (tableStateChanged)="onTableStateChanged($event)"
-    (onActionPerformed)="onActionPerformed($event)"
-    (onRowClicked)="onRowClicked($event)"
-    (rowSelectionChange)="onRowSelectionChange($event)"
-  >
-    <!-- Optional: Custom header content for filters -->
-    <ng-container filter>
-      <!-- Add custom filter components here if needed -->
-    </ng-container>
-    <!-- Optional: Custom body content for no-data or loading states -->
-    <ng-container body>
-      <!-- <tr *ngIf="tableData.length === 0">
-        <td colspan="6" class="text-center py-4">No data available</td>
-      </tr> -->
-    </ng-container>
-  </app-data-table>
+<div class="p-8  mx-auto lg:flex lg:space-x-8">
+  <!-- Main Content -->
+  <div class="space-y-12 space-x-4 w-[1150px]">
+    <!-- Demo 1: Basic Table -->
+    <app-demo-card
+      title="1. Basic Data Table"
+      description="A simple data table with text and badge columns."
+      [files]="basicFiles()">
+      <app-data-table
+        [columnGroups]="basicColumns()"
+        [data]="basicData()"
+        [pageSize]="5"
+        [totalCount]="basicData().length"
+        [formControl]="basicControl"
+        (tableStateChanged)="onTableStateChanged($event)">
+      </app-data-table>
+      <p class="text-sm text-gray-600 mt-2">
+        Table State: {{ basicControl.value | json }}
+      </p>
+    </app-demo-card>
+
+    <!-- Demo 2: Table with Filters and Sorting -->
+    <app-demo-card
+      title="2. Table with Filters and Sorting"
+      description="A data table with filtering and sorting capabilities."
+      [files]="filterFiles()">
+      <app-data-table
+        [columnGroups]="filterColumns()"
+        [data]="filterData()"
+        [pageSize]="5"
+        [totalCount]="filterData().length"
+        [enableSearch]="true"
+        [formControl]="filterControl"
+        (tableStateChanged)="onTableStateChanged($event)"
+        (filterChanged)="onFilterChanged($event)">
+      </app-data-table>
+      <p class="text-sm text-gray-600 mt-2">
+        Table State: {{ filterControl.value | json }}
+      </p>
+    </app-demo-card>
+
+    <!-- Demo 3: Table with Row Selection and Actions -->
+    <app-demo-card
+      title="3. Table with Row Selection and Actions"
+      description="A data table with row selection and action buttons."
+      [files]="actionFiles()">
+      <app-data-table
+        [columnGroups]="actionColumns()"
+        [data]="actionData()"
+        [pageSize]="5"
+        [totalCount]="actionData().length"
+        [enableRowSelection]="true"
+        [rowSelectionKey]="'id'"
+        [formControl]="actionControl"
+        (tableStateChanged)="onTableStateChanged($event)"
+        (onActionPerformed)="onActionPerformed($event)"
+        (rowSelectionChange)="onRowSelectionChange($event)">
+      </app-data-table>
+      <p class="text-sm text-gray-600 mt-2">
+        Table State: {{ actionControl.value | json }}
+      </p>
+    </app-demo-card>
+  </div>
+
+  <!-- Fixed and Scrollable Sidebar -->
+  <div class="lg:w-80 lg:fixed lg:top-8 lg:right-8 lg:max-h-[calc(100vh-4rem)] lg:overflow-y-auto">
+    <app-doc-io-list
+      class="block w-full bg-white shadow-lg p-4 rounded-lg"
+      [items]="[
+        { title: 'columnGroups', desc: 'Array of column groups defining table structure', type: 'input' },
+        { title: 'pageSize', desc: 'Number of rows per page', type: 'input' },
+        { title: 'enableHorizontallyScrollable', desc: 'Enables horizontal scrolling', type: 'input' },
+        { title: 'enableResizableColumns', desc: 'Enables column resizing', type: 'input' },
+        { title: 'enableClickableRows', desc: 'Enables row click events', type: 'input' },
+        { title: 'expandableComponent', desc: 'Component for expandable rows', type: 'input' },
+        { title: 'filterComponent', desc: 'Custom filter component', type: 'input' },
+        { title: 'enableSearch', desc: 'Enables search input', type: 'input' },
+        { title: 'disableInitialLoad', desc: 'Disables initial data load', type: 'input' },
+        { title: 'rowSelectionKey', desc: 'Key for row selection', type: 'input' },
+        { title: 'enableRowSelection', desc: 'Enables row selection', type: 'input' },
+        { title: 'defaultSelectedKeys', desc: 'Default selected row keys', type: 'input' },
+        { title: 'initialValue', desc: 'Initial table state', type: 'input' },
+        { title: 'data', desc: 'Array of data to display', type: 'input' },
+        { title: 'totalCount', desc: 'Total number of data items', type: 'input' },
+        { title: 'maxPinnedLeft', desc: 'Maximum number of left-pinned columns', type: 'input' },
+        { title: 'maxPinnedRight', desc: 'Maximum number of right-pinned columns', type: 'input' },
+        { title: 'pageChange', desc: 'Emitted when pagination changes', type: 'output' },
+        { title: 'sortChanged', desc: 'Emitted when sorting changes', type: 'output' },
+        { title: 'tableStateChanged', desc: 'Emitted when table state changes', type: 'output' },
+        { title: 'onActionPerformed', desc: 'Emitted when an action is performed', type: 'output' },
+        { title: 'filterChanged', desc: 'Emitted when filters change', type: 'output' },
+        { title: 'onRowClicked', desc: 'Emitted when a row is clicked', type: 'output' },
+        { title: 'rowSelectionChange', desc: 'Emitted when row selection changes', type: 'output' },
+        { title: 'pinChanged', desc: 'Emitted when column pinning changes', type: 'output' }
+      ]">
+    </app-doc-io-list>
+  </div>
 </div>
