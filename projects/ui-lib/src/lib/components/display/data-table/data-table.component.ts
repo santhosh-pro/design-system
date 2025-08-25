@@ -38,6 +38,7 @@ import { DateInputComponent, InputDateFormat } from '../../forms/date/date-input
     DatePipe,
     StatusBadgeComponent,
     SortableTableDirective,
+    // TableResizableColumnsDirective,
     CheckboxComponent,
     FormsModule,
     TextInputComponent,
@@ -57,7 +58,7 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
 
   public InputDateFormat = InputDateFormat;
 
-  columns = input.required<ColumnDef[]>();
+  columnGroups = input.required<ColumnNode[]>();
   pageSize = input(50);
   private internalPageSize: number = this.pageSize();
   enableHorizontallyScrollable = input(true);
@@ -96,7 +97,7 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
   columnFilters: { [key: string]: { value?: any; min?: any; max?: any; operation: string } } = {};
   filterControls: { [key: string]: { [prop: string]: FormControl } } = {};
   selectedIds = signal<any[]>([]);
-  columnsSignal: WritableSignal<ColumnDef[]> = signal([]);
+  columnGroupsSignal: WritableSignal<ColumnNode[]> = signal([]);
 
   constructor(private cdr: ChangeDetectorRef) {
     super();
@@ -109,12 +110,23 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
       this.applyInitialState(initialValue);
     }
     // Initialize column visibility and sync with signal
-    const updatedColumns = this.columns().map(col => ({
-      ...col,
-      visible: col.visible ?? true,
-      pinned: col.type === 'actions' ? 'right' : (col.pinned ?? null)
-    }));
-    this.columnsSignal.set(updatedColumns);
+    const updatedGroups = this.columnGroups().map(node => this.cloneNodeWithVisibility(node));
+    this.columnGroupsSignal.set(updatedGroups);
+  }
+
+  private cloneNodeWithVisibility(node: ColumnNode): ColumnNode {
+    if ('children' in node) {
+      return {
+        ...node,
+        children: node.children.map(child => this.cloneNodeWithVisibility(child))
+      };
+    } else {
+      return {
+        ...node,
+        visible: node.visible ?? true,
+        pinned: node.type === 'actions' ? 'right' : (node.pinned ?? null)
+      };
+    }
   }
 
   protected onValueReady(value: TableStateEvent): void {
@@ -142,7 +154,7 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
       console.log('Default selected IDs:', this.selectedIds());
     }
 
-    this.columnsSignal().forEach(column => {
+    this.allLeafColumns().forEach(column => {
       if (column.filterConfig) {
         const filterKey = this.getFilterKey(column);
         if (!this.columnFilters[filterKey]?.value) {
@@ -305,7 +317,7 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
   }
 
   hasFilterConfig(): boolean {
-    return this.columnsSignal().some(column => !!column.filterConfig);
+    return this.allLeafColumns().some(column => !!column.filterConfig);
   }
 
   onFilterChanged(value: any, min: any, max: any, column: ColumnDef) {
@@ -498,8 +510,9 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
     this.onValueChange(tableStateEvent);
   }
 
-  getThTrClass(column: ColumnDef) {
-    switch (column.alignment) {
+  getThTrClass(cellOrColumn: HeaderCell | ColumnDef) {
+    const alignment = 'node' in cellOrColumn ? cellOrColumn.node.alignment : cellOrColumn.alignment;
+    switch (alignment) {
       case 'left':
         return 'text-left';
       case 'center':
@@ -631,6 +644,92 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
     console.log('Select all changed:', this.selectedIds());
   }
 
+  // Nested header functions
+  getMaxDepth(): number {
+    const nodes = this.columnGroupsSignal();
+    let max = 1;
+    const recurse = (node: ColumnNode, depth: number) => {
+      if ('children' in node && node.children.length > 0) {
+        node.children.forEach(child => recurse(child, depth + 1));
+      } else {
+        max = Math.max(max, depth);
+      }
+    };
+    nodes.forEach(node => recurse(node, 1));
+    return max;
+  }
+
+  getHeaderLevels(): number[] {
+    return Array.from({ length: this.getMaxDepth() }, (_, i) => i);
+  }
+
+  allLeafColumns(): ColumnDef[] {
+    const leaves: ColumnDef[] = [];
+    const traverse = (node: ColumnNode) => {
+      if ('children' in node) {
+        node.children.forEach(traverse);
+      } else if (node.visible ?? true) {
+        leaves.push(node);
+      }
+    };
+    this.columnGroupsSignal().forEach(traverse);
+    return leaves;
+  }
+
+  getLeafCount(node: ColumnNode): number {
+    if (!('children' in node)) return (node.visible ?? true) ? 1 : 0;
+    return node.children.reduce((sum, child) => sum + this.getLeafCount(child), 0);
+  }
+
+  getHeaderCellsAtLevel(level: number): HeaderCell[] {
+    const cells: HeaderCell[] = [];
+    const maxDepth = this.getMaxDepth();
+    const traverse = (node: ColumnNode, currentLevel: number) => {
+      if (currentLevel === level) {
+        const isGroup = 'children' in node;
+        const colspan = this.getLeafCount(node);
+        let rowspan = 1;
+        if (!isGroup) {
+          rowspan = maxDepth - currentLevel;
+        }
+        if (colspan > 0) {
+          cells.push({
+            title: node.title,
+            colspan,
+            rowspan,
+            node,
+            sortKey: isGroup ? undefined : node.sortKey,
+            pinned: this.getNodePinned(node),
+            alignment: node.alignment
+          });
+        }
+      } else if ('children' in node) {
+        node.children.forEach(child => traverse(child, currentLevel + 1));
+      }
+    };
+    this.columnGroupsSignal().forEach(node => traverse(node, 0));
+    return cells;
+  }
+
+  getNodePinned(node: ColumnNode): 'left' | 'right' | null {
+    if (!('children' in node)) return node.pinned ?? null;
+    const childPinneds = node.children.map(child => this.getNodePinned(child)).filter(p => p !== null);
+    const first = childPinneds[0];
+    if (childPinneds.length > 0 && childPinneds.every(p => p === first)) {
+      return first;
+    }
+    return null;
+  }
+
+  private getFirstLeaf(node: ColumnNode): ColumnDef {
+    if (!('children' in node)) return node;
+    return this.getFirstLeaf(node.children[0]);
+  }
+
+  getHeaderRowSpan(): number {
+    return this.getMaxDepth();
+  }
+
   // Pinning functionality
   onPinToggle(column: ColumnDef) {
     console.log('Pin toggle for column:', column.title);
@@ -644,8 +743,8 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
     }
 
     // Check max pinned limit
-    const leftPinnedCount = this.columnsSignal().filter(col => col.pinned === 'left' && (col.visible ?? true)).length;
-    const rightPinnedCount = this.columnsSignal().filter(col => col.pinned === 'right' && (col.visible ?? true)).length;
+    const leftPinnedCount = this.allLeafColumns().filter(col => col.pinned === 'left').length;
+    const rightPinnedCount = this.allLeafColumns().filter(col => col.pinned === 'right').length;
 
     if (newPinnedValue === 'left' && leftPinnedCount >= this.maxPinnedLeft() && column.pinned !== 'left') {
       console.warn('Maximum left-pinned columns reached:', this.maxPinnedLeft());
@@ -657,9 +756,7 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
     }
 
     // Update the column's pinned property
-    this.columnsSignal.update(columns => {
-      return columns.map(col => col === column ? { ...col, pinned: newPinnedValue } : col);
-    });
+    this.columnGroupsSignal.update(nodes => nodes.map(node => this.updatePinnedInNode(node, column, newPinnedValue)));
 
     // Emit pinning change
     this.pinChanged.emit({ column, pinned: newPinnedValue });
@@ -668,120 +765,99 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
     this.cdr.detectChanges();
   }
 
-  getPinnedLeftOffset(column: ColumnDef): string {
-    if (column.pinned !== 'left') return '0';
+  private updatePinnedInNode(node: ColumnNode, target: ColumnDef, newPinned: 'left' | 'right' | null): ColumnNode {
+    if (node === target) {
+      return { ...node, pinned: newPinned };
+    }
+    if ('children' in node) {
+      return {
+        ...node,
+        children: node.children.map(child => this.updatePinnedInNode(child, target, newPinned))
+      };
+    }
+    return node;
+  }
 
-    const allPinnedColumns = this.columnsSignal().filter(col => col.pinned === 'left' && (col.visible ?? true));
-    allPinnedColumns.sort((a, b) => this.columnsSignal().indexOf(a) - this.columnsSignal().indexOf(b));
+  private getLeafHeaderRow(): HTMLElement | null {
+    if (this.tableRef) {
+      const headerRows = this.tableRef.nativeElement.querySelectorAll('thead tr');
+      const index = headerRows.length - (this.hasFilterConfig() ? 2 : 1);
+      return headerRows[index] as HTMLElement;
+    }
+    return null;
+  }
 
-    const pinnedIndex = allPinnedColumns.indexOf(column);
-    if (pinnedIndex === -1) return '0';
+  getPinnedLeftOffset(node: ColumnNode): string {
+    const pinned = this.getNodePinned(node);
+    if (pinned !== 'left') return '0';
+
+    const firstLeaf = this.getFirstLeaf(node);
+    const leftPinnedLeaves = this.allLeafColumns().filter(c => c.pinned === 'left');
+    const index = leftPinnedLeaves.findIndex(c => c === firstLeaf);
+    if (index === -1) return '0';
 
     let offset = 0;
-    const hasCheckbox = this.enableRowSelection();
-    const domIndex = hasCheckbox ? pinnedIndex + 1 : pinnedIndex;
-
-    if (this.tableRef?.nativeElement) {
-      const headerRow = this.tableRef.nativeElement.querySelector('thead tr:first-child');
-      if (headerRow) {
-        const thElements = headerRow.querySelectorAll('th.sticky');
-        if (thElements && thElements.length > 0) {
-          for (let i = 0; i < domIndex && i < thElements.length; i++) {
-            const th = thElements[i] as HTMLElement;
-            const width = th?.offsetWidth;
-            if (width && !isNaN(width)) {
-              offset += width;
-            } else {
-              if (hasCheckbox && i === 0) {
-                offset += 48; // Checkbox column width
-              } else {
-                const fallbackIndex = hasCheckbox ? i - 1 : i;
-                if (fallbackIndex >= 0 && fallbackIndex < allPinnedColumns.length) {
-                  offset += allPinnedColumns[fallbackIndex].width ?? 120;
-                }
-              }
-            }
-          }
-        } else {
-          if (hasCheckbox) {
-            offset += 48;
-          }
-          for (let i = 0; i < pinnedIndex; i++) {
-            offset += allPinnedColumns[i].width ?? 120;
-          }
+    const headerRow = this.getLeafHeaderRow();
+    if (headerRow) {
+      const thElements = headerRow.querySelectorAll('th.sticky[pinned="left"]');
+      if (thElements.length > 0) {
+        for (let i = 0; i < index; i++) {
+          offset += (thElements[i] as HTMLElement).offsetWidth;
         }
-      } else {
-        if (hasCheckbox) {
-          offset += 48;
-        }
-        for (let i = 0; i < pinnedIndex; i++) {
-          offset += allPinnedColumns[i].width ?? 120;
-        }
-      }
-    } else {
-      if (hasCheckbox) {
-        offset += 48;
-      }
-      for (let i = 0; i < pinnedIndex; i++) {
-        offset += allPinnedColumns[i].width ?? 120;
       }
     }
 
-    return isNaN(offset) ? '0' : `${offset}px`;
+    // Fallback if DOM not ready
+    if (offset === 0 && index > 0) {
+      for (let i = 0; i < index; i++) {
+        offset += leftPinnedLeaves[i].width ?? 120;
+      }
+    }
+
+    if (this.enableRowSelection()) offset += 48; // Checkbox width
+    return `${offset}px`;
   }
 
-  getPinnedRightOffset(column: ColumnDef): string {
-    if (column.pinned !== 'right') return '0';
+  getPinnedRightOffset(node: ColumnNode): string {
+    const pinned = this.getNodePinned(node);
+    if (pinned !== 'right') return '0';
 
-    const allPinnedColumns = this.columnsSignal().filter(col => col.pinned === 'right' && (col.visible ?? true));
-    allPinnedColumns.sort((a, b) => this.columnsSignal().indexOf(a) - this.columnsSignal().indexOf(b));
-
-    const pinnedIndex = allPinnedColumns.indexOf(column);
-    if (pinnedIndex === -1) return '0';
+    const firstLeaf = this.getFirstLeaf(node);
+    const rightPinnedLeaves = this.allLeafColumns().filter(c => c.pinned === 'right');
+    const index = rightPinnedLeaves.findIndex(c => c === firstLeaf);
+    if (index === -1) return '0';
 
     let offset = 0;
+    const headerRow = this.getLeafHeaderRow();
+    if (headerRow) {
+      const thElements = headerRow.querySelectorAll('th.sticky[pinned="right"]');
+      if (thElements.length > 0) {
+        for (let i = index + 1; i < rightPinnedLeaves.length; i++) {
+          offset += (thElements[i] as HTMLElement).offsetWidth;
+        }
+      }
+    }
 
-    if (this.tableRef) {
-      const headerRow = this.tableRef.nativeElement.querySelector('thead tr:first-child');
-      let thElements: NodeListOf<HTMLElement> | null = null;
-      if (headerRow) {
-        thElements = headerRow.querySelectorAll('th.sticky[pinned="right"]');
-      }
-      if (thElements) {
-        for (let i = pinnedIndex + 1; i < allPinnedColumns.length; i++) {
-          const domI = i - allPinnedColumns.length + thElements.length;
-          const th = thElements[domI];
-          if (th) {
-            offset += th.offsetWidth;
-          } else {
-            offset += allPinnedColumns[i].width ?? 120;
-          }
-        }
-      } else {
-        for (let i = pinnedIndex + 1; i < allPinnedColumns.length; i++) {
-          offset += allPinnedColumns[i].width ?? 120;
-        }
-      }
-    } else {
-      for (let i = pinnedIndex + 1; i < allPinnedColumns.length; i++) {
-        offset += allPinnedColumns[i].width ?? 120;
+    // Fallback
+    if (offset === 0) {
+      for (let i = index + 1; i < rightPinnedLeaves.length; i++) {
+        offset += rightPinnedLeaves[i].width ?? 120;
       }
     }
 
     return `${offset}px`;
   }
 
-  getPinnedZIndex(column: ColumnDef): number {
-    if (!column.pinned) return 0;
+  getPinnedZIndex(node: ColumnNode): number {
+    const pinned = this.getNodePinned(node);
+    if (!pinned) return 0;
 
-    const direction = column.pinned;
-    const allPinnedColumns = this.columnsSignal().filter(col => col.pinned === direction && (col.visible ?? true));
-    allPinnedColumns.sort((a, b) => this.columnsSignal().indexOf(a) - this.columnsSignal().indexOf(b));
+    const firstLeaf = this.getFirstLeaf(node);
+    const pinnedLeaves = this.allLeafColumns().filter(c => c.pinned === pinned);
+    let index = pinnedLeaves.findIndex(c => c === firstLeaf);
 
-    let index = allPinnedColumns.indexOf(column);
-
-    if (direction === 'right') {
-      index = allPinnedColumns.length - 1 - index;
+    if (pinned === 'right') {
+      index = pinnedLeaves.length - 1 - index;
     }
 
     return 30 - index;
@@ -791,6 +867,25 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
     return this.enableRowSelection() ? '0' : '';
   }
 }
+
+export type ColumnNode = ColumnDef | ColumnGroup;
+
+export interface ColumnGroup {
+  title: string;
+  children: ColumnNode[];
+  alignment?: 'left' | 'center' | 'right';
+}
+
+export interface HeaderCell {
+  title: string;
+  colspan: number;
+  rowspan: number;
+  node: ColumnNode;
+  sortKey?: string;
+  pinned?: 'left' | 'right' | null;
+  alignment?: 'left' | 'center' | 'right';
+}
+
 
 export interface ColumnDef {
   title: string;

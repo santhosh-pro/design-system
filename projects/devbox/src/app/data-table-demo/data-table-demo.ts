@@ -2,7 +2,7 @@ import { Component, signal } from '@angular/core';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { DemoCard, DemoFile } from '../core/demo-card/demo-card';
 import { DocIoList } from '../core/doc-io-list/doc-io-list';
-import { ColumnDef, DataTableComponent, TableActionEvent, TableStateEvent } from 'projects/ui-lib/src/public-api';
+import { ColumnDef, ColumnNode, DataTableComponent, TableActionEvent, TableStateEvent } from 'projects/ui-lib/src/public-api';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -74,7 +74,92 @@ export class DataTableDemo {
 
   // Form controls for table state
   basicControl = new FormControl<TableStateEvent>({ searchText: '' });
-
+  nestedColumns = signal<ColumnNode[]>([
+    {
+      title: 'User Info',
+      children: [
+        { title: 'ID', key: 'id', type: 'text', alignment: 'left', sortKey: 'id', },
+        {
+          title: 'Personal Details',
+          children: [
+            {
+              title: 'Name',
+              key: 'name',
+              type: 'text',
+              alignment: 'left',
+              sortKey: 'name',
+            },
+            {
+              title: 'Email',
+              key: 'email',
+              type: 'text',
+              alignment: 'left',
+              sortKey: 'email',
+            },
+          ]
+        },
+      ]
+    },
+    {
+      title: 'Status Info',
+      children: [
+        {
+          title: 'Age',
+          key: 'age',
+          type: 'text',
+          alignment: 'center',
+          sortKey: 'age',
+        },
+        {
+          title: 'Status',
+          key: 'status',
+          type: 'badge',
+          sortKey: 'status',
+          badgeConfig: {
+            properties: [
+              { data: 'Active', displayText: 'Active', backgroundColorClass: 'bg-green-100', textColorClass: 'text-green-800' },
+              { data: 'Inactive', displayText: 'Inactive', backgroundColorClass: 'bg-red-100', textColorClass: 'text-red-800' },
+            ],
+          },
+        },
+      ]
+    },
+    {
+      title: 'Employment',
+      children: [
+        {
+          title: 'Joined Date',
+          key: 'joined',
+          type: 'date',
+          sortKey: 'joined',
+          alignment: 'center',
+          dateConfig: { dateFormat: 'MMM d, y', showIcon: true },
+        },
+        {
+          title: 'Department',
+          key: 'department',
+          type: 'text',
+          sortKey: 'department',
+          alignment: 'left',
+        },
+      ]
+    },
+    {
+      title: 'Actions',
+      type: 'actions',
+      pinned: 'right',
+      actionsConfig: {
+        iconActions: [
+          { iconPath: 'edit.svg', actionKey: 'edit', label: 'Edit' },
+          { iconPath: 'delete.svg', actionKey: 'delete', label: 'Delete' }
+        ],
+        threeDotMenuActions: [
+          { label: 'View Details', actionKey: 'view' },
+          { label: 'Archive', actionKey: 'archive' }
+        ]
+      }
+    }
+  ]);
 
   // Demo files for code viewer
   basicFiles = signal<DemoFile[]>([
@@ -133,7 +218,7 @@ export class BasicDemoComponent {
     },
   ]);
 
-  
+
   // Placeholder for expandable component (assumed to exist)
   expandableComponent: any = null;
 

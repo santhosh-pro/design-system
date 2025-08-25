@@ -15,53 +15,54 @@
 
   <!-- Table Container -->
   <div class="flex-1 overflow-y-auto relative" [ngClass]="{'overflow-x-auto': enableHorizontallyScrollable()}">
+
     <table #table class="w-full table-auto">
       <!-- Table Header -->
       <thead class="sticky top-0 bg-white z-60">
-        <!-- Main Heading Row -->
+        @for (level of getHeaderLevels(); track level) {
+        <!-- Header Level Row -->
         <tr sortableTable (sortChange)="onSortChanged($event)"
           class="text-overline text-neutral-500 text-nowrap border-b border-gray-200">
           <!-- Checkbox Column Header -->
-          @if (enableRowSelection()) {
-          <th class="w-12 px-4 py-3 border-b border-gray-200 sticky z-20 bg-white" pinned="left"
-            [style.left]="getCheckboxColumnOffset()">
+          @if (enableRowSelection() && level === 0) {
+          <th [attr.rowspan]="getHeaderRowSpan()" class="w-12 px-4 py-3 border-b border-gray-200 sticky z-20 bg-white"
+            pinned="left" [style.left]="getCheckboxColumnOffset()">
             <app-checkbox [ngModel]="isAllSelected()" (valueChanged)="onSelectAllRows($event)"></app-checkbox>
           </th>
           }
-          @for (column of columnsSignal(); track column; let colIndex = $index) {
-          @let isColumnVisible = column.visible ?? true;
-          @if (isColumnVisible) {
-          <th [attr.data-sortable-key]="column.sortKey"
+          @for (cell of getHeaderCellsAtLevel(level); track $index; let colIndex = $index) {
+          <th [attr.colspan]="cell.colspan" [attr.rowspan]="cell.rowspan" [attr.data-sortable-key]="cell.sortKey"
             class="relative cursor-pointer px-4 py-3 text-caption font-semibold text-primary-600 uppercase tracking-wider border-b border-gray-200 transition-colors duration-200 hover:bg-indigo-50"
             [ngClass]="[
-              getThTrClass(column),
-              colIndex < columnsSignal().length - 1 ? 'border-r border-gray-200' : '',
-              column.pinned ? 'sticky z-20 bg-white' : ''
-            ]" [attr.pinned]="column.pinned"
-            [style.left]="column.pinned === 'left' ? getPinnedLeftOffset(column) : ''"
-            [style.right]="column.pinned === 'right' ? getPinnedRightOffset(column) : ''"
-            [style.zIndex]="column.pinned ? getPinnedZIndex(column) : ''">
+              getThTrClass(cell),
+              cell.pinned ? 'sticky z-20 bg-white' : ''
+            ]" [attr.pinned]="cell.pinned"
+            [style.left]="cell.pinned === 'left' ? getPinnedLeftOffset(cell.node) : ''"
+            [style.right]="cell.pinned === 'right' ? getPinnedRightOffset(cell.node) : ''"
+            [style.zIndex]="cell.pinned ? getPinnedZIndex(cell.node) : ''">
             <div class="flex items-center gap-2">
+              @if (!('children' in cell.node)) {
               <div class="pin-toggle">
                 <!-- Pin Toggle Icon -->
-                <svg (click)="onPinToggle(column)" fill="currentColor" stroke="currentColor" width="16px" height="16px"
-                  version="1.1" viewBox="144 144 512 512" xmlns="http://www.w3.org/2000/svg"
-                  [ngClass]="column.pinned ? 'text-primary-600' : 'text-neutral-500'" class="cursor-pointer">
+                <svg (click)="onPinToggle(cell.node)" fill="currentColor" stroke="currentColor" width="16px"
+                  height="16px" version="1.1" viewBox="144 144 512 512" xmlns="http://www.w3.org/2000/svg"
+                  [ngClass]="cell.pinned ? 'text-primary-600' : 'text-neutral-500'" class="cursor-pointer">
                   <g>
                     <path
                       d="m525.64 448.04-29.535-200.94h29.93v-23.617h-252.08v23.617h29.945l-29.539 200.94h-28.496v23.617h142.31v104.87h23.617v-104.87h142.33v-23.617zm-227.41 0 29.535-200.94h144.47l29.52 200.94z" />
                   </g>
                 </svg>
               </div>
+              }
               <!-- Column Title -->
-              <span>{{ column.title }}</span>
+              <span>{{ cell.title }}</span>
               <!-- Sorting Icon -->
               <span class="sort-icon"></span>
             </div>
           </th>
           }
-          }
         </tr>
+        }
 
         <!-- Filter Row -->
         @if (hasFilterConfig()) {
@@ -70,12 +71,9 @@
           <th class="w-12 px-4 py-3 border-b border-gray-200 sticky z-20 bg-neutral-50" pinned="left"
             [style.left]="getCheckboxColumnOffset()"></th>
           }
-          @for (column of columnsSignal(); track column; let colIndex = $index) {
-          @let isColumnVisible = column.visible ?? true;
-          @if (isColumnVisible) {
+          @for (column of allLeafColumns(); track column; let colIndex = $index) {
           <th class="border-b border-gray-200 px-4 py-3" [ngClass]="[
               getThTrClass(column),
-              colIndex < columnsSignal().length - 1 ? 'border-r border-gray-200' : '',
               column.pinned ? 'sticky z-20 bg-neutral-50' : ''
             ]" [attr.pinned]="column.pinned"
             [style.left]="column.pinned === 'left' ? getPinnedLeftOffset(column) : ''"
@@ -125,7 +123,6 @@
             }
           </th>
           }
-          }
         </tr>
         }
       </thead>
@@ -149,12 +146,9 @@
               [disabled]="!enableRowSelection()"></app-checkbox>
           </td>
           }
-          @for (column of columnsSignal(); track column; let colIndex = $index) {
-          @let isColumnVisible = column.visible ?? true;
-          @if (isColumnVisible) {
+          @for (column of allLeafColumns(); track column; let colIndex = $index) {
           <td class="px-4 py-3 border-b border-gray-100 relative text-body2 text-gray-800" [ngClass]="[
               getThTrClass(column),
-              colIndex < columnsSignal().length - 1 ? 'border-r border-gray-200' : '',
               column.pinned ? 'sticky z-20 bg-white' : ''
             ]" [attr.pinned]="column.pinned"
             [style.left]="column.pinned === 'left' ? getPinnedLeftOffset(column) : ''"
@@ -241,7 +235,6 @@
             }
             }
           </td>
-          }
           }
         </tr>
         }
