@@ -77,6 +77,7 @@ export class DataTableDemo {
   nestedColumns = signal<ColumnNode[]>([
     {
       title: 'User Info',
+      alignment: 'right',
       children: [
         { title: 'ID', key: 'id', type: 'text', alignment: 'left', sortKey: 'id', },
         {

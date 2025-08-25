@@ -32,18 +32,17 @@
           }
           @for (cell of getHeaderCellsAtLevel(level); track $index; let colIndex = $index) {
           <th [attr.colspan]="cell.colspan" [attr.rowspan]="cell.rowspan" [attr.data-sortable-key]="cell.sortKey"
-            class="relative cursor-pointer px-4 py-3 text-caption font-semibold text-primary-600 uppercase tracking-wider border-b border-gray-200 transition-colors duration-200 hover:bg-indigo-50"
+            class="relative cursor-pointer px-4 py-3 text-caption font-semibold text-primary-600 uppercase tracking-wider border-b border-gray-200 hover:bg-indigo-50"
             [ngClass]="[
-              getThTrClass(cell),
-              cell.pinned ? 'sticky z-20 bg-white' : ''
-            ]" [attr.pinned]="cell.pinned"
-            [style.left]="cell.pinned === 'left' ? getPinnedLeftOffset(cell.node) : ''"
+      getThTrClass(cell),
+      cell.pinned ? 'sticky z-20 bg-white' : '',
+      (isColumnGroup(cell.node) && cell.colspan > 1) ? 'border-r border-gray-300' : ''
+    ]" [attr.pinned]="cell.pinned" [style.left]="cell.pinned === 'left' ? getPinnedLeftOffset(cell.node) : ''"
             [style.right]="cell.pinned === 'right' ? getPinnedRightOffset(cell.node) : ''"
             [style.zIndex]="cell.pinned ? getPinnedZIndex(cell.node) : ''">
-            <div class="flex items-center gap-2">
-              @if (!('children' in cell.node)) {
+            <div class="flex items-center gap-2" [ngClass]="getFlexJustifyClass(cell)">
+              @if (!isColumnGroup(cell.node)) {
               <div class="pin-toggle">
-                <!-- Pin Toggle Icon -->
                 <svg (click)="onPinToggle(cell.node)" fill="currentColor" stroke="currentColor" width="16px"
                   height="16px" version="1.1" viewBox="144 144 512 512" xmlns="http://www.w3.org/2000/svg"
                   [ngClass]="cell.pinned ? 'text-primary-600' : 'text-neutral-500'" class="cursor-pointer">
@@ -54,9 +53,7 @@
                 </svg>
               </div>
               }
-              <!-- Column Title -->
               <span>{{ cell.title }}</span>
-              <!-- Sorting Icon -->
               <span class="sort-icon"></span>
             </div>
           </th>
@@ -75,8 +72,7 @@
           <th class="border-b border-gray-200 px-4 py-3" [ngClass]="[
               getThTrClass(column),
               column.pinned ? 'sticky z-20 bg-neutral-50' : ''
-            ]" [attr.pinned]="column.pinned"
-            [style.left]="column.pinned === 'left' ? getPinnedLeftOffset(column) : ''"
+            ]" [attr.pinned]="column.pinned" [style.left]="column.pinned === 'left' ? getPinnedLeftOffset(column) : ''"
             [style.right]="column.pinned === 'right' ? getPinnedRightOffset(column) : ''"
             [style.zIndex]="column.pinned ? getPinnedZIndex(column) : ''">
             @if (column.filterConfig) {
@@ -150,8 +146,7 @@
           <td class="px-4 py-3 border-b border-gray-100 relative text-body2 text-gray-800" [ngClass]="[
               getThTrClass(column),
               column.pinned ? 'sticky z-20 bg-white' : ''
-            ]" [attr.pinned]="column.pinned"
-            [style.left]="column.pinned === 'left' ? getPinnedLeftOffset(column) : ''"
+            ]" [attr.pinned]="column.pinned" [style.left]="column.pinned === 'left' ? getPinnedLeftOffset(column) : ''"
             [style.right]="column.pinned === 'right' ? getPinnedRightOffset(column) : ''"
             [style.zIndex]="column.pinned ? getPinnedZIndex(column) : ''">
             @switch (column.type) {

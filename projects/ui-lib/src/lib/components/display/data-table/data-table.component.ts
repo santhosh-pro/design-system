@@ -510,19 +510,33 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
     this.onValueChange(tableStateEvent);
   }
 
-  getThTrClass(cellOrColumn: HeaderCell | ColumnDef) {
-    const alignment = 'node' in cellOrColumn ? cellOrColumn.node.alignment : cellOrColumn.alignment;
-    switch (alignment) {
-      case 'left':
-        return 'text-left';
-      case 'center':
-        return 'text-center';
-      case 'right':
-        return 'text-right';
-      default:
-        return 'text-left';
-    }
+getThTrClass(cellOrColumn: HeaderCell | ColumnDef) {
+  const alignment = 'node' in cellOrColumn ? cellOrColumn.node.alignment : cellOrColumn.alignment;
+  switch (alignment) {
+    case 'left':
+      return 'text-left !important';
+    case 'center':
+      return 'text-center !important';
+    case 'right':
+      return 'text-right !important';
+    default:
+      return 'text-left !important';
   }
+}
+
+getFlexJustifyClass(cell: HeaderCell): string {
+  const alignment = cell.node.alignment;
+  switch (alignment) {
+    case 'left':
+      return 'justify-start';
+    case 'center':
+      return 'justify-center';
+    case 'right':
+      return 'justify-end';
+    default:
+      return 'justify-start';
+  }
+}
 
   getFlexJustify(column: ColumnDef) {
     switch (column.alignment) {
@@ -681,34 +695,38 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
     return node.children.reduce((sum, child) => sum + this.getLeafCount(child), 0);
   }
 
-  getHeaderCellsAtLevel(level: number): HeaderCell[] {
-    const cells: HeaderCell[] = [];
-    const maxDepth = this.getMaxDepth();
-    const traverse = (node: ColumnNode, currentLevel: number) => {
-      if (currentLevel === level) {
-        const isGroup = 'children' in node;
-        const colspan = this.getLeafCount(node);
-        let rowspan = 1;
-        if (!isGroup) {
-          rowspan = maxDepth - currentLevel;
-        }
-        if (colspan > 0) {
-          cells.push({
-            title: node.title,
-            colspan,
-            rowspan,
-            node,
-            sortKey: isGroup ? undefined : node.sortKey,
-            pinned: this.getNodePinned(node),
-            alignment: node.alignment
-          });
-        }
-      } else if ('children' in node) {
-        node.children.forEach(child => traverse(child, currentLevel + 1));
+getHeaderCellsAtLevel(level: number): HeaderCell[] {
+  const cells: HeaderCell[] = [];
+  const maxDepth = this.getMaxDepth();
+  const traverse = (node: ColumnNode, currentLevel: number) => {
+    if (currentLevel === level) {
+      const isGroup = 'children' in node;
+      const colspan = this.getLeafCount(node);
+      let rowspan = 1;
+      if (!isGroup) {
+        rowspan = maxDepth - currentLevel;
       }
-    };
-    this.columnGroupsSignal().forEach(node => traverse(node, 0));
-    return cells;
+      if (colspan > 0) {
+        cells.push({
+          title: node.title,
+          colspan,
+          rowspan,
+          node,
+          sortKey: isGroup ? undefined : node.sortKey,
+          pinned: this.getNodePinned(node),
+          alignment: node.alignment
+        });
+      }
+    } else if ('children' in node) {
+      node.children.forEach(child => traverse(child, currentLevel + 1));
+    }
+  };
+  this.columnGroupsSignal().forEach(node => traverse(node, 0));
+  return cells;
+}
+
+  isColumnGroup(node: ColumnNode): node is ColumnGroup {
+    return 'children' in node;
   }
 
   getNodePinned(node: ColumnNode): 'left' | 'right' | null {
