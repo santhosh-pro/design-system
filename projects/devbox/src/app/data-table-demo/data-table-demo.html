@@ -3,7 +3,7 @@
   <div class="space-y-12 space-x-2 w-[1150px]">
     <!-- Demo 1: Basic Table with Sorting and Pagination -->
     <app-demo-card
-      title="1. Basic Data Table"
+      title="Basic Data Table"
       description="A simple data table with sorting, pagination, and badge columns."
       [files]="basicFiles()">
       <app-data-table
@@ -22,7 +22,7 @@
 
     <!-- Demo 2: Table with Row Selection and Clickable Rows -->
     <app-demo-card
-      title="2. Table with Row Selection and Clickable Rows"
+      title="Table with Row Selection and Clickable Rows"
       description="A data table with row selection and clickable rows for user interaction."
       [files]="selectionFiles()">
       <app-data-table
@@ -45,7 +45,7 @@
 
     <!-- Demo 3: Table with Actions and Row Selection -->
     <app-demo-card
-      title="3. Table with Actions and Row Selection"
+      title="Table with Actions and Row Selection"
       description="A data table with action buttons and row selection."
       [files]="actionFiles()">
       <app-data-table
@@ -65,32 +65,29 @@
       </p>
     </app-demo-card>
 
-    <!-- Demo 4: Table with Pinnable and Resizable Columns -->
     <app-demo-card
-      title="4. Table with Pinnable and Resizable Columns"
-      description="A data table with pinnable and resizable columns for flexible layout."
-      [files]="pinnableFiles()">
-      <app-data-table
-        [columnGroups]="pinnableColumns()"
-        [data]="pinnableData()"
-        [pageSize]="5"
-        [totalCount]="pinnableData().length"
-        [enableHorizontallyScrollable]="true"
-        [enableResizableColumns]="true"
-        [maxPinnedLeft]="2"
-        [maxPinnedRight]="2"
-        [formControl]="pinnableControl"
-        (tableStateChanged)="onTableStateChanged($event)"
-        (pinChanged)="onPinChanged($event)">
-      </app-data-table>
-      <p class="text-sm text-gray-600 mt-2">
-        Table State: {{ pinnableControl.value | json }}
-      </p>
+      title="Table with Pinnable and scrollable Columns"
+      description="A data table with pinnable and scrollable columns."
+      [files]="scrollableFiles()">
+    <app-data-table
+  [columnGroups]="scrollableColumns()"
+  [data]="scrollableData()"
+  [pageSize]="5"
+  [totalCount]="scrollableData().length"
+  [enableHorizontallyScrollable]="true"
+  [enableResizableColumns]="true"
+  [maxPinnedLeft]="2"
+  [maxPinnedRight]="2"
+  [formControl]="scrollableControl"
+  (tableStateChanged)="onTableStateChanged($event)"
+  (pinChanged)="onPinChanged($event)">
+</app-data-table>
     </app-demo-card>
+
 
     <!-- Demo 5: Table with Expandable Rows -->
     <app-demo-card
-      title="5. Table with Expandable Rows"
+      title="Table with Expandable Rows"
       description="A data table with expandable rows for additional details."
       [files]="expandableFiles()">
       <app-data-table

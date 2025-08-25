@@ -127,6 +127,31 @@ export class DataTableDemo {
     },
   ]);
 
+
+  scrollableColumns = signal<ColumnGroup[]>([
+  {
+    title: 'Staff Details',
+    columns: [
+      { title: 'ID', key: 'id', type: 'text', alignment: 'left', sortKey: 'id', pinned: 'left' },
+      { title: 'Full Name', key: 'name', type: 'text', alignment: 'left', sortKey: 'name' },
+      { title: 'Position', key: 'position', type: 'text', alignment: 'center', sortKey: 'position' },
+      { title: 'Salary', key: 'salary', type: 'text', alignment: 'right', sortKey: 'salary' },
+      { title: 'Location', key: 'location', type: 'text', alignment: 'center', sortKey: 'location', pinned: 'right' },
+      { title: 'Department', key: 'department', type: 'text', alignment: 'left', sortKey: 'department' },
+      { title: 'Hire Date', key: 'hireDate', type: 'text', alignment: 'center', sortKey: 'hireDate' },
+      { title: 'Email', key: 'email', type: 'text', alignment: 'left', sortKey: 'email' },
+      { title: 'Phone', key: 'phone', type: 'text', alignment: 'left', sortKey: 'phone' },
+      { title: 'Status', key: 'status', type: 'text', alignment: 'center', sortKey: 'status' },
+      { title: 'Experience (Years)', key: 'experience', type: 'text', alignment: 'right', sortKey: 'experience' },
+      { title: 'Team', key: 'team', type: 'text', alignment: 'left', sortKey: 'team' },
+      { title: 'Manager', key: 'manager', type: 'text', alignment: 'left', sortKey: 'manager' },
+      { title: 'Office', key: 'office', type: 'text', alignment: 'center', sortKey: 'office' },
+      { title: 'Performance Score', key: 'performanceScore', type: 'text', alignment: 'right', sortKey: 'performanceScore' },
+      { title: 'Last Review', key: 'lastReview', type: 'text', alignment: 'center', sortKey: 'lastReview' },
+    ],
+  },
+]);
+
   expandableColumns = signal<ColumnGroup[]>([
     {
       title: 'Project Overview',
@@ -156,6 +181,7 @@ export class DataTableDemo {
   selectionControl = new FormControl<TableStateEvent>({ searchText: '' });
   actionControl = new FormControl<TableStateEvent>({ searchText: '' });
   pinnableControl = new FormControl<TableStateEvent>({ searchText: '' });
+  scrollableControl = new FormControl<TableStateEvent>({ searchText: '' });
   expandableControl = new FormControl<TableStateEvent>({ searchText: '' });
 
   // Demo files for code viewer
@@ -367,6 +393,137 @@ onPinChanged(event: { column: ColumnDef; pinned: 'left' | 'right' | null }) {
 }`,
     },
   ]);
+
+  scrollableFiles = signal<DemoFile[]>([
+  {
+    name: 'scrollable-demo.component.html',
+    language: 'html',
+    code: `<app-data-table
+  [columnGroups]="scrollableColumns()"
+  [data]="scrollableData()"
+  [pageSize]="5"
+  [totalCount]="scrollableData().length"
+  [enableHorizontallyScrollable]="true"
+  [enableResizableColumns]="true"
+  [maxPinnedLeft]="2"
+  [maxPinnedRight]="2"
+  [formControl]="scrollableControl"
+  (tableStateChanged)="onTableStateChanged($event)"
+  (pinChanged)="onPinChanged($event)">
+</app-data-table>`,
+  },
+  {
+    name: 'scrollable-demo.component.ts',
+    language: 'ts',
+    code: `import { Component, signal } from '@angular/core';
+import { FormControl } from '@angular/forms';
+
+interface ColumnDef {
+  title: string;
+  key: string;
+  type: string;
+  alignment: 'left' | 'center' | 'right';
+  sortKey: string;
+  pinned?: 'left' | 'right' | null;
+}
+
+interface ColumnGroup {
+  title: string;
+  columns: ColumnDef[];
+}
+
+interface TableStateEvent {
+  searchText: string;
+}
+
+@Component({
+  selector: 'app-scrollable-demo',
+  templateUrl: './scrollable-demo.component.html',
+})
+export class ScrollableDemoComponent {
+  scrollableColumns = signal<ColumnGroup[]>([
+    {
+      title: 'Staff Details',
+      columns: [
+        { title: 'ID', key: 'id', type: 'text', alignment: 'left', sortKey: 'id', pinned: 'left' },
+        { title: 'Full Name', key: 'name', type: 'text', alignment: 'left', sortKey: 'name' },
+        { title: 'Position', key: 'position', type: 'text', alignment: 'center', sortKey: 'position' },
+        { title: 'Salary', key: 'salary', type: 'text', alignment: 'right', sortKey: 'salary' },
+        { title: 'Location', key: 'location', type: 'text', alignment: 'center', sortKey: 'location', pinned: 'right' },
+        { title: 'Department', key: 'department', type: 'text', alignment: 'left', sortKey: 'department' },
+        { title: 'Hire Date', key: 'hireDate', type: 'text', alignment: 'center', sortKey: 'hireDate' },
+        { title: 'Email', key: 'email', type: 'text', alignment: 'left', sortKey: 'email' },
+        { title: 'Phone', key: 'phone', type: 'text', alignment: 'left', sortKey: 'phone' },
+        { title: 'Status', key: 'status', type: 'text', alignment: 'center', sortKey: 'status' },
+        { title: 'Experience (Years)', key: 'experience', type: 'text', alignment: 'right', sortKey: 'experience' },
+        { title: 'Team', key: 'team', type: 'text', alignment: 'left', sortKey: 'team' },
+        { title: 'Manager', key: 'manager', type: 'text', alignment: 'left', sortKey: 'manager' },
+        { title: 'Office', key: 'office', type: 'text', alignment: 'center', sortKey: 'office' },
+        { title: 'Performance Score', key: 'performanceScore', type: 'text', alignment: 'right', sortKey: 'performanceScore' },
+        { title: 'Last Review', key: 'lastReview', type: 'text', alignment: 'center', sortKey: 'lastReview' },
+      ],
+    },
+  ]);
+
+  scrollableData = signal<any[]>([
+    { id: 1, name: 'John Doe', position: 'Developer', salary: 75000, location: 'Remote', department: 'Engineering', hireDate: '2020-01-15', email: 'john.doe@example.com', phone: '123-456-7890', status: 'Active', experience: 5, team: 'Frontend', manager: 'Alice Smith', office: 'HQ', performanceScore: 4.5, lastReview: '2025-06-01' },
+    { id: 2, name: 'Jane Smith', position: 'Designer', salary: 65000, location: 'New York', department: 'Design', hireDate: '2019-03-22', email: 'jane.smith@example.com', phone: '234-567-8901', status: 'Active', experience: 4, team: 'UI/UX', manager: 'Bob Johnson', office: 'Branch A', performanceScore: 4.2, lastReview: '2025-05-15' },
+    { id: 3, name: 'Michael Brown', position: 'Manager', salary: 90000, location: 'Chicago', department: 'Management', hireDate: '2018-07-10', email: 'michael.brown@example.com', phone: '345-678-9012', status: 'Active', experience: 8, team: 'Leadership', manager: 'Carol White', office: 'HQ', performanceScore: 4.8, lastReview: '2025-07-01' },
+    { id: 4, name: 'Emily Davis', position: 'Analyst', salary: 60000, location: 'San Francisco', department: 'Analytics', hireDate: '2021-02-18', email: 'emily.davis@example.com', phone: '456-789-0123', status: 'Active', experience: 3, team: 'Data', manager: 'David Lee', office: 'Branch B', performanceScore: 4.0, lastReview: '2025-04-20' },
+    { id: 5, name: 'William Johnson', position: 'Engineer', salary: 80000, location: 'Remote', department: 'Engineering', hireDate: '2020-09-05', email: 'william.johnson@example.com', phone: '567-890-1234', status: 'Active', experience: 6, team: 'Backend', manager: 'Alice Smith', office: 'HQ', performanceScore: 4.7, lastReview: '2025-06-10' },
+    { id: 6, name: 'Olivia Wilson', position: 'Developer', salary: 72000, location: 'Austin', department: 'Engineering', hireDate: '2021-11-30', email: 'olivia.wilson@example.com', phone: '678-901-2345', status: 'Active', experience: 4, team: 'Full Stack', manager: 'Bob Johnson', office: 'Branch A', performanceScore: 4.3, lastReview: '2025-05-25' },
+    { id: 7, name: 'James Taylor', position: 'Designer', salary: 67000, location: 'Remote', department: 'Design', hireDate: '2020-04-12', email: 'james.taylor@example.com', phone: '789-012-3456', status: 'Inactive', experience: 5, team: 'UI/UX', manager: 'Carol White', office: 'HQ', performanceScore: 3.9, lastReview: '2024-12-15' },
+    { id: 8, name: 'Sophia Martinez', position: 'Analyst', salary: 62000, location: 'Boston', department: 'Analytics', hireDate: '2022-01-25', email: 'sophia.martinez@example.com', phone: '890-123-4567', status: 'Active', experience: 2, team: 'Data', manager: 'David Lee', office: 'Branch B', performanceScore: 4.1, lastReview: '2025-03-10' },
+    { id: 9, name: 'Liam Anderson', position: 'Engineer', salary: 78000, location: 'Seattle', department: 'Engineering', hireDate: '2019-06-17', email: 'liam.anderson@example.com', phone: '901-234-5678', status: 'Active', experience: 7, team: 'Backend', manager: 'Alice Smith', office: 'HQ', performanceScore: 4.6, lastReview: '2025-06-20' },
+    { id: 10, name: 'Ava Thompson', position: 'Manager', salary: 95000, location: 'Remote', department: 'Management', hireDate: '2017-10-08', email: 'ava.thompson@example.com', phone: '012-345-6789', status: 'Active', experience: 9, team: 'Leadership', manager: 'Carol White', office: 'HQ', performanceScore: 4.9, lastReview: '2025-07-05' },
+    { id: 11, name: 'Noah White', position: 'Developer', salary: 74000, location: 'Denver', department: 'Engineering', hireDate: '2021-03-14', email: 'noah.white@example.com', phone: '123-456-7891', status: 'Active', experience: 3, team: 'Frontend', manager: 'Bob Johnson', office: 'Branch A', performanceScore: 4.4, lastReview: '2025-05-30' },
+    { id: 12, name: 'Isabella Lee', position: 'Designer', salary: 66000, location: 'Miami', department: 'Design', hireDate: '2020-08-20', email: 'isabella.lee@example.com', phone: '234-567-8902', status: 'Active', experience: 4, team: 'UI/UX', manager: 'Carol White', office: 'Branch B', performanceScore: 4.2, lastReview: '2025-04-25' },
+    { id: 13, name: 'Ethan Harris', position: 'Analyst', salary: 61000, location: 'Remote', department: 'Analytics', hireDate: '2022-05-10', email: 'ethan.harris@example.com', phone: '345-678-9013', status: 'Active', experience: 2, team: 'Data', manager: 'David Lee', office: 'HQ', performanceScore: 4.0, lastReview: '2025-03-15' },
+    { id: 14, name: 'Mia Clark', position: 'Engineer', salary: 79000, location: 'San Francisco', department: 'Engineering', hireDate: '2019-12-01', email: 'mia.clark@example.com', phone: '456-789-0124', status: 'Active', experience: 6, team: 'Backend', manager: 'Alice Smith', office: 'Branch A', performanceScore: 4.5, lastReview: '2025-06-15' },
+    { id: 15, name: 'Alexander Lewis', position: 'Manager', salary: 92000, location: 'Chicago', department: 'Management', hireDate: '2018-02-28', email: 'alexander.lewis@example.com', phone: '567-890-1235', status: 'Active', experience: 8, team: 'Leadership', manager: 'Carol White', office: 'HQ', performanceScore: 4.7, lastReview: '2025-07-10' },
+    { id: 16, name: 'Charlotte Walker', position: 'Developer', salary: 73000, location: 'Remote', department: 'Engineering', hireDate: '2021-07-19', email: 'charlotte.walker@example.com', phone: '678-901-2346', status: 'Active', experience: 3, team: 'Full Stack', manager: 'Bob Johnson', office: 'Branch B', performanceScore: 4.3, lastReview: '2025-05-20' },
+    { id: 17, name: 'Daniel Young', position: 'Designer', salary: 68000, location: 'Austin', department: 'Design', hireDate: '2020-11-05', email: 'daniel.young@example.com', phone: '789-012-3457', status: 'Active', experience: 5, team: 'UI/UX', manager: 'Carol White', office: 'HQ', performanceScore: 4.1, lastReview: '2025-04-30' },
+    { id: 18, name: 'Amelia King', position: 'Analyst', salary: 63000, location: 'Boston', department: 'Analytics', hireDate: '2022-03-15', email: 'amelia.king@example.com', phone: '890-123-4568', status: 'Active', experience: 2, team: 'Data', manager: 'David Lee', office: 'Branch A', performanceScore: 4.0, lastReview: '2025-03-20' },
+    { id: 19, name: 'Henry Scott', position: 'Engineer', salary: 77000, location: 'Seattle', department: 'Engineering', hireDate: '2019-09-25', email: 'henry.scott@example.com', phone: '901-234-5679', status: 'Active', experience: 6, team: 'Backend', manager: 'Alice Smith', office: 'HQ', performanceScore: 4.6, lastReview: '2025-06-25' },
+    { id: 20, name: 'Evelyn Adams', position: 'Manager', salary: 94000, location: 'Remote', department: 'Management', hireDate: '2017-12-10', email: 'evelyn.adams@example.com', phone: '012-345-6790', status: 'Active', experience: 9, team: 'Leadership', manager: 'Carol White', office: 'Branch B', performanceScore: 4.8, lastReview: '2025-07-15' },
+  ]);
+
+  scrollableControl = new FormControl<TableStateEvent>({ searchText: '' });
+
+  onTableStateChanged(event: TableStateEvent) {
+    console.log('Table state changed:', event);
+  }
+
+  onPinChanged(event: { column: ColumnDef; pinned: 'left' | 'right' | null }) {
+    console.log('Pin changed:', event);
+  }
+}
+`,
+  },
+]);
+
+  scrollableData = signal<any[]>([
+  { id: 1, name: 'John Doe', position: 'Developer', salary: 75000, location: 'Remote', department: 'Engineering', hireDate: '2020-01-15', email: 'john.doe@example.com', phone: '123-456-7890', status: 'Active', experience: 5, team: 'Frontend', manager: 'Alice Smith', office: 'HQ', performanceScore: 4.5, lastReview: '2025-06-01' },
+  { id: 2, name: 'Jane Smith', position: 'Designer', salary: 65000, location: 'New York', department: 'Design', hireDate: '2019-03-22', email: 'jane.smith@example.com', phone: '234-567-8901', status: 'Active', experience: 4, team: 'UI/UX', manager: 'Bob Johnson', office: 'Branch A', performanceScore: 4.2, lastReview: '2025-05-15' },
+  { id: 3, name: 'Michael Brown', position: 'Manager', salary: 90000, location: 'Chicago', department: 'Management', hireDate: '2018-07-10', email: 'michael.brown@example.com', phone: '345-678-9012', status: 'Active', experience: 8, team: 'Leadership', manager: 'Carol White', office: 'HQ', performanceScore: 4.8, lastReview: '2025-07-01' },
+  { id: 4, name: 'Emily Davis', position: 'Analyst', salary: 60000, location: 'San Francisco', department: 'Analytics', hireDate: '2021-02-18', email: 'emily.davis@example.com', phone: '456-789-0123', status: 'Active', experience: 3, team: 'Data', manager: 'David Lee', office: 'Branch B', performanceScore: 4.0, lastReview: '2025-04-20' },
+  { id: 5, name: 'William Johnson', position: 'Engineer', salary: 80000, location: 'Remote', department: 'Engineering', hireDate: '2020-09-05', email: 'william.johnson@example.com', phone: '567-890-1234', status: 'Active', experience: 6, team: 'Backend', manager: 'Alice Smith', office: 'HQ', performanceScore: 4.7, lastReview: '2025-06-10' },
+  { id: 6, name: 'Olivia Wilson', position: 'Developer', salary: 72000, location: 'Austin', department: 'Engineering', hireDate: '2021-11-30', email: 'olivia.wilson@example.com', phone: '678-901-2345', status: 'Active', experience: 4, team: 'Full Stack', manager: 'Bob Johnson', office: 'Branch A', performanceScore: 4.3, lastReview: '2025-05-25' },
+  { id: 7, name: 'James Taylor', position: 'Designer', salary: 67000, location: 'Remote', department: 'Design', hireDate: '2020-04-12', email: 'james.taylor@example.com', phone: '789-012-3456', status: 'Inactive', experience: 5, team: 'UI/UX', manager: 'Carol White', office: 'HQ', performanceScore: 3.9, lastReview: '2024-12-15' },
+  { id: 8, name: 'Sophia Martinez', position: 'Analyst', salary: 62000, location: 'Boston', department: 'Analytics', hireDate: '2022-01-25', email: 'sophia.martinez@example.com', phone: '890-123-4567', status: 'Active', experience: 2, team: 'Data', manager: 'David Lee', office: 'Branch B', performanceScore: 4.1, lastReview: '2025-03-10' },
+  { id: 9, name: 'Liam Anderson', position: 'Engineer', salary: 78000, location: 'Seattle', department: 'Engineering', hireDate: '2019-06-17', email: 'liam.anderson@example.com', phone: '901-234-5678', status: 'Active', experience: 7, team: 'Backend', manager: 'Alice Smith', office: 'HQ', performanceScore: 4.6, lastReview: '2025-06-20' },
+  { id: 10, name: 'Ava Thompson', position: 'Manager', salary: 95000, location: 'Remote', department: 'Management', hireDate: '2017-10-08', email: 'ava.thompson@example.com', phone: '012-345-6789', status: 'Active', experience: 9, team: 'Leadership', manager: 'Carol White', office: 'HQ', performanceScore: 4.9, lastReview: '2025-07-05' },
+  { id: 11, name: 'Noah White', position: 'Developer', salary: 74000, location: 'Denver', department: 'Engineering', hireDate: '2021-03-14', email: 'noah.white@example.com', phone: '123-456-7891', status: 'Active', experience: 3, team: 'Frontend', manager: 'Bob Johnson', office: 'Branch A', performanceScore: 4.4, lastReview: '2025-05-30' },
+  { id: 12, name: 'Isabella Lee', position: 'Designer', salary: 66000, location: 'Miami', department: 'Design', hireDate: '2020-08-20', email: 'isabella.lee@example.com', phone: '234-567-8902', status: 'Active', experience: 4, team: 'UI/UX', manager: 'Carol White', office: 'Branch B', performanceScore: 4.2, lastReview: '2025-04-25' },
+  { id: 13, name: 'Ethan Harris', position: 'Analyst', salary: 61000, location: 'Remote', department: 'Analytics', hireDate: '2022-05-10', email: 'ethan.harris@example.com', phone: '345-678-9013', status: 'Active', experience: 2, team: 'Data', manager: 'David Lee', office: 'HQ', performanceScore: 4.0, lastReview: '2025-03-15' },
+  { id: 14, name: 'Mia Clark', position: 'Engineer', salary: 79000, location: 'San Francisco', department: 'Engineering', hireDate: '2019-12-01', email: 'mia.clark@example.com', phone: '456-789-0124', status: 'Active', experience: 6, team: 'Backend', manager: 'Alice Smith', office: 'Branch A', performanceScore: 4.5, lastReview: '2025-06-15' },
+  { id: 15, name: 'Alexander Lewis', position: 'Manager', salary: 92000, location: 'Chicago', department: 'Management', hireDate: '2018-02-28', email: 'alexander.lewis@example.com', phone: '567-890-1235', status: 'Active', experience: 8, team: 'Leadership', manager: 'Carol White', office: 'HQ', performanceScore: 4.7, lastReview: '2025-07-10' },
+  { id: 16, name: 'Charlotte Walker', position: 'Developer', salary: 73000, location: 'Remote', department: 'Engineering', hireDate: '2021-07-19', email: 'charlotte.walker@example.com', phone: '678-901-2346', status: 'Active', experience: 3, team: 'Full Stack', manager: 'Bob Johnson', office: 'Branch B', performanceScore: 4.3, lastReview: '2025-05-20' },
+  { id: 17, name: 'Daniel Young', position: 'Designer', salary: 68000, location: 'Austin', department: 'Design', hireDate: '2020-11-05', email: 'daniel.young@example.com', phone: '789-012-3457', status: 'Active', experience: 5, team: 'UI/UX', manager: 'Carol White', office: 'HQ', performanceScore: 4.1, lastReview: '2025-04-30' },
+  { id: 18, name: 'Amelia King', position: 'Analyst', salary: 63000, location: 'Boston', department: 'Analytics', hireDate: '2022-03-15', email: 'amelia.king@example.com', phone: '890-123-4568', status: 'Active', experience: 2, team: 'Data', manager: 'David Lee', office: 'Branch A', performanceScore: 4.0, lastReview: '2025-03-20' },
+  { id: 19, name: 'Henry Scott', position: 'Engineer', salary: 77000, location: 'Seattle', department: 'Engineering', hireDate: '2019-09-25', email: 'henry.scott@example.com', phone: '901-234-5679', status: 'Active', experience: 6, team: 'Backend', manager: 'Alice Smith', office: 'HQ', performanceScore: 4.6, lastReview: '2025-06-25' },
+  { id: 20, name: 'Evelyn Adams', position: 'Manager', salary: 94000, location: 'Remote', department: 'Management', hireDate: '2017-12-10', email: 'evelyn.adams@example.com', phone: '012-345-6790', status: 'Active', experience: 9, team: 'Leadership', manager: 'Carol White', office: 'Branch B', performanceScore: 4.8, lastReview: '2025-07-15' },
+]);
 
   expandableFiles = signal<DemoFile[]>([
     {

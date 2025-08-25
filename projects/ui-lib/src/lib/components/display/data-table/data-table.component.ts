@@ -17,7 +17,6 @@ import { PaginationComponent, PaginationEvent } from '../../display/pagination/p
 import { DatePipe, NgClass } from '@angular/common';
 import { StatusBadgeComponent } from '../../feedback/status-badge/status-badge.component';
 import { SortableTableDirective, TableSortEvent } from './base-table/sortable-table.directive';
-import { TableResizableColumnsDirective } from './base-table/table-resizable-columns.directive';
 import { FormsModule, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { BaseControlValueAccessorV3 } from '../../../core/base-control-value-accessor-v3';
 import { MultiSelectDropdownComponent } from '../../forms/select/multi-select-dropdown/multi-select-dropdown.component';
@@ -39,7 +38,7 @@ import { DateInputComponent, InputDateFormat } from '../../forms/date/date-input
     DatePipe,
     StatusBadgeComponent,
     SortableTableDirective,
-    TableResizableColumnsDirective,
+    // TableResizableColumnsDirective,
     CheckboxComponent,
     FormsModule,
     TextInputComponent,

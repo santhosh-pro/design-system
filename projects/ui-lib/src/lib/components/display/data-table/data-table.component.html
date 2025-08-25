@@ -15,7 +15,9 @@
 
   <!-- Table Container -->
   <div class="flex-1 overflow-y-auto relative" [ngClass]="{'overflow-x-auto': enableHorizontallyScrollable()}">
-    <table #table class="w-full table-auto" [appTableResizableColumns]="enableResizableColumns()">
+        <!-- <table #table class="w-full table-auto" [appTableResizableColumns]="enableResizableColumns()"> -->
+
+    <table #table class="w-full table-auto">
       <!-- Table Header -->
       <thead class="sticky top-0 bg-white z-60">
         <!-- Main Heading Row -->
