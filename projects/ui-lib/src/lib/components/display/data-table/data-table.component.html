@@ -15,8 +15,6 @@
 
   <!-- Table Container -->
   <div class="flex-1 overflow-y-auto relative" [ngClass]="{'overflow-x-auto': enableHorizontallyScrollable()}">
-        <!-- <table #table class="w-full table-auto" [appTableResizableColumns]="enableResizableColumns()"> -->
-
     <table #table class="w-full table-auto">
       <!-- Table Header -->
       <thead class="sticky top-0 bg-white z-60">
@@ -30,25 +28,22 @@
             <app-checkbox [ngModel]="isAllSelected()" (valueChanged)="onSelectAllRows($event)"></app-checkbox>
           </th>
           }
-          @for (group of columnGroupsSignal(); track group; let groupIndex = $index) {
-          @for (column of group.columns; track column; let colIndex = $index) {
+          @for (column of columnsSignal(); track column; let colIndex = $index) {
           @let isColumnVisible = column.visible ?? true;
           @if (isColumnVisible) {
           <th [attr.data-sortable-key]="column.sortKey"
             class="relative cursor-pointer px-4 py-3 text-caption font-semibold text-primary-600 uppercase tracking-wider border-b border-gray-200 transition-colors duration-200 hover:bg-indigo-50"
             [ngClass]="[
               getThTrClass(column),
-              colIndex < group.columns.length - 1 ? 'border-r border-gray-200' : '',
-              colIndex === group.columns.length - 1 && groupIndex < columnGroupsSignal().length - 1 ? 'border-r border-gray-200' : '',
+              colIndex < columnsSignal().length - 1 ? 'border-r border-gray-200' : '',
               column.pinned ? 'sticky z-20 bg-white' : ''
             ]" [attr.pinned]="column.pinned"
-            [style.left]="column.pinned === 'left' ? getPinnedLeftOffset(column, group) : ''"
-            [style.right]="column.pinned === 'right' ? getPinnedRightOffset(column, group) : ''"
-            [style.zIndex]="column.pinned ? getPinnedZIndex(column, group) : ''">
+            [style.left]="column.pinned === 'left' ? getPinnedLeftOffset(column) : ''"
+            [style.right]="column.pinned === 'right' ? getPinnedRightOffset(column) : ''"
+            [style.zIndex]="column.pinned ? getPinnedZIndex(column) : ''">
             <div class="flex items-center gap-2">
               <div class="pin-toggle">
-
-                <!-- Pin Toggle Icon (Always shown, primary color when pinned, gray when unpinned) -->
+                <!-- Pin Toggle Icon -->
                 <svg (click)="onPinToggle(column)" fill="currentColor" stroke="currentColor" width="16px" height="16px"
                   version="1.1" viewBox="144 144 512 512" xmlns="http://www.w3.org/2000/svg"
                   [ngClass]="column.pinned ? 'text-primary-600' : 'text-neutral-500'" class="cursor-pointer">
@@ -60,11 +55,10 @@
               </div>
               <!-- Column Title -->
               <span>{{ column.title }}</span>
-              <!-- Sorting Icon (Right, managed by SortableTableDirective) -->
+              <!-- Sorting Icon -->
               <span class="sort-icon"></span>
             </div>
           </th>
-          }
           }
           }
         </tr>
@@ -76,19 +70,17 @@
           <th class="w-12 px-4 py-3 border-b border-gray-200 sticky z-20 bg-neutral-50" pinned="left"
             [style.left]="getCheckboxColumnOffset()"></th>
           }
-          @for (group of columnGroupsSignal(); track group; let groupIndex = $index) {
-          @for (column of group.columns; track column; let colIndex = $index) {
+          @for (column of columnsSignal(); track column; let colIndex = $index) {
           @let isColumnVisible = column.visible ?? true;
           @if (isColumnVisible) {
           <th class="border-b border-gray-200 px-4 py-3" [ngClass]="[
               getThTrClass(column),
-              colIndex < group.columns.length - 1 ? 'border-r border-gray-200' : '',
-              colIndex === group.columns.length - 1 && groupIndex < columnGroupsSignal().length - 1 ? 'border-r border-gray-200' : '',
+              colIndex < columnsSignal().length - 1 ? 'border-r border-gray-200' : '',
               column.pinned ? 'sticky z-20 bg-neutral-50' : ''
             ]" [attr.pinned]="column.pinned"
-            [style.left]="column.pinned === 'left' ? getPinnedLeftOffset(column, group) : ''"
-            [style.right]="column.pinned === 'right' ? getPinnedRightOffset(column, group) : ''"
-            [style.zIndex]="column.pinned ? getPinnedZIndex(column, group) : ''">
+            [style.left]="column.pinned === 'left' ? getPinnedLeftOffset(column) : ''"
+            [style.right]="column.pinned === 'right' ? getPinnedRightOffset(column) : ''"
+            [style.zIndex]="column.pinned ? getPinnedZIndex(column) : ''">
             @if (column.filterConfig) {
             <div class="flex flex-col sm:flex-row sm:items-center gap-2 min-w-0">
               @switch (column.filterConfig.type) {
@@ -134,7 +126,6 @@
           </th>
           }
           }
-          }
         </tr>
         }
       </thead>
@@ -158,19 +149,17 @@
               [disabled]="!enableRowSelection()"></app-checkbox>
           </td>
           }
-          @for (group of columnGroupsSignal(); track group; let groupIndex = $index) {
-          @for (column of group.columns; track column; let colIndex = $index) {
+          @for (column of columnsSignal(); track column; let colIndex = $index) {
           @let isColumnVisible = column.visible ?? true;
           @if (isColumnVisible) {
           <td class="px-4 py-3 border-b border-gray-100 relative text-body2 text-gray-800" [ngClass]="[
               getThTrClass(column),
-              colIndex < group.columns.length - 1 ? 'border-r border-gray-200' : '',
-              colIndex === group.columns.length - 1 && groupIndex < columnGroupsSignal().length - 1 ? 'border-r border-gray-200' : '',
+              colIndex < columnsSignal().length - 1 ? 'border-r border-gray-200' : '',
               column.pinned ? 'sticky z-20 bg-white' : ''
             ]" [attr.pinned]="column.pinned"
-            [style.left]="column.pinned === 'left' ? getPinnedLeftOffset(column, group) : ''"
-            [style.right]="column.pinned === 'right' ? getPinnedRightOffset(column, group) : ''"
-            [style.zIndex]="column.pinned ? getPinnedZIndex(column, group) : ''">
+            [style.left]="column.pinned === 'left' ? getPinnedLeftOffset(column) : ''"
+            [style.right]="column.pinned === 'right' ? getPinnedRightOffset(column) : ''"
+            [style.zIndex]="column.pinned ? getPinnedZIndex(column) : ''">
             @switch (column.type) {
             @default {
             <span class="text-body2 text-neutral-700" [ngClass]="column.textConfig?.textColorClass">{{
@@ -252,7 +241,6 @@
             }
             }
           </td>
-          }
           }
           }
         </tr>

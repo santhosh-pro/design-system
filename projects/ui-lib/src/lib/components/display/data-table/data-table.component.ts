@@ -38,7 +38,6 @@ import { DateInputComponent, InputDateFormat } from '../../forms/date/date-input
     DatePipe,
     StatusBadgeComponent,
     SortableTableDirective,
-    // TableResizableColumnsDirective,
     CheckboxComponent,
     FormsModule,
     TextInputComponent,
@@ -47,7 +46,7 @@ import { DateInputComponent, InputDateFormat } from '../../forms/date/date-input
     ReactiveFormsModule,
     DateInputComponent,
     ContextMenuButtonComponent
-],
+  ],
   providers: [provideNgxMask()],
   templateUrl: './data-table.component.html',
   styleUrls: ['./data-table.component.css']
@@ -58,7 +57,7 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
 
   public InputDateFormat = InputDateFormat;
 
-  columnGroups = input.required<ColumnGroup[]>();
+  columns = input.required<ColumnDef[]>();
   pageSize = input(50);
   private internalPageSize: number = this.pageSize();
   enableHorizontallyScrollable = input(true);
@@ -97,7 +96,7 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
   columnFilters: { [key: string]: { value?: any; min?: any; max?: any; operation: string } } = {};
   filterControls: { [key: string]: { [prop: string]: FormControl } } = {};
   selectedIds = signal<any[]>([]);
-  columnGroupsSignal: WritableSignal<ColumnGroup[]> = signal([]);
+  columnsSignal: WritableSignal<ColumnDef[]> = signal([]);
 
   constructor(private cdr: ChangeDetectorRef) {
     super();
@@ -110,11 +109,12 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
       this.applyInitialState(initialValue);
     }
     // Initialize column visibility and sync with signal
-    const updatedGroups = this.columnGroups().map(group => ({
-      ...group,
-      columns: group.columns.map(col => ({ ...col, visible: col.visible ?? true, pinned: col.type === 'actions' ? 'right' : (col.pinned ?? null) }))
+    const updatedColumns = this.columns().map(col => ({
+      ...col,
+      visible: col.visible ?? true,
+      pinned: col.type === 'actions' ? 'right' : (col.pinned ?? null)
     }));
-    this.columnGroupsSignal.set(updatedGroups);
+    this.columnsSignal.set(updatedColumns);
   }
 
   protected onValueReady(value: TableStateEvent): void {
@@ -142,24 +142,22 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
       console.log('Default selected IDs:', this.selectedIds());
     }
 
-    this.columnGroupsSignal().forEach(group => {
-      group.columns.forEach(column => {
-        if (column.filterConfig) {
-          const filterKey = this.getFilterKey(column);
-          if (!this.columnFilters[filterKey]?.value) {
-            this.columnFilters[filterKey] = {
-              value: column.filterConfig.type === 'select' ? [] : undefined,
-              operation: this.columnFilters[filterKey]?.operation ?? this.getDefaultOperation(column.filterConfig.type),
-            };
-          }
-          const control = this.getFilterControl(column, 'value');
-          control.valueChanges.pipe(debounceTime(300)).subscribe(value => {
-            if (!this.isInitializingFilters) {
-              this.onFilterChanged(value, null, null, column);
-            }
-          });
+    this.columnsSignal().forEach(column => {
+      if (column.filterConfig) {
+        const filterKey = this.getFilterKey(column);
+        if (!this.columnFilters[filterKey]?.value) {
+          this.columnFilters[filterKey] = {
+            value: column.filterConfig.type === 'select' ? [] : undefined,
+            operation: this.columnFilters[filterKey]?.operation ?? this.getDefaultOperation(column.filterConfig.type),
+          };
         }
-      });
+        const control = this.getFilterControl(column, 'value');
+        control.valueChanges.pipe(debounceTime(300)).subscribe(value => {
+          if (!this.isInitializingFilters) {
+            this.onFilterChanged(value, null, null, column);
+          }
+        });
+      }
     });
 
     let paginationEvent: PaginationEvent = {
@@ -307,9 +305,7 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
   }
 
   hasFilterConfig(): boolean {
-    return this.columnGroupsSignal().some(group =>
-      group.columns.some(column => !!column.filterConfig)
-    );
+    return this.columnsSignal().some(column => !!column.filterConfig);
   }
 
   onFilterChanged(value: any, min: any, max: any, column: ColumnDef) {
@@ -648,10 +644,8 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
     }
 
     // Check max pinned limit
-    const leftPinnedCount = this.columnGroupsSignal().reduce((count, group) => 
-      count + group.columns.filter(col => col.pinned === 'left' && (col.visible ?? true)).length, 0);
-    const rightPinnedCount = this.columnGroupsSignal().reduce((count, group) => 
-      count + group.columns.filter(col => col.pinned === 'right' && (col.visible ?? true)).length, 0);
+    const leftPinnedCount = this.columnsSignal().filter(col => col.pinned === 'left' && (col.visible ?? true)).length;
+    const rightPinnedCount = this.columnsSignal().filter(col => col.pinned === 'right' && (col.visible ?? true)).length;
 
     if (newPinnedValue === 'left' && leftPinnedCount >= this.maxPinnedLeft() && column.pinned !== 'left') {
       console.warn('Maximum left-pinned columns reached:', this.maxPinnedLeft());
@@ -663,12 +657,8 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
     }
 
     // Update the column's pinned property
-    this.columnGroupsSignal.update(groups => {
-      const updatedGroups = groups.map(group => ({
-        ...group,
-        columns: group.columns.map(col => col === column ? { ...col, pinned: newPinnedValue } : col)
-      }));
-      return updatedGroups;
+    this.columnsSignal.update(columns => {
+      return columns.map(col => col === column ? { ...col, pinned: newPinnedValue } : col);
     });
 
     // Emit pinning change
@@ -678,104 +668,75 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
     this.cdr.detectChanges();
   }
 
-getPinnedLeftOffset(column: ColumnDef, group: ColumnGroup): string {
-  if (column.pinned !== 'left') return '0';
+  getPinnedLeftOffset(column: ColumnDef): string {
+    if (column.pinned !== 'left') return '0';
 
-  const allPinnedColumns: { column: ColumnDef; groupIndex: number }[] = [];
-  this.columnGroupsSignal().forEach((grp, groupIndex) => {
-    grp.columns.forEach(col => {
-      if (col.pinned === 'left' && (col.visible ?? true)) {
-        allPinnedColumns.push({ column: col, groupIndex });
-      }
-    });
-  });
+    const allPinnedColumns = this.columnsSignal().filter(col => col.pinned === 'left' && (col.visible ?? true));
+    allPinnedColumns.sort((a, b) => this.columnsSignal().indexOf(a) - this.columnsSignal().indexOf(b));
 
-  allPinnedColumns.sort((a, b) => {
-    if (a.groupIndex !== b.groupIndex) return a.groupIndex - b.groupIndex;
-    return this.columnGroupsSignal()[a.groupIndex].columns.indexOf(a.column) - 
-           this.columnGroupsSignal()[b.groupIndex].columns.indexOf(b.column);
-  });
+    const pinnedIndex = allPinnedColumns.indexOf(column);
+    if (pinnedIndex === -1) return '0';
 
-  const pinnedIndex = allPinnedColumns.findIndex(item => item.column === column);
-  if (pinnedIndex === -1) return '0';
+    let offset = 0;
+    const hasCheckbox = this.enableRowSelection();
+    const domIndex = hasCheckbox ? pinnedIndex + 1 : pinnedIndex;
 
-  let offset = 0;
-  const hasCheckbox = this.enableRowSelection();
-  const domIndex = hasCheckbox ? pinnedIndex + 1 : pinnedIndex;
-
-  if (this.tableRef?.nativeElement) {
-    const headerRow = this.tableRef.nativeElement.querySelector('thead tr:first-child');
-    if (headerRow) {
-      const thElements = headerRow.querySelectorAll('th.sticky');
-      if (thElements && thElements.length > 0) {
-        for (let i = 0; i < domIndex && i < thElements.length; i++) {
-          const th = thElements[i] as HTMLElement;
-          const width = th?.offsetWidth;
-          if (width && !isNaN(width)) {
-            offset += width;
-          } else {
-            // Fallback to default widths
-            if (hasCheckbox && i === 0) {
-              offset += 48; // Checkbox column width
+    if (this.tableRef?.nativeElement) {
+      const headerRow = this.tableRef.nativeElement.querySelector('thead tr:first-child');
+      if (headerRow) {
+        const thElements = headerRow.querySelectorAll('th.sticky');
+        if (thElements && thElements.length > 0) {
+          for (let i = 0; i < domIndex && i < thElements.length; i++) {
+            const th = thElements[i] as HTMLElement;
+            const width = th?.offsetWidth;
+            if (width && !isNaN(width)) {
+              offset += width;
             } else {
-              const fallbackIndex = hasCheckbox ? i - 1 : i;
-              if (fallbackIndex >= 0 && fallbackIndex < allPinnedColumns.length) {
-                offset += allPinnedColumns[fallbackIndex].column.width ?? 120;
+              if (hasCheckbox && i === 0) {
+                offset += 48; // Checkbox column width
+              } else {
+                const fallbackIndex = hasCheckbox ? i - 1 : i;
+                if (fallbackIndex >= 0 && fallbackIndex < allPinnedColumns.length) {
+                  offset += allPinnedColumns[fallbackIndex].width ?? 120;
+                }
               }
             }
           }
+        } else {
+          if (hasCheckbox) {
+            offset += 48;
+          }
+          for (let i = 0; i < pinnedIndex; i++) {
+            offset += allPinnedColumns[i].width ?? 120;
+          }
         }
       } else {
-        // DOM elements not ready, use fallback calculation
         if (hasCheckbox) {
           offset += 48;
         }
         for (let i = 0; i < pinnedIndex; i++) {
-          offset += allPinnedColumns[i].column.width ?? 120;
+          offset += allPinnedColumns[i].width ?? 120;
         }
       }
     } else {
-      // Header row not found, use fallback
       if (hasCheckbox) {
         offset += 48;
       }
       for (let i = 0; i < pinnedIndex; i++) {
-        offset += allPinnedColumns[i].column.width ?? 120;
+        offset += allPinnedColumns[i].width ?? 120;
       }
     }
-  } else {
-    // TableRef not available, use fallback
-    if (hasCheckbox) {
-      offset += 48;
-    }
-    for (let i = 0; i < pinnedIndex; i++) {
-      offset += allPinnedColumns[i].column.width ?? 120;
-    }
+
+    return isNaN(offset) ? '0' : `${offset}px`;
   }
 
-  // Ensure we never return NaN
-  return isNaN(offset) ? '0' : `${offset}px`;
-}
-
-  getPinnedRightOffset(column: ColumnDef, group: ColumnGroup): string {
+  getPinnedRightOffset(column: ColumnDef): string {
     if (column.pinned !== 'right') return '0';
 
-    const allPinnedColumns: { column: ColumnDef; groupIndex: number }[] = [];
-    this.columnGroupsSignal().forEach((grp, groupIndex) => {
-      grp.columns.forEach(col => {
-        if (col.pinned === 'right' && (col.visible ?? true)) {
-          allPinnedColumns.push({ column: col, groupIndex });
-        }
-      });
-    });
+    const allPinnedColumns = this.columnsSignal().filter(col => col.pinned === 'right' && (col.visible ?? true));
+    allPinnedColumns.sort((a, b) => this.columnsSignal().indexOf(a) - this.columnsSignal().indexOf(b));
 
-    allPinnedColumns.sort((a, b) => {
-      if (a.groupIndex !== b.groupIndex) return a.groupIndex - b.groupIndex;
-      return this.columnGroupsSignal()[a.groupIndex].columns.indexOf(a.column) - 
-             this.columnGroupsSignal()[b.groupIndex].columns.indexOf(b.column);
-    });
-
-    const pinnedIndex = allPinnedColumns.findIndex(item => item.column === column);
+    const pinnedIndex = allPinnedColumns.indexOf(column);
     if (pinnedIndex === -1) return '0';
 
     let offset = 0;
@@ -787,55 +748,39 @@ getPinnedLeftOffset(column: ColumnDef, group: ColumnGroup): string {
         thElements = headerRow.querySelectorAll('th.sticky[pinned="right"]');
       }
       if (thElements) {
-        // For right, sum widths of elements to the right (higher indices)
         for (let i = pinnedIndex + 1; i < allPinnedColumns.length; i++) {
-          const domI = i - allPinnedColumns.length + thElements.length; // Adjust if needed, but since sorted, use fallback
+          const domI = i - allPinnedColumns.length + thElements.length;
           const th = thElements[domI];
           if (th) {
             offset += th.offsetWidth;
           } else {
-            offset += allPinnedColumns[i].column.width ?? 120;
+            offset += allPinnedColumns[i].width ?? 120;
           }
         }
       } else {
-        // Fallback
         for (let i = pinnedIndex + 1; i < allPinnedColumns.length; i++) {
-          offset += allPinnedColumns[i].column.width ?? 120;
+          offset += allPinnedColumns[i].width ?? 120;
         }
       }
     } else {
-      // No tableRef fallback
       for (let i = pinnedIndex + 1; i < allPinnedColumns.length; i++) {
-        offset += allPinnedColumns[i].column.width ?? 120;
+        offset += allPinnedColumns[i].width ?? 120;
       }
     }
 
     return `${offset}px`;
   }
 
-  getPinnedZIndex(column: ColumnDef, group: ColumnGroup): number {
+  getPinnedZIndex(column: ColumnDef): number {
     if (!column.pinned) return 0;
 
     const direction = column.pinned;
-    const allPinnedColumns: { column: ColumnDef; groupIndex: number }[] = [];
-    this.columnGroupsSignal().forEach((grp, groupIndex) => {
-      grp.columns.forEach(col => {
-        if (col.pinned === direction && (col.visible ?? true)) {
-          allPinnedColumns.push({ column: col, groupIndex });
-        }
-      });
-    });
+    const allPinnedColumns = this.columnsSignal().filter(col => col.pinned === direction && (col.visible ?? true));
+    allPinnedColumns.sort((a, b) => this.columnsSignal().indexOf(a) - this.columnsSignal().indexOf(b));
 
-    allPinnedColumns.sort((a, b) => {
-      if (a.groupIndex !== b.groupIndex) return a.groupIndex - b.groupIndex;
-      return this.columnGroupsSignal()[a.groupIndex].columns.indexOf(a.column) - 
-             this.columnGroupsSignal()[b.groupIndex].columns.indexOf(b.column);
-    });
-
-    let index = allPinnedColumns.findIndex(item => item.column === column);
+    let index = allPinnedColumns.indexOf(column);
 
     if (direction === 'right') {
-      // For right, reverse index so rightmost has highest z-index
       index = allPinnedColumns.length - 1 - index;
     }
 
@@ -845,11 +790,6 @@ getPinnedLeftOffset(column: ColumnDef, group: ColumnGroup): string {
   getCheckboxColumnOffset(): string {
     return this.enableRowSelection() ? '0' : '';
   }
-}
-
-export interface ColumnGroup {
-  title: string;
-  columns: ColumnDef[];
 }
 
 export interface ColumnDef {

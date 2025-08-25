@@ -7,7 +7,7 @@
       description="A simple data table with sorting, pagination, and badge columns."
       [files]="basicFiles()">
       <app-data-table
-        [columnGroups]="basicColumns()"
+        [columns]="basicColumns()"
         [data]="basicData()"
         [pageSize]="10"
         [totalCount]="basicData().length"
@@ -20,90 +20,6 @@
       </p>
     </app-demo-card>
 
-    <!-- Demo 2: Table with Row Selection and Clickable Rows -->
-    <app-demo-card
-      title="Table with Row Selection and Clickable Rows"
-      description="A data table with row selection and clickable rows for user interaction."
-      [files]="selectionFiles()">
-      <app-data-table
-        [columnGroups]="selectionColumns()"
-        [data]="selectionData()"
-        [pageSize]="5"
-        [totalCount]="selectionData().length"
-        [enableRowSelection]="true"
-        [rowSelectionKey]="'id'"
-        [enableClickableRows]="true"
-        [formControl]="selectionControl"
-        (tableStateChanged)="onTableStateChanged($event)"
-        (rowSelectionChange)="onRowSelectionChange($event)"
-        (onRowClicked)="onRowClicked($event)">
-      </app-data-table>
-      <p class="text-sm text-gray-600 mt-2">
-        Table State: {{ selectionControl.value | json }}
-      </p>
-    </app-demo-card>
-
-    <!-- Demo 3: Table with Actions and Row Selection -->
-    <app-demo-card
-      title="Table with Actions and Row Selection"
-      description="A data table with action buttons and row selection."
-      [files]="actionFiles()">
-      <app-data-table
-        [columnGroups]="actionColumns()"
-        [data]="actionData()"
-        [pageSize]="5"
-        [totalCount]="actionData().length"
-        [enableRowSelection]="true"
-        [rowSelectionKey]="'id'"
-        [formControl]="actionControl"
-        (tableStateChanged)="onTableStateChanged($event)"
-        (onActionPerformed)="onActionPerformed($event)"
-        (rowSelectionChange)="onRowSelectionChange($event)">
-      </app-data-table>
-      <p class="text-sm text-gray-600 mt-2">
-        Table State: {{ actionControl.value | json }}
-      </p>
-    </app-demo-card>
-
-    <app-demo-card
-      title="Table with Pinnable and scrollable Columns"
-      description="A data table with pinnable and scrollable columns."
-      [files]="scrollableFiles()">
-    <app-data-table
-  [columnGroups]="scrollableColumns()"
-  [data]="scrollableData()"
-  [pageSize]="5"
-  [totalCount]="scrollableData().length"
-  [enableHorizontallyScrollable]="true"
-  [enableResizableColumns]="true"
-  [maxPinnedLeft]="2"
-  [maxPinnedRight]="2"
-  [formControl]="scrollableControl"
-  (tableStateChanged)="onTableStateChanged($event)"
-  (pinChanged)="onPinChanged($event)">
-</app-data-table>
-    </app-demo-card>
-
-
-    <!-- Demo 5: Table with Expandable Rows -->
-    <app-demo-card
-      title="Table with Expandable Rows"
-      description="A data table with expandable rows for additional details."
-      [files]="expandableFiles()">
-      <app-data-table
-        [columnGroups]="expandableColumns()"
-        [data]="expandableData()"
-        [pageSize]="5"
-        [totalCount]="expandableData().length"
-        [enableSearch]="true"
-        [expandableComponent]="expandableComponent"
-        [formControl]="expandableControl"
-        (tableStateChanged)="onTableStateChanged($event)">
-      </app-data-table>
-      <p class="text-sm text-gray-600 mt-2">
-        Table State: {{ expandableControl.value | json }}
-      </p>
-    </app-demo-card>
   </div>
 
   <!-- Fixed and Scrollable Sidebar -->
