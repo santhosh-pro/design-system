@@ -1,10 +1,13 @@
 import {
-    AfterContentInit, ChangeDetectorRef,
+    AfterContentInit,
+    ChangeDetectorRef,
     Component,
-    ElementRef, HostListener,
+    ElementRef,
+    HostListener,
     inject,
     input,
-    output, Renderer2,
+    output,
+    Renderer2,
     signal,
     viewChild,
     ViewChild
@@ -14,10 +17,16 @@ import { CdkConnectedOverlay, Overlay } from "@angular/cdk/overlay";
 import { NgClass } from "@angular/common";
 import { resolveTemplateWithObject } from "../../../../core/template-resolver";
 import { deepEqual } from "../../../../core/base-input-utils";
-import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
 import { BaseInputComponent } from '../../../../core/base-input/base-input.component';
 import { HumanizeFormMessagesPipe } from '../../../../core/humanize-form-messages.pipe';
 import { CheckboxComponent } from '../../checkbox/checkbox.component';
+import { BaseControlValueAccessorV3 } from '../../../../core/base-control-value-accessor-v3';
+
+export enum MultiSelectDropdownAppearance {
+    standard,
+    csv,
+    chips
+}
 
 @Component({
     selector: 'app-multi-select-dropdown',
@@ -33,8 +42,7 @@ import { CheckboxComponent } from '../../checkbox/checkbox.component';
     templateUrl: './multi-select-dropdown.component.html',
     styleUrl: './multi-select-dropdown.component.scss'
 })
-export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor implements AfterContentInit {
-
+export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessorV3<T[]> implements AfterContentInit {
     cdr = inject(ChangeDetectorRef);
     renderer = inject(Renderer2);
     overlay = inject(Overlay);
@@ -44,7 +52,7 @@ export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor im
     placeholder = input<string>('Select');
     display = input<string | null>();
     displayTemplate = input<string | null>();
-    value = input<string>('');
+    value = input<string>(''); 
     identifier = input<string>('id');
     searchKeyMatch = input<string | null>();
     noDataMessage = input<string>();
@@ -55,7 +63,6 @@ export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor im
     minimumPopupWidth = input(250);
     appearance = input<MultiSelectDropdownAppearance>(MultiSelectDropdownAppearance.standard);
 
-    valueChanged = output<T[]>();
     addActionClicked = output<void>();
 
     isOpen = signal(false);
@@ -64,7 +71,6 @@ export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor im
     dropdownWidth = signal(300);
     selectedItems = signal<T[]>([]);
     filteredList = signal<T[]>([]);
-    errorMessages = signal<{ [key: string]: string }>({});
 
     @ViewChild('dropdownButton', { static: true }) dropdownButton!: ElementRef;
     @ViewChild('dropdownListContainer', { static: false }) dropdownListContainer!: ElementRef;
@@ -72,32 +78,15 @@ export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor im
     private searchField = viewChild<ElementRef<HTMLInputElement>>('searchField');
 
     scrollStrategy = this.overlay.scrollStrategies.block();
-
-    ngControl = inject(NgControl, { optional: true, self: true });
-
     MultiSelectDropdownAppearance = MultiSelectDropdownAppearance;
 
-    constructor() {
-        super();
-        if (this.ngControl) {
-            this.ngControl!.valueAccessor = this;
-        }
-    }
-
-    override onWriteValue(value: any): void {
-
-    }
-
-    ngAfterContentInit(): void {
-        let formControl = this.ngControl?.control as FormControl;
-        if (formControl) {
-            this.formControl = this.ngControl?.control as FormControl;
-            if (this.formControl.value == null) {
-                this.formControl.setValue([]);
-            }
-            if (!Array.isArray(this.formControl.value)) {
-                this.formControl.setValue([]);
-            }
+    protected onValueReady(value: T[] | null): void {
+        if (value == null) {
+            this.formControl.setValue([], { emitEvent: false });
+            this.selectedItems.set([]);
+        } else {
+            this.selectedItems.set(value);
+            this.filteredList.set(this.items());
         }
     }
 
@@ -119,7 +108,6 @@ export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor im
         if (this.value() == null || this.value() == '') {
             return selectedItem;
         }
-
         let valuePath = this.value()!;
         return this.items().find(item => {
             const propertyValue = valuePath.split('.').reduce((acc, part) => acc && acc[part], item as any);
@@ -152,7 +140,6 @@ export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor im
         let identifierPath = this.identifier() ?? '';
         let value = this.getIdentifier(item);
 
-
         let anyMatch = controlValue.some(x => x == value);
         if (anyMatch) {
             return true;
@@ -182,38 +169,24 @@ export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor im
     }
 
     onItemClicked(item: T) {
-        this.markAsTouched();
-
+        this.markTouched();
         const controlValue = (this.formControl.value as T[]) ?? [];
         const valueExistInFormControl = this.isItemExistInFormControl(item);
         const valueExistInSelections = this.isItemExistInNormalSelectionList(item);
 
-
         if (valueExistInFormControl || valueExistInSelections) {
-            const index = controlValue.indexOf(item);
-            controlValue.splice(index, 1);
-            this.selectedItems.update(prev => {
-                let index = prev.findIndex(x => deepEqual(x, item));
-                prev.splice(index, 1);
-                return prev;
-            });
-            let value = this.getAllValues();
-            this.valueChanged.emit(value);
-            this.onChange(controlValue);
+            const newControlValue = controlValue.filter(x => !deepEqual(x, item));
+            this.formControl.setValue(newControlValue);
+            this.selectedItems.update(prev => prev.filter(x => !deepEqual(x, item)));
         } else {
-            controlValue.push(item);
-            this.selectedItems.update(prev => {
-                prev.push(item);
-                return prev;
-            });
-            let value = this.getAllValues();
-            this.valueChanged.emit(value);
-            this.onChange(controlValue);
+            const newControlValue = [...controlValue, item];
+            this.formControl.setValue(newControlValue);
+            this.selectedItems.update(prev => [...prev, item]);
         }
+        this.onValueChange(this.formControl.value);
     }
 
     getDisplayString(item: T | null): any {
-
         let object = item as any;
         if (object == null) {
             return null;
@@ -228,12 +201,10 @@ export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor im
         }
 
         return item;
-
     }
 
     filterList(event: Event) {
         const searchKeyword = (event.target as HTMLInputElement)?.value;
-
         if (this.enableSearch()) {
             this.updateFilteredList(searchKeyword);
         } else {
@@ -245,7 +216,6 @@ export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor im
 
     updateFilteredList(searchKeyword?: string) {
         if (!searchKeyword || searchKeyword.trim() === '') {
-            // Reset full list when search is cleared
             this.filteredList.set(this.items());
             this.highlightedIndex.set(0);
             return;
@@ -263,7 +233,6 @@ export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor im
         this.updateHighlightedIndex();
     }
 
-
     findFirstMatch(searchKeyword?: string): T | null {
         if (!searchKeyword || searchKeyword.trim() === '') {
             return null;
@@ -278,8 +247,6 @@ export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor im
     }
 
     updateHighlightedIndex() {
-        // TODO
-        // let index = this.filteredList().findIndex(item => item == this.selectedItem());
         this.highlightedIndex.set(0);
     }
 
@@ -289,7 +256,6 @@ export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor im
             this.dropdownWidth.set(this.minimumPopupWidth());
             return;
         }
-
         this.dropdownWidth.set(this.dropdownButton.nativeElement.offsetWidth);
     }
 
@@ -300,7 +266,7 @@ export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor im
     toggleDropdown(): void {
         this.isOpen.update(prev => !prev);
         if (this.isOpen()) {
-            this.filteredList.set(this.items());  // always start with full list
+            this.filteredList.set(this.items());
             this.updateHighlightedIndex();
             this.adjustDropdownPosition();
             this.setPopupWidth();
@@ -313,7 +279,6 @@ export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor im
             }
         }
     }
-
 
     setDropdownMaxHeight() {
         const buttonRect = this.dropdownButton.nativeElement.getBoundingClientRect();
@@ -382,7 +347,6 @@ export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor im
                 break;
         }
 
-
         if (!this.enableSearch()) {
             let key = event.key;
             if (key.length === 1 && /^[a-zA-Z]$/.test(key)) {
@@ -394,12 +358,11 @@ export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor im
                         resolvedText = this.getDisplayString(item);
                     }
                     return resolvedText.toLowerCase().startsWith(key);
-                }
-                );
+                });
 
                 if (matchingIndex !== -1) {
                     this.highlightedIndex.set(matchingIndex);
-                    this.scrollToHighlightedItem()
+                    this.scrollToHighlightedItem();
                 }
             }
         }
@@ -418,13 +381,13 @@ export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor im
     onSelectAllClicked() {
         this.formControl.setValue(this.items());
         this.selectedItems.set(this.items());
-        this.valueChanged.emit(this.items());
+        this.onValueChange(this.items());
     }
 
     onClearSelectionClicked() {
         this.formControl.setValue([]);
         this.selectedItems.set([]);
-        this.valueChanged.emit([]);
+        this.onValueChange([]);
     }
 
     getCsv(): string | null {
@@ -449,11 +412,4 @@ export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor im
     onAddActionClicked() {
         this.addActionClicked.emit();
     }
-
-}
-
-export enum MultiSelectDropdownAppearance {
-    standard,
-    csv,
-    chips
 }

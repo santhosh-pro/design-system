@@ -55,6 +55,7 @@ export class DateInputComponent extends BaseControlValueAccessorV3<Date | null> 
   allowOnlyFuture = input<boolean>(false);
   disabledDays = input<Weekday[]>([]);
   disabledDates = input<Date[]>([]);
+  value = input<Date | null>(null);
   inputDateFormat = input<InputDateFormat>(InputDateFormat.mmddyyyy);
 
   overlayService = inject(OverlayService);

@@ -22,8 +22,6 @@ export abstract class BaseControlValueAccessorV3<T> implements ControlValueAcces
   // Injected NgControl
   private ngControl = inject(NgControl, { optional: true, self: true });
 
-  // Internal value
-  protected value: T | null = null; // Renamed from actualValue for clarity
 
   // Abstract method for subclasses to implement
   protected abstract onValueReady(value: T | null): void;
@@ -45,7 +43,6 @@ export abstract class BaseControlValueAccessorV3<T> implements ControlValueAcces
     if (value !== this.formControl.value) {
       this.formControl.setValue(value, { emitEvent: false });
     }
-    this.value = value;
     this.onValueReady(value);
   }
 
@@ -80,7 +77,6 @@ export abstract class BaseControlValueAccessorV3<T> implements ControlValueAcces
 
   // Protected methods
   protected onValueChange(value: T | null): void {
-    this.value = value;
     if (value !== null) {
       this.valueChange.emit(value);
       this.onChange(value);
