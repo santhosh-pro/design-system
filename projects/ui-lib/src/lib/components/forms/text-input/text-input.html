@@ -1,4 +1,4 @@
-<app-base-input #inputElement [title]="label()" [fullWidth]="fullWidth()" [isRequiredField]="hasRequiredValidator()">
+<ui-base-input #inputElement [title]="label()" [fullWidth]="fullWidth()" [isRequiredField]="hasRequiredValidator()">
   <!-- Input Slot -->
   <div input class="relative flex items-center w-full bg-white border border-neutral-200 rounded-md shadow-sm focus-within:ring-2 focus-within:ring-primary-400 transition-all">
     <!-- Prefix Select -->
@@ -26,7 +26,7 @@
     <!-- Input Field -->
     <div class="relative flex items-center flex-1">
       @if (iconSrc()) {
-        <app-svg-icon [size]="18" [src]="iconSrc()!" class="absolute ml-3 text-neutral-400 pointer-events-none"></app-svg-icon>
+        <ui-svg-icon [size]="18" [src]="iconSrc()!" class="absolute ml-3 text-neutral-400 pointer-events-none"></ui-svg-icon>
       }
       <input
         [mask]="mask()"
@@ -45,7 +45,7 @@
       >
       @if (actionIcon()) {
         <div (click)="onActionClick()" class="absolute right-2 p-2 flex justify-center items-center hover:bg-neutral-100 rounded-full cursor-pointer">
-          <app-svg-icon [size]="18" [src]="actionIcon()!" class="text-neutral-400"></app-svg-icon>
+          <ui-svg-icon [size]="18" [src]="actionIcon()!" class="text-neutral-400"></ui-svg-icon>
         </div>
       }
     </div>
@@ -61,4 +61,4 @@
       <span class="text-caption text-transparent">.</span>
     </div>
   }
-</app-base-input>
+</ui-base-input>

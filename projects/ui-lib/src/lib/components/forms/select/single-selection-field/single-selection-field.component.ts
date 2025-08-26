@@ -8,7 +8,7 @@ import { resolveTemplateWithObject } from '../../../../core/template-resolver';
 import { AppSvgIconComponent } from '../../../misc/app-svg-icon/app-svg-icon';
 
 @Component({
-  selector: 'app-single-selection-field',
+  selector: 'ui-single-selection-field',
   standalone: true,
   imports: [
     BaseInputComponent,

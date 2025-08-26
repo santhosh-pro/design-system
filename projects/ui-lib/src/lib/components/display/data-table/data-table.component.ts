@@ -34,7 +34,7 @@ import { AppSvgIconComponent } from "../../misc/app-svg-icon/app-svg-icon";
 import { InputDateFormat } from '../../forms/date/date-format';
 
 @Component({
-  selector: 'app-data-table',
+  selector: 'ui-data-table',
   standalone: true,
   imports: [
     PaginationComponent,

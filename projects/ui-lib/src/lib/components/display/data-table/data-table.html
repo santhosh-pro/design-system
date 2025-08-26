@@ -8,14 +8,14 @@
       @if (enableSearch()) {
         <div class="flex-1 max-w-md">
           
-          <app-text-input 
+          <ui-text-input 
             placeholder="Search..." 
             type="search" 
             [fullWidth]="false"
             (valueChange)="onSearchTextChanged($event)"
             iconSrc="edit.svg"
             class="w-full">
-          </app-text-input>
+          </ui-text-input>
         </div>
       }
       <div class="flex items-center gap-4">
@@ -41,10 +41,10 @@
             @if (enableRowSelection() && level === 0) {
               <th [attr.rowspan]="getHeaderRowSpan()" 
                   class="sticky left-0 z-[120] bg-gray-100 w-12 px-4 py-4 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.1)]">
-                <app-checkbox 
+                <ui-checkbox 
                   [ngModel]="isAllSelected()" 
                   (valueChanged)="onSelectAllRows($event)">
-                </app-checkbox>
+                </ui-checkbox>
               </th>
             }
             
@@ -79,7 +79,7 @@
                     @switch (column.filterConfig.type) {
                       @case ('text') {
                         <div class="flex items-center w-full min-w-[140px]">
-                          <app-text-input 
+                          <ui-text-input 
                             [placeholder]="column.filterConfig.placeholder || 'Filter...'"
                             [formControl]="getFilterControl(column, 'value')" 
                             [fullWidth]="true" 
@@ -88,12 +88,12 @@
                             [prefixOptions]="getFilterOperations(column.filterConfig.type)" 
                             [defaultPrefixValue]="'contains'"
                             class="flex-1 min-w-[140px]">
-                          </app-text-input>
+                          </ui-text-input>
                         </div>
                       }
                       @case ('number') {
                         <div class="flex items-center w-full min-w-[120px]">
-                          <app-text-input 
+                          <ui-text-input 
                             type="number" 
                             [placeholder]="column.filterConfig.placeholder || 'Filter...'"
                             [formControl]="getFilterControl(column, 'value')"
@@ -104,24 +104,24 @@
                             [defaultPrefixValue]="'equals'" 
                             [prefixOptions]="getFilterOperations(column.filterConfig.type)"
                             class="flex-1 min-w-[120px]">
-                          </app-text-input>
+                          </ui-text-input>
                         </div>
                       }
                       @case ('date') {
                         <div class="flex items-center w-full min-w-[140px]">
-                          <app-date-input 
+                          <ui-date-input 
                             [formControl]="getFilterControl(column, 'value')"
                             (valueChanged)="onFilterChanged($event, null, null, column)" 
                             [fullWidth]="true"
                             [showDatePickerIcon]="true"
                             [inputDateFormat]="column.filterConfig.dateFormat === 'dd/MM/yyyy' ? InputDateFormat.ddmmyyyy : InputDateFormat.mmddyyyy"
                             class="flex-1 min-w-[140px]">
-                          </app-date-input>
+                          </ui-date-input>
                         </div>
                       }
                       @case ('select') {
                         <div class="flex items-center w-full min-w-[100px]">
-                          <app-multi-select-dropdown 
+                          <ui-multi-select-dropdown 
                             [items]="column.filterConfig.options || []" 
                             [fullWidth]="true"  
                             [enableSearch]="true" 
@@ -131,7 +131,7 @@
                             identifier="value" 
                             [formControl]="getFilterControl(column, 'value')"
                             class="flex-1 min-w-[100px]">
-                          </app-multi-select-dropdown>
+                          </ui-multi-select-dropdown>
                         </div>
                       }
                     }
@@ -166,11 +166,11 @@
                 <td class="sticky left-0 z-[50] bg-white w-12 px-4 py-4 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.05)] group-hover:bg-blue-50 transition-colors duration-200"
                     [class.bg-blue-100]="isRowSelected(item)"
                     [class.group-hover:bg-blue-200]="isRowSelected(item)">
-                  <app-checkbox 
+                  <ui-checkbox 
                     [ngModel]="isRowSelected(item)" 
                     (valueChanged)="onRowSelectionChange($event, item)"
                     [disabled]="!enableRowSelection()">
-                  </app-checkbox>
+                  </ui-checkbox>
                 </td>
               }
               
@@ -216,28 +216,28 @@
                     @case ('badge') {
                       @let badgeProperty = getBadgeProperty(item, column);
                       <div class="flex items-center" [class]="getFlexJustify(column)">
-                        <app-status-badge 
+                        <ui-status-badge 
                           [backgroundColorClass]="badgeProperty?.backgroundColorClass ?? null"
                           [indicatorColor]="badgeProperty?.indicatorColorClass ?? null"
                           [borderColorClass]="badgeProperty?.borderColorClass ?? null"
                           [textColorClass]="badgeProperty?.textColorClass ?? null" 
                           [isUpperCase]="true"
                           [status]="badgeProperty?.displayText ?? 'Unknown'">
-                        </app-status-badge>
+                        </ui-status-badge>
                       </div>
                     }
                     
                     @case ('custom') {
                       @if (column.component) {
                         <div class="flex items-center">
-                          <app-dynamic-renderer 
+                          <ui-dynamic-renderer 
                             [component]="column.component" 
                             [rowData]="item" 
                             [data]="column.customConfig?.data"
                             [rowPosition]="$index + 1" 
                             [isLastRow]="$last"
                             (actionPerformed)="onRowActionPerformed($event)">
-                          </app-dynamic-renderer>
+                          </ui-dynamic-renderer>
                         </div>
                       }
                     }
@@ -253,7 +253,7 @@
                               class="flex items-center justify-center h-8 w-8 cursor-pointer rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
                               [title]="iconAction.label || iconAction.actionKey"
                             >
-                               <app-svg-icon [src]="iconAction.iconPath" [size]="16" class="text-gray-600"></app-svg-icon>
+                               <ui-svg-icon [src]="iconAction.iconPath" [size]="16" class="text-gray-600"></ui-svg-icon>
                             </button>
                           }
                         }
@@ -262,7 +262,7 @@
                         @if (column.actionsConfig?.threeDotMenuActions) {
                           @let menuActions = getContextMenuActions(column.actionsConfig?.threeDotMenuActions, item);
                           @if (menuActions.length > 0) {
-                            <app-context-menu-button
+                            <ui-context-menu-button
                               (onActionClicked)="_onActionClicked($event, item, null)"
                               [actions]="menuActions"
                               class="relative"
@@ -276,7 +276,7 @@
                                   <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
                                 </svg>
                               </button>
-                            </app-context-menu-button>
+                            </ui-context-menu-button>
                           }
                         }
 
@@ -284,7 +284,7 @@
                         @if (column.actionsConfig?.components) {
                           <div class="flex items-center gap-1">
                             @for (component of column.actionsConfig?.components; track $index) {
-                              <app-dynamic-renderer
+                              <ui-dynamic-renderer
                                 [component]="component"
                                 [rowData]="item"
                                 [data]="column.customConfig?.data"
@@ -292,7 +292,7 @@
                                 [isLastRow]="$last"
                                 (actionPerformed)="onRowActionPerformed($event)"
                               >
-                              </app-dynamic-renderer>
+                              </ui-dynamic-renderer>
                             }
                           </div>
                         }
@@ -329,10 +329,10 @@
 
   <!-- Pagination -->
   <div class="border-t-2 border-gray-300 bg-white px-6 py-4 flex-shrink-0">
-    <app-pagination 
+    <ui-pagination 
       [pageSize]="pageSize()" 
       [totalItems]="totalCount()"
       (pageChange)="onPageChange($event)">
-    </app-pagination>
+    </ui-pagination>
   </div>
 </div>

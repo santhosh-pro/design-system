@@ -1,7 +1,7 @@
 import {Component, input} from '@angular/core';
 
 @Component({
-  selector: 'app-no-data',
+  selector: 'ui-no-data',
   standalone: true,
   imports: [
   ],

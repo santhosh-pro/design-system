@@ -4,7 +4,7 @@ import {ToastEvent} from "../../models/toast-event";
 import {ToastService} from "../../toast";
 
 @Component({
-  selector: 'app-toaster',
+  selector: 'ui-toaster',
   standalone: true,
   imports: [
     ToastComponent

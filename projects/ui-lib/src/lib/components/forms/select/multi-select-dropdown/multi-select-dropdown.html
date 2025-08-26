@@ -1,4 +1,4 @@
-<app-base-input
+<ui-base-input
   [title]="title()"
   [fullWidth]="fullWidth()"
   (keydown)="handleKeydown($event)"
@@ -181,10 +181,10 @@
             [attr.aria-selected]="isItemExistInFormControl(item) || isItemExistInNormalSelectionList(item)"
             tabindex="0"
           >
-            <app-checkbox
+            <ui-checkbox
               [ngModel]="isItemExistInFormControl(item) || isItemExistInNormalSelectionList(item)"
               class="pointer-events-none"
-            ></app-checkbox>
+            ></ui-checkbox>
             <span class="text-sm text-gray-700 truncate">{{ getDisplayString(item) }}</span>
           </div>
         } @empty {
@@ -196,7 +196,7 @@
       </div>
     </div>
   </ng-template>
-</app-base-input>
+</ui-base-input>
 
 <!-- Error Messages -->
 @if (formControl.errors && hasErrors()) {

@@ -3,7 +3,7 @@ import {DIALOG_DATA, DialogRef} from "@angular/cdk/dialog";
 import { ButtonComponent } from '../../forms/button/button';
 
 @Component({
-  selector: 'app-alert-dialog',
+  selector: 'ui-alert-dialog',
   standalone: true,
   imports: [
     ButtonComponent,

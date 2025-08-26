@@ -16,7 +16,7 @@ import {ToastService} from "../../toast";
 import {NgClass} from "@angular/common";
 
 @Component({
-  selector: 'app-toast',
+  selector: 'ui-toast',
   standalone: true,
   imports: [
     ToastCloseButtonComponent,

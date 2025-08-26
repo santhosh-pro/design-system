@@ -6,7 +6,7 @@
       title="Basic Data Table"
       description="A simple data table with sorting, pagination, and badge columns."
       [files]="basicFiles()">
-      <app-data-table
+      <ui-data-table
     [columnGroups]="nestedColumns()"
     [data]="nestedData()"
     [enableRowSelection]="true"
@@ -16,7 +16,7 @@
     [enableSearch]="true"
     [formControl]="basicControl"
     (stateChange)="onTableStateChanged($event)">
-  </app-data-table>
+  </ui-data-table>
       <p class="text-sm text-gray-600 mt-2">
         {{selectedRows | json}}
         Table State: {{ basicControl.value | json }}

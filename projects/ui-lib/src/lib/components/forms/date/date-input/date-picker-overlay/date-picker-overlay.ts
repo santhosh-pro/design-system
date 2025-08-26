@@ -3,7 +3,7 @@ import {DIALOG_DATA, DialogRef} from "@angular/cdk/dialog";
 import {DatePickerComponent, Weekday} from './date-picker/date-picker';
 
 @Component({
-  selector: 'app-date-picker-overlay',
+  selector: 'ui-date-picker-overlay',
   standalone: true,
   imports: [
     DatePickerComponent

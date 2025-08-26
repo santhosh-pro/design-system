@@ -21,7 +21,7 @@ import { NgxMaskDirective } from '../../input-mask/ngx-mask.directive';
 type ViewType = 'picker' | 'calendar';
 
 @Component({
-  selector: 'app-date-input',
+  selector: 'ui-date-input',
   standalone: true,
   imports: [
     HumanizeFormMessagesPipe,

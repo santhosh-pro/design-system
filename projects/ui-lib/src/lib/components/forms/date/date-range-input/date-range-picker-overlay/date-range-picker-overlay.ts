@@ -4,7 +4,7 @@ import { FormsModule } from "@angular/forms";
 import { DateRangeEvent, DateRangePickerComponent } from "./date-range-picker/date-range-picker";
 
 @Component({
-  selector: "app-date-range-picker-overlay",
+  selector: "ui-date-range-picker-overlay",
   standalone: true,
   imports: [DateRangePickerComponent, FormsModule],
   templateUrl: "./date-range-picker-overlay.html",

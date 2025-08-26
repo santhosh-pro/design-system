@@ -2,7 +2,7 @@ import {Component, input} from '@angular/core';
 import {NgClass} from "@angular/common";
 
 @Component({
-  selector: 'app-spinner',
+  selector: 'ui-spinner',
   standalone: true,
   imports: [
     NgClass

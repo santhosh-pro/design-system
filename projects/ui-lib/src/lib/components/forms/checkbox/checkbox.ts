@@ -5,7 +5,7 @@ import { BaseControlValueAccessor } from '../../../core/base-control-value-acces
 
 
 @Component({
-  selector: 'app-checkbox',
+  selector: 'ui-checkbox',
   standalone: true,
   imports: [
     ReactiveFormsModule,

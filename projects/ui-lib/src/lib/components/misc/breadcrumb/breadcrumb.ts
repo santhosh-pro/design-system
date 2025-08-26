@@ -5,7 +5,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { NgClass } from '@angular/common';
 
 @Component({
-  selector: 'app-breadcrumb',
+  selector: 'ui-breadcrumb',
   standalone: true,
   imports: [NgClass],
   templateUrl: './breadcrumb.html',

@@ -24,17 +24,17 @@
       <tr>
         <td colspan="100" class="h-min">
           <div class="flex flex-col gap-10 px-6 py-8">
-            <app-shimmer type="multiline"></app-shimmer>
-            <app-shimmer type="multiline"></app-shimmer>
-            <app-shimmer type="multiline"></app-shimmer>
-            <app-shimmer type="multiline"></app-shimmer>
-            <app-shimmer type="multiline"></app-shimmer>
-            <app-shimmer type="multiline"></app-shimmer>
-            <app-shimmer type="multiline"></app-shimmer>
-            <app-shimmer type="multiline"></app-shimmer>
-            <app-shimmer type="multiline"></app-shimmer>
-            <app-shimmer type="multiline"></app-shimmer>
-            <app-shimmer type="multiline"></app-shimmer>
+            <ui-shimmer type="multiline"></ui-shimmer>
+            <ui-shimmer type="multiline"></ui-shimmer>
+            <ui-shimmer type="multiline"></ui-shimmer>
+            <ui-shimmer type="multiline"></ui-shimmer>
+            <ui-shimmer type="multiline"></ui-shimmer>
+            <ui-shimmer type="multiline"></ui-shimmer>
+            <ui-shimmer type="multiline"></ui-shimmer>
+            <ui-shimmer type="multiline"></ui-shimmer>
+            <ui-shimmer type="multiline"></ui-shimmer>
+            <ui-shimmer type="multiline"></ui-shimmer>
+            <ui-shimmer type="multiline"></ui-shimmer>
           </div>
         </td>
       </tr>
@@ -47,7 +47,7 @@
       <tr>
         <td colspan="1000">
           <div class="flex flex-col justify-center items-center gap-8 px-6 py-8">
-            <app-no-data-table></app-no-data-table>
+            <ui-no-data-table></ui-no-data-table>
           </div>
         </td>
       </tr>
@@ -62,12 +62,12 @@
     <tr>
       <td colspan="100">
         <div class="bg-white w-full">
-          <app-pagination
+          <ui-pagination
             class="w-full"
             [pageSize]="itemsPerPage()"
             [totalItems]="state()?.response()?.totalCount ?? 0"
             (pageChange)="onPageChange($event)">
-          </app-pagination>
+          </ui-pagination>
         </div>
       </td>
     </tr>

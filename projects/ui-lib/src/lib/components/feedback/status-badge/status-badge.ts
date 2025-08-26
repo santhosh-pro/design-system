@@ -2,7 +2,7 @@ import {Component, input, Input} from '@angular/core';
 import {NgClass} from "@angular/common";
 
 @Component({
-  selector: 'app-status-badge',
+  selector: 'ui-status-badge',
   imports: [
     NgClass
   ],

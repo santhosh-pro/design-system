@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-context-menu-icon',
+  selector: 'ui-context-menu-icon',
   standalone: true,
     imports: [
     ],

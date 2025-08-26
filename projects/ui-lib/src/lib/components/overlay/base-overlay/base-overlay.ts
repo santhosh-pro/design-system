@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 
 @Component({
-  selector: 'app-base-overlay',
+  selector: 'ui-base-overlay',
   imports: [],
   templateUrl: './base-overlay.html',
   standalone: true,

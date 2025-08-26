@@ -1,7 +1,7 @@
-<app-base-input #inputElement [title]="label()"  [fullWidth]="fullWidth()" [isRequiredField]="hasRequiredValidator()">
+<ui-base-input #inputElement [title]="label()"  [fullWidth]="fullWidth()" [isRequiredField]="hasRequiredValidator()">
   <div input class="relative w-full text-neutral-400 bg-white shadow-1 rounded-md">
     @if (iconSrc()) {
-      <app-svg-icon [size]="18" [src]="iconSrc()!" class="absolute pointer-events-none ml-3 mt-3 text-neutral-400 z-10"></app-svg-icon>
+      <ui-svg-icon [size]="18" [src]="iconSrc()!" class="absolute pointer-events-none ml-3 mt-3 text-neutral-400 z-10"></ui-svg-icon>
     }
 
     <!-- Wrapper for chips and input -->
@@ -55,7 +55,7 @@
       </div>
     </div>
   </div>
-</app-base-input>
+</ui-base-input>
 
 @if (formControl.errors && hasErrors()) {
   <div class="mt-1">

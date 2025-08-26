@@ -9,7 +9,7 @@ export interface DateRangeEvent {
 }
 
 @Component({
-  selector: "app-date-range-picker",
+  selector: "ui-date-range-picker",
   imports: [NgClass],
   standalone: true,
   templateUrl: "./date-range-picker.html",

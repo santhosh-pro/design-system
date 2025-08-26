@@ -2,7 +2,7 @@ import {Component, input} from '@angular/core';
 import {NoDataComponent} from "../../../feedback/no-data/no-data";
 
 @Component({
-  selector: 'app-no-data-table',
+  selector: 'ui-no-data-table',
   standalone: true,
   imports: [
     NoDataComponent

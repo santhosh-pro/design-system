@@ -18,7 +18,7 @@ import { NgxMaskDirective } from '../../input-mask/ngx-mask.directive';
 
 
 @Component({
-  selector: 'app-multi-date-input',
+  selector: 'ui-multi-date-input',
   standalone: true,
   imports: [
     HumanizeFormMessagesPipe,

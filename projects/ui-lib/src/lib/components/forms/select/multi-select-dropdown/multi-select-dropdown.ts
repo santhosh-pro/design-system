@@ -29,7 +29,7 @@ export enum MultiSelectDropdownAppearance {
 }
 
 @Component({
-    selector: 'app-multi-select-dropdown',
+    selector: 'ui-multi-select-dropdown',
     standalone: true,
     imports: [
         BaseInputComponent,

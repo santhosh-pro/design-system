@@ -5,7 +5,7 @@ import { SpinnerComponent } from '../../feedback/spinner/spinner';
 import { AppSvgIconComponent } from '../../misc/app-svg-icon/app-svg-icon';
 
 @Component({
-  selector: 'app-button',
+  selector: 'ui-button',
   standalone: true,
   imports: [
     NgClass,

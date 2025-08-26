@@ -7,12 +7,12 @@
       title="1. Basic String Array Selection"
       description="Select your favorite color from a simple string array."
       [files]="basicFiles()">
-      <app-single-selection-field
+      <ui-single-selection-field
         [formControl]="basicControl"
         title="Select Your Favorite Color"
         [options]="colors()"
         [fullWidth]="true">
-      </app-single-selection-field>
+      </ui-single-selection-field>
       <p class="text-sm text-gray-600 mt-2">
         Selected: {{ basicControl.value || 'None' }}
       </p>
@@ -23,14 +23,14 @@
       title="2. Object Array Selection"
       description="Select a country with label/value object pairs."
       [files]="countryFiles()">
-      <app-single-selection-field
+      <ui-single-selection-field
         [formControl]="countryControl"
         title="Select Country"
         [options]="countries()"
         [fullWidth]="true"
         labelKey="name"
         valueKey="code">
-      </app-single-selection-field>
+      </ui-single-selection-field>
       <p class="text-sm text-gray-600 mt-2">
         Selected Country Code: {{ countryControl.value || 'None' }}
       </p>
@@ -41,14 +41,14 @@
       title="3. With Categories"
       description="Items grouped into categories."
       [files]="categoryFiles()">
-      <app-single-selection-field
+      <ui-single-selection-field
         [formControl]="categoryControl"
         title="Select a Fruit"
         [options]="categories()"
         [fullWidth]="true"
         labelKey="name"
         categoryKey="category">
-      </app-single-selection-field>
+      </ui-single-selection-field>
       <p class="text-sm text-gray-600 mt-2">
         Selected Fruit: {{ categoryControl.value || 'None' }}
       </p>

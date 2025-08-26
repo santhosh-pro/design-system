@@ -5,7 +5,7 @@ import {Subscription} from "rxjs";
 import {OverlayContextMenuComponent} from './overlay-context-menu/overlay-context-menu';
 
 @Component({
-  selector: 'app-context-menu-button',
+  selector: 'ui-context-menu-button',
   imports: [],
   templateUrl: './context-menu-button.html',
   standalone: true,

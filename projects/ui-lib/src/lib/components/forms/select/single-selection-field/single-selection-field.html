@@ -1,4 +1,4 @@
-<app-base-input [title]="label()" [fullWidth]="fullWidth()" [isRequiredField]="hasRequiredValidator()">
+<ui-base-input [title]="label()" [fullWidth]="fullWidth()" [isRequiredField]="hasRequiredValidator()">
   <div
     input
     class="flex flex-wrap gap-3"
@@ -34,7 +34,7 @@
               <img class="object-contain" height="20" width="20" [src]="icon()(item)!" [alt]="displayText()(item) || 'Item icon'" />
             }
             @case ('svg') {
-              <app-svg-icon [src]="icon()(item)!" [size]="18" [ngStyle]="{'color': itemIconColor()(item)}" />
+              <ui-svg-icon [src]="icon()(item)!" [size]="18" [ngStyle]="{'color': itemIconColor()(item)}" />
             }
           }
         }
@@ -81,4 +81,4 @@
       </p>
     }
   </div>
-</app-base-input>
+</ui-base-input>

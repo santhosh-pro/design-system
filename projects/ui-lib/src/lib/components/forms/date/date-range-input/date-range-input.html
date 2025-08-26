@@ -1,5 +1,5 @@
 <!-- date-range-input.component.html -->
-<app-base-input
+<ui-base-input
   #inputElement
   [title]="label()"
   [fullWidth]="fullWidth()"
@@ -10,11 +10,11 @@
     class="relative w-full text-gray-400 bg-white shadow-sm rounded-md cursor-default"
   >
     @if (iconSrc()) {
-      <app-svg-icon
+      <ui-svg-icon
         [size]="18"
         [src]="iconSrc()!"
         class="absolute pointer-events-none ml-3 mt-3 text-gray-400 z-10"
-      ></app-svg-icon>
+      ></ui-svg-icon>
     }
 
     <div
@@ -94,7 +94,7 @@
       }
     </div>
   </div>
-</app-base-input>
+</ui-base-input>
 
 @if (formControl.errors && hasErrors()) {
   <div class="mt-1">

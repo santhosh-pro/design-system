@@ -3,7 +3,7 @@ import {FormsModule} from "@angular/forms";
 import {NgClass} from "@angular/common";
 
 @Component({
-  selector: 'app-pagination',
+  selector: 'ui-pagination',
   standalone: true,
   imports: [
     FormsModule,

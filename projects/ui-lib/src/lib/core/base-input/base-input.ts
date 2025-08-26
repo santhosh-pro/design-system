@@ -2,7 +2,7 @@ import { Component, input } from '@angular/core';
 import { NgClass } from '@angular/common';
 
 @Component({
-  selector: 'app-base-input',
+  selector: 'ui-base-input',
   standalone: true,
   imports: [NgClass],
   templateUrl: './base-input.html',

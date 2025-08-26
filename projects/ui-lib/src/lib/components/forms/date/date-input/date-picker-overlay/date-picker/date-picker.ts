@@ -5,7 +5,7 @@ import { BaseControlValueAccessor } from '../../../../../../core/base-control-va
 export type Weekday = 'sunday' | 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday';
 
 @Component({
-  selector: 'app-date-picker',
+  selector: 'ui-date-picker',
   imports: [
     NgClass
   ],

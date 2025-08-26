@@ -22,7 +22,7 @@ interface SelectOption {
 }
 
 @Component({
-  selector: 'app-text-input',
+  selector: 'ui-text-input',
   standalone: true,
   imports: [
     NgClass,

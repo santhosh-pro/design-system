@@ -5,7 +5,7 @@ import {PaginationComponent, PaginationEvent} from "../../../display/pagination/
 import { NoDataTableComponent } from '../no-data-table/no-data-table';
 
 @Component({
-  selector: 'app-base-table',
+  selector: 'ui-base-table',
   standalone: true,
   imports: [
     NoDataTableComponent,

@@ -6,12 +6,12 @@
   [ngClass]="buttonClass()">
 
   @if (iconSrc()) {
-    <app-svg-icon [src]="iconSrc()!" [size]="iconSize()" class="mr-3"
-                  [ngClass]="loading() ? 'text-transparent' : iconClass()"></app-svg-icon>
+    <ui-svg-icon [src]="iconSrc()!" [size]="iconSize()" class="mr-3"
+                  [ngClass]="loading() ? 'text-transparent' : iconClass()"></ui-svg-icon>
   }
 
-  <app-spinner class="w-min absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-               [borderColor]="loading() ? loaderColor() : 'border-transparent'"></app-spinner>
+  <ui-spinner class="w-min absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+               [borderColor]="loading() ? loaderColor() : 'border-transparent'"></ui-spinner>
 
   <div [ngClass]="loading() ? 'text-transparent' : 'text-body2'">
     <ng-content></ng-content>

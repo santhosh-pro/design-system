@@ -4,7 +4,7 @@ import {ContextMenuButtonAction} from '../context-menu-button';
 import { AppSvgIconComponent } from '../../../misc/app-svg-icon/app-svg-icon';
 
 @Component({
-  selector: 'app-overlay-context-menu',
+  selector: 'ui-overlay-context-menu',
   imports: [
     AppSvgIconComponent,
   ],

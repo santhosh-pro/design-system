@@ -29,7 +29,7 @@ import { InputDateFormat } from "../date-format";
 
 
 @Component({
-  selector: "app-date-range-input",
+  selector: "ui-date-range-input",
   standalone: true,
   imports: [
     HumanizeFormMessagesPipe,

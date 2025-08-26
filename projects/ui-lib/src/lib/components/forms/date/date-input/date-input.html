@@ -1,8 +1,8 @@
 @if (viewType() === 'picker') {
-  <app-base-input #inputElement [title]="label()" [fullWidth]="fullWidth()" [isRequiredField]="hasRequiredValidator()">
+  <ui-base-input #inputElement [title]="label()" [fullWidth]="fullWidth()" [isRequiredField]="hasRequiredValidator()">
     <div input class="relative flex items-center w-full text-neutral-400 bg-white shadow-1 rounded-md">
       @if (iconSrc()) {
-        <app-svg-icon [size]="18" [src]="iconSrc()!" class="absolute pointer-events-none ml-3 text-neutral-400"></app-svg-icon>
+        <ui-svg-icon [size]="18" [src]="iconSrc()!" class="absolute pointer-events-none ml-3 text-neutral-400"></ui-svg-icon>
       }
 
       <input
@@ -30,10 +30,10 @@
         </div>
       }
     </div>
-  </app-base-input>
+  </ui-base-input>
 } @else if (viewType() === 'calendar') {
   <div class="relative">
-    <app-date-picker
+    <ui-date-picker
       [minDate]="minDate()"
       [maxDate]="maxDate()"
       [allowOnlyPast]="allowOnlyPast()"
@@ -41,7 +41,7 @@
       [disabledDays]="disabledDays()"
       [disabledDates]="disabledDates()"
       (dateSelected)="onDateSelected($event)">
-    </app-date-picker>
+    </ui-date-picker>
   </div>
 }
 

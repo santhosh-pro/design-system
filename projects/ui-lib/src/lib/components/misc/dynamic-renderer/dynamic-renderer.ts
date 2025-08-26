@@ -12,7 +12,7 @@ import { TableActionEvent } from '../../display/data-table/data-table';
 
 @Component({
   standalone: true,
-  selector: 'app-dynamic-renderer',
+  selector: 'ui-dynamic-renderer',
   templateUrl: './dynamic-renderer.html',
   styleUrl: './dynamic-renderer.scss'
 })

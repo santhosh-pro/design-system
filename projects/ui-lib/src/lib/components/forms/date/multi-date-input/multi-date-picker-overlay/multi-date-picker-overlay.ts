@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MultiDatePickerComponent, Weekday } from './multi-date-picker/multi-date-picker';
 
 @Component({
-  selector: 'app-multi-date-picker-overlay',
+  selector: 'ui-multi-date-picker-overlay',
   standalone: true,
   imports: [MultiDatePickerComponent, FormsModule],
   templateUrl: './multi-date-picker-overlay.html',
