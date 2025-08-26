@@ -11,16 +11,18 @@ import {
   OnInit,
   ChangeDetectorRef,
   ElementRef,
-  ViewChild
+  ViewChild,
+  OnDestroy
 } from '@angular/core';
 import { PaginationComponent, PaginationEvent } from '../../display/pagination/pagination.component';
-import { DatePipe, NgClass } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { StatusBadgeComponent } from '../../feedback/status-badge/status-badge.component';
 import { SortableTableDirective, TableSortEvent } from './base-table/sortable-table.directive';
 import { FormsModule, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { BaseControlValueAccessorV3 } from '../../../core/base-control-value-accessor-v3';
 import { MultiSelectDropdownComponent } from '../../forms/select/multi-select-dropdown/multi-select-dropdown.component';
 import { debounceTime } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 import { resolveTemplateWithObject } from '../../../core/template-resolver';
 import { provideNgxMask } from '../../forms/input-mask/ngx-mask.providers';
 import { DynamicRendererComponent } from '../../misc/dynamic-renderer/dynamic-renderer.component';
@@ -28,17 +30,16 @@ import { ContextMenuButtonAction, ContextMenuButtonComponent } from '../../overl
 import { CheckboxComponent } from '../../forms/checkbox/checkbox.component';
 import { TextInputComponent } from '../../forms/text-input/text-input.component';
 import { DateInputComponent, InputDateFormat } from '../../forms/date/date-input/date-input.component';
+import { AppSvgIconComponent } from "../../misc/app-svg-icon/app-svg-icon.component";
 
 @Component({
   selector: 'app-data-table',
   standalone: true,
   imports: [
     PaginationComponent,
-    NgClass,
     DatePipe,
     StatusBadgeComponent,
     SortableTableDirective,
-    // TableResizableColumnsDirective,
     CheckboxComponent,
     FormsModule,
     TextInputComponent,
@@ -46,23 +47,23 @@ import { DateInputComponent, InputDateFormat } from '../../forms/date/date-input
     MultiSelectDropdownComponent,
     ReactiveFormsModule,
     DateInputComponent,
-    ContextMenuButtonComponent
+    ContextMenuButtonComponent,
+    AppSvgIconComponent
   ],
   providers: [provideNgxMask()],
   templateUrl: './data-table.component.html',
-  styleUrls: ['./data-table.component.css']
+  styles: []
 })
-export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableStateEvent> implements OnInit, AfterViewInit {
+export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableStateEvent> implements OnInit, AfterViewInit, OnDestroy {
   @ContentChildren('filter') headerComponents!: QueryList<any>;
   @ViewChild('table', { static: false }) tableRef!: ElementRef;
 
   public InputDateFormat = InputDateFormat;
 
+  // Inputs
   columnGroups = input.required<ColumnNode[]>();
   pageSize = input(50);
-  private internalPageSize: number = this.pageSize();
   enableHorizontallyScrollable = input(true);
-  enableResizableColumns = input(false);
   enableClickableRows = input(false);
   expandableComponent = input<any>();
   filterComponent = input<any>();
@@ -74,38 +75,41 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
   initialValue = input<TableStateEvent>({ searchText: '' });
   data = input<T[]>([]);
   totalCount = input<number>(0);
-  maxPinnedLeft = input<number>(3);
-  maxPinnedRight = input<number>(3);
 
+  // Outputs
   pageChange = output<PaginationEvent>();
   sortChanged = output<TableSortEvent>();
-  tableStateChanged = output<TableStateEvent>();
-  onActionPerformed = output<TableActionEvent>();
+  stateChanged = output<TableStateEvent>();
+  actionPerformed = output<TableActionEvent>(); // Renamed from onActionPerformed for consistency (no 'on' prefix)
   filterChanged = output<FilterEvent>();
-  onRowClicked = output<any>();
-  rowSelectionChange = output<any[]>();
-  pinChanged = output<{ column: ColumnDef; pinned: 'left' | 'right' | null }>();
+  rowClicked = output<any>(); // Renamed from onRowClicked
+  rowSelectionChanged = output<any[]>(); // Renamed from rowSelectionChange for clarity
 
-  subscriptions: any[] = [];
+  // Signals
+  private internalPageSize: number = this.pageSize();
+  selectedIds = signal<any[]>([]);
+  columnGroupsSignal: WritableSignal<ColumnNode[]> = signal([]);
+  headerHeight = signal(0);
+
+  // Internal state
+  private subscriptions: Subscription[] = [];
   private isInitializingFilters = true;
   private lastStateChangeTimestamp = 0;
-  private readonly debounceTime = 200;
+  private readonly debounceTimeMs = 200;
 
   paginationEvent?: PaginationEvent;
   tableSortEvent?: TableSortEvent;
   searchText: string = '';
   columnFilters: { [key: string]: { value?: any; min?: any; max?: any; operation: string } } = {};
   filterControls: { [key: string]: { [prop: string]: FormControl } } = {};
-  selectedIds = signal<any[]>([]);
-  columnGroupsSignal: WritableSignal<ColumnNode[]> = signal([]);
 
   constructor(private cdr: ChangeDetectorRef) {
     super();
   }
 
+  // Lifecycle hooks
   ngOnInit(): void {
     const initialValue = this.initialValue();
-    console.log('Initial value:', initialValue);
     if (initialValue) {
       this.applyInitialState(initialValue);
     }
@@ -114,25 +118,88 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
     this.columnGroupsSignal.set(updatedGroups);
   }
 
-  private cloneNodeWithVisibility(node: ColumnNode): ColumnNode {
-    if ('children' in node) {
-      return {
-        ...node,
-        children: node.children.map(child => this.cloneNodeWithVisibility(child))
-      };
-    } else {
-      return {
-        ...node,
-        visible: node.visible ?? true,
-        pinned: node.type === 'actions' ? 'right' : (node.pinned ?? null)
-      };
+  ngAfterViewInit(): void {
+    if (this.enableRowSelection() && this.defaultSelectedKeys().length > 0) {
+      this.selectedIds.set([...this.defaultSelectedKeys()]);
+      this.rowSelectionChanged.emit(this.selectedIds());
     }
+
+    // Initialize filter controls and subscriptions
+    this.allLeafColumns().forEach(column => {
+      if (column.filterConfig) {
+        const filterKey = this.getFilterKey(column);
+        if (!this.columnFilters[filterKey]?.value) {
+          this.columnFilters[filterKey] = {
+            value: column.filterConfig.type === 'select' ? [] : undefined,
+            operation: this.columnFilters[filterKey]?.operation ?? this.getDefaultOperation(column.filterConfig.type),
+          };
+        }
+        const control = this.getFilterControl(column, 'value');
+        const sub = control.valueChanges.pipe(debounceTime(300)).subscribe(value => {
+          if (!this.isInitializingFilters) {
+            this.onFilterChanged(value, null, null, column);
+          }
+        });
+        this.subscriptions.push(sub);
+      }
+    });
+
+    // Initial pagination setup
+    this.paginationEvent = {
+      pageNumber: 1,
+      pageSize: this.internalPageSize,
+    };
+    this.pageChange.emit(this.paginationEvent);
+
+    // Initial table state
+    const tableStateEvent: TableStateEvent = {
+      searchText: '',
+      paginationEvent: this.paginationEvent,
+      tableSortEvent: this.tableSortEvent,
+      columnFilters: this.columnFilters,
+    };
+    this.onValueChange(tableStateEvent);
+
+    // Subscribe to custom header component filters
+    this.headerComponents.forEach((component) => {
+      if (component.filtersChanged) {
+        const sub = component.filtersChanged.subscribe((newFilters: any) => {
+          if (newFilters && Object.keys(newFilters).length > 0) {
+            this.columnFilters['custom'] = { value: newFilters, operation: 'custom' };
+          } else {
+            delete this.columnFilters['custom'];
+          }
+          const updatedTableStateEvent: TableStateEvent = {
+            searchText: this.searchText,
+            paginationEvent: this.paginationEvent,
+            tableSortEvent: this.tableSortEvent,
+            columnFilters: { ...this.columnFilters },
+          };
+          const filterEvent: FilterEvent = { key: 'custom', value: newFilters, operation: 'custom' };
+          this.filterChanged.emit(filterEvent);
+          this.emitTableStateChanged(updatedTableStateEvent);
+        });
+        this.subscriptions.push(sub);
+      }
+    });
+
+    this.updateHeaderHeight();
+
+    // Delay to ensure DOM is ready
+    setTimeout(() => {
+      this.cdr.detectChanges();
+      this.isInitializingFilters = false;
+    }, 0);
   }
 
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
+  // State management
   protected onValueReady(value: TableStateEvent): void {
-    console.log('onValueReady called with:', value);
     this.applyInitialState(value);
-    this.tableStateChanged.emit(value);
+    this.stateChanged.emit(value);
   }
 
   private applyInitialState(value: TableStateEvent): void {
@@ -147,143 +214,203 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
     }
   }
 
-  ngAfterViewInit(): void {
-    if (this.enableRowSelection() && this.defaultSelectedKeys().length > 0) {
-      this.selectedIds.set([...this.defaultSelectedKeys()]);
-      this.rowSelectionChange.emit(this.selectedIds());
-      console.log('Default selected IDs:', this.selectedIds());
-    }
-
-    this.allLeafColumns().forEach(column => {
-      if (column.filterConfig) {
-        const filterKey = this.getFilterKey(column);
-        if (!this.columnFilters[filterKey]?.value) {
-          this.columnFilters[filterKey] = {
-            value: column.filterConfig.type === 'select' ? [] : undefined,
-            operation: this.columnFilters[filterKey]?.operation ?? this.getDefaultOperation(column.filterConfig.type),
-          };
-        }
-        const control = this.getFilterControl(column, 'value');
-        control.valueChanges.pipe(debounceTime(300)).subscribe(value => {
-          if (!this.isInitializingFilters) {
-            this.onFilterChanged(value, null, null, column);
-          }
-        });
-      }
-    });
-
-    let paginationEvent: PaginationEvent = {
-      pageNumber: 1,
-      pageSize: this.internalPageSize,
-    };
-    this.paginationEvent = paginationEvent;
-    this.pageChange.emit(paginationEvent);
-
-    let tableStateEvent: TableStateEvent = {
-      searchText: '',
-      paginationEvent,
-      tableSortEvent: this.tableSortEvent,
-      columnFilters: this.columnFilters,
-    };
-
-    this.onValueChange(tableStateEvent);
-
-    this.headerComponents.forEach((component) => {
-      if (component.filtersChanged) {
-        let emitter = component.filtersChanged;
-        const sub = emitter.subscribe((newFilters: any) => {
-          console.log('Custom filter changed:', newFilters);
-          if (newFilters && Object.keys(newFilters).length > 0) {
-            this.columnFilters['custom'] = { value: newFilters, operation: 'custom' };
-          } else {
-            delete this.columnFilters['custom'];
-          }
-          let updatedTableStateEvent: TableStateEvent = {
-            searchText: this.searchText,
-            paginationEvent: this.paginationEvent,
-            tableSortEvent: this.tableSortEvent,
-            columnFilters: { ...this.columnFilters },
-          };
-          const filterEvent: FilterEvent = { key: 'custom', value: newFilters, operation: 'custom' };
-          this.filterChanged.emit(filterEvent);
-          this.emitTableStateChanged(updatedTableStateEvent);
-        });
-        this.subscriptions.push(sub);
-      }
-    });
-
-    // Delay offset calculation to ensure DOM is ready
-    setTimeout(() => {
-      this.cdr.detectChanges();
-      this.isInitializingFilters = false;
-    }, 0);
-  }
-
-  private emitTableStateChanged(tableStateEvent: TableStateEvent) {
+  private emitTableStateChanged(tableStateEvent: TableStateEvent): void {
     const now = Date.now();
-    if (this.isInitializingFilters) {
-      console.log('Skipping tableStateChanged emission during filter initialization:', tableStateEvent);
-      return;
-    }
-    if (now - this.lastStateChangeTimestamp < this.debounceTime) {
-      console.log('Debouncing tableStateChanged emission:', tableStateEvent);
+    if (this.isInitializingFilters || now - this.lastStateChangeTimestamp < this.debounceTimeMs) {
       return;
     }
     this.lastStateChangeTimestamp = now;
-    console.log('Emitting tableStateChanged:', tableStateEvent);
-    this.tableStateChanged.emit(tableStateEvent);
+    this.stateChanged.emit(tableStateEvent);
   }
 
-  private areTableStatesEqual(state1: TableStateEvent, state2: TableStateEvent): boolean {
-    const paginationEqual =
-      (state1.paginationEvent?.pageNumber ?? 1) === (state2.paginationEvent?.pageNumber ?? 1) &&
-      (state1.paginationEvent?.pageSize ?? this.internalPageSize) === (state2.paginationEvent?.pageSize ?? this.internalPageSize);
-    const sortEqual =
-      (state1.tableSortEvent?.key ?? null) === (state2.tableSortEvent?.key ?? null) &&
-      (state1.tableSortEvent?.direction ?? null) === (state2.tableSortEvent?.direction ?? null);
-    const searchEqual = (state1.searchText ?? '') === (state2.searchText ?? '');
-    const filtersEqual = this.areFiltersEqual(state1.columnFilters ?? {}, state2.columnFilters ?? {});
-    return paginationEqual && sortEqual && searchEqual && filtersEqual;
-  }
-
-  private areFiltersEqual(
-    filters1: { [key: string]: { value?: any; min?: any; max?: any; operation: string } },
-    filters2: { [key: string]: { value?: any; min?: any; max?: any; operation: string } }
-  ): boolean {
-    const keys1 = Object.keys(filters1);
-    const keys2 = Object.keys(filters2);
-    if (keys1.length !== keys2.length) return false;
-    return keys1.every(key => {
-      const filter1 = filters1[key];
-      const filter2 = filters2[key];
-      if (!filter2) return false;
-      const valueEqual = filter1.value === filter2.value || (
-        Array.isArray(filter1.value) && Array.isArray(filter2.value) &&
-        filter1.value.length === filter2.value.length &&
-        filter1.value.every((val: any, i: number) => val === filter2.value[i])
-      );
-      const minEqual = filter1.min === filter2.min;
-      const maxEqual = filter1.max === filter2.max;
-      const operationEqual = filter1.operation === filter2.operation;
-      return valueEqual && minEqual && maxEqual && operationEqual;
-    });
-  }
-
-  onSearchTextChanged($event: string) {
-    this.searchText = $event;
-    let paginationEvent: PaginationEvent = {
+  // Event handlers
+  onSearchTextChanged(event: string): void {
+    this.searchText = event;
+    this.paginationEvent = {
       pageNumber: 1,
       pageSize: this.paginationEvent?.pageSize ?? this.internalPageSize
     };
-    this.paginationEvent = paginationEvent;
-    let tableStateEvent: TableStateEvent = {
+    const tableStateEvent: TableStateEvent = {
       searchText: this.searchText,
-      paginationEvent: paginationEvent,
+      paginationEvent: this.paginationEvent,
       tableSortEvent: this.tableSortEvent,
       columnFilters: this.columnFilters
     };
     this.emitTableStateChanged(tableStateEvent);
     this.onValueChange(tableStateEvent);
+  }
+
+  onFilterChanged(value: any, min: any, max: any, column: ColumnDef): void {
+    const filterKey = this.getFilterKey(column);
+    if (!filterKey) {
+      return;
+    }
+    const existingFilter = this.columnFilters[filterKey] || {
+      operation: this.getDefaultOperation(column.filterConfig?.type),
+    };
+    const operation = existingFilter.operation;
+    let parsedValue = this.parseFilterValue(value, column.filterConfig?.type);
+    let parsedMin = this.parseFilterValue(min, column.filterConfig?.type);
+    let parsedMax = this.parseFilterValue(max, column.filterConfig?.type);
+
+    if (operation === 'range') {
+      if (parsedMin || parsedMax) {
+        this.columnFilters[filterKey] = { min: parsedMin, max: parsedMax, operation };
+      } else {
+        delete this.columnFilters[filterKey];
+      }
+    } else {
+      if (parsedValue && (Array.isArray(parsedValue) ? parsedValue.length > 0 : true)) {
+        this.columnFilters[filterKey] = { value: parsedValue, operation };
+      } else {
+        delete this.columnFilters[filterKey];
+      }
+    }
+
+    const filterEvent: FilterEvent = operation === 'range'
+      ? { key: filterKey, min: parsedMin, max: parsedMax, operation }
+      : { key: filterKey, value: parsedValue, operation };
+    this.filterChanged.emit(filterEvent);
+
+    this.paginationEvent = {
+      pageNumber: 1,
+      pageSize: this.paginationEvent?.pageSize ?? this.internalPageSize,
+    };
+    const tableStateEvent: TableStateEvent = {
+      searchText: this.searchText,
+      paginationEvent: this.paginationEvent,
+      tableSortEvent: this.tableSortEvent,
+      columnFilters: { ...this.columnFilters },
+    };
+    this.emitTableStateChanged(tableStateEvent);
+    this.onValueChange(tableStateEvent);
+  }
+
+  onFilterOperationChanged(operation: string, column: ColumnDef): void {
+    const filterKey = this.getFilterKey(column);
+    if (!filterKey) {
+      return;
+    }
+    const existingFilter = this.columnFilters[filterKey] || {
+      value: undefined,
+      min: undefined,
+      max: undefined,
+      operation: this.getDefaultOperation(column.filterConfig?.type)
+    };
+    this.columnFilters[filterKey] = operation === 'range'
+      ? { min: existingFilter.min, max: existingFilter.max, operation }
+      : { value: existingFilter.value, operation };
+
+    if (this.filterControls[filterKey]) {
+      if (operation === 'range') {
+        this.filterControls[filterKey]['value']?.setValue(null, { emitEvent: false });
+      } else {
+        this.filterControls[filterKey]['min']?.setValue(null, { emitEvent: false });
+        this.filterControls[filterKey]['max']?.setValue(null, { emitEvent: false });
+      }
+    }
+
+    const filterEvent: FilterEvent = operation === 'range'
+      ? { key: filterKey, min: existingFilter.min, max: existingFilter.max, operation }
+      : { key: filterKey, value: existingFilter.value, operation };
+    this.filterChanged.emit(filterEvent);
+
+    this.paginationEvent = {
+      pageNumber: 1,
+      pageSize: this.paginationEvent?.pageSize ?? this.internalPageSize
+    };
+    const tableStateEvent: TableStateEvent = {
+      searchText: this.searchText,
+      paginationEvent: this.paginationEvent,
+      tableSortEvent: this.tableSortEvent,
+      columnFilters: { ...this.columnFilters }
+    };
+    this.emitTableStateChanged(tableStateEvent);
+    this.onValueChange(tableStateEvent);
+  }
+
+  onPageChange(event: PaginationEvent): void {
+    this.paginationEvent = event;
+    const tableStateEvent: TableStateEvent = {
+      searchText: this.searchText,
+      paginationEvent: event,
+      tableSortEvent: this.tableSortEvent,
+      columnFilters: this.columnFilters
+    };
+    this.pageChange.emit(event);
+    this.emitTableStateChanged(tableStateEvent);
+    this.onValueChange(tableStateEvent);
+  }
+
+  onSortChanged(event: TableSortEvent): void {
+    this.tableSortEvent = event;
+    const tableStateEvent: TableStateEvent = {
+      searchText: this.searchText,
+      paginationEvent: {
+        pageNumber: 1,
+        pageSize: this.paginationEvent?.pageSize ?? this.internalPageSize
+      },
+      tableSortEvent: event,
+      columnFilters: this.columnFilters
+    };
+    this.sortChanged.emit(event);
+    this.emitTableStateChanged(tableStateEvent);
+    this.onValueChange(tableStateEvent);
+  }
+
+  onRowSelectionChange(selected: boolean, item: any): void {
+    const id = this.getItemId(item);
+    let updatedIds: any[];
+    if (selected) {
+      updatedIds = [...this.selectedIds(), id];
+    } else {
+      updatedIds = this.selectedIds().filter(selectedId => selectedId !== id);
+    }
+    this.selectedIds.set(updatedIds);
+    this.rowSelectionChanged.emit(this.selectedIds());
+  }
+
+  onSelectAllRows(selected: boolean): void {
+    let updatedIds: any[];
+    if (selected) {
+      const newIds = this.data().map((item: any) => this.getItemId(item)).filter((id: any) => !this.selectedIds().includes(id));
+      updatedIds = [...this.selectedIds(), ...newIds];
+    } else {
+      const currentPageIds = this.data().map((item: any) => this.getItemId(item));
+      updatedIds = this.selectedIds().filter(id => !currentPageIds.includes(id));
+    }
+    this.selectedIds.set(updatedIds);
+    this.rowSelectionChanged.emit(this.selectedIds());
+  }
+
+  // Helper methods
+  private cloneNodeWithVisibility(node: ColumnNode): ColumnNode {
+    if ('children' in node) {
+      return {
+        ...node,
+        children: node.children.map(child => this.cloneNodeWithVisibility(child))
+      };
+    } else {
+      return {
+        ...node,
+        visible: node.visible ?? true
+      };
+    }
+  }
+
+  private updateHeaderHeight(): void {
+    if (this.tableRef) {
+      const headers = this.tableRef.nativeElement.querySelectorAll('thead tr:not(:last-child)');
+      let height = 0;
+      headers.forEach((tr: HTMLElement) => {
+        height += tr.offsetHeight;
+      });
+      this.headerHeight.set(height);
+    }
+  }
+
+  getHeaderHeight(): number {
+    return this.headerHeight();
   }
 
   getFilterKey(column: ColumnDef): string {
@@ -312,6 +439,22 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
     return this.filterControls[filterKey][property];
   }
 
+  private parseFilterValue(value: any, type?: string): any {
+    if (type === 'select') {
+      if (Array.isArray(value)) {
+        return value.map(v => typeof v === 'string' ? v : v?.value).filter(Boolean);
+      } else if (value) {
+        return [typeof value === 'string' ? value : value?.value].filter(Boolean);
+      } else {
+        return [];
+      }
+    } else if (type === 'date') {
+      const parsed = value ? new Date(value) : null;
+      return this.isValidDate(parsed) ? parsed : null;
+    }
+    return value;
+  }
+
   private isValidDate(date: any): boolean {
     return date instanceof Date && !isNaN(date.getTime());
   }
@@ -320,118 +463,13 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
     return this.allLeafColumns().some(column => !!column.filterConfig);
   }
 
-  onFilterChanged(value: any, min: any, max: any, column: ColumnDef) {
-    console.log('onFilterChanged called with:', { value, min, max, column: column.title });
-    const filterKey = this.getFilterKey(column);
-    if (!filterKey) {
-      console.warn('No valid filter key found for column:', column.title);
-      return;
-    }
-    const existingFilter = this.columnFilters[filterKey] || {
-      operation: this.getDefaultOperation(column.filterConfig?.type),
-    };
-    const operation = existingFilter.operation;
-    let parsedValue = value;
-    let parsedMin = min;
-    let parsedMax = max;
-
-    if (column.filterConfig?.type === 'select') {
-      parsedValue = Array.isArray(value) ? value : value ? [value] : [];
-    } else if (column.filterConfig?.type === 'date') {
-      parsedValue = value ? new Date(value) : null;
-      parsedMin = min ? new Date(min) : null;
-      parsedMax = max ? new Date(max) : null;
-      parsedValue = parsedValue && this.isValidDate(parsedValue) ? parsedValue : null;
-      parsedMin = parsedMin && this.isValidDate(parsedMin) ? parsedMin : null;
-      parsedMax = parsedMax && this.isValidDate(parsedMax) ? parsedMax : null;
-    }
-
-    if (operation === 'range') {
-      if (parsedMin || parsedMax) {
-        this.columnFilters[filterKey] = { min: parsedMin, max: parsedMax, operation };
-      } else {
-        delete this.columnFilters[filterKey];
-      }
-    } else {
-      if (parsedValue && (Array.isArray(parsedValue) ? parsedValue.length > 0 : parsedValue)) {
-        this.columnFilters[filterKey] = { value: parsedValue, operation };
-      } else {
-        delete this.columnFilters[filterKey];
-      }
-    }
-
-    const filterEvent: FilterEvent = operation === 'range'
-      ? { key: filterKey, min: parsedMin, max: parsedMax, operation }
-      : { key: filterKey, value: parsedValue, operation };
-    console.log('Emitting filterChanged:', filterEvent);
-    this.filterChanged.emit(filterEvent);
-
-    const paginationEvent: PaginationEvent = {
-      pageNumber: 1,
-      pageSize: this.paginationEvent?.pageSize ?? this.internalPageSize,
-    };
-    this.paginationEvent = paginationEvent;
-    const tableStateEvent: TableStateEvent = {
-      searchText: this.searchText,
-      paginationEvent,
-      tableSortEvent: this.tableSortEvent,
-      columnFilters: { ...this.columnFilters },
-    };
-    this.emitTableStateChanged(tableStateEvent);
-    this.onValueChange(tableStateEvent);
-  }
-
-  onFilterOperationChanged(operation: string, column: ColumnDef) {
-    console.log('onFilterOperationChanged called with:', { operation, column: column.title });
-    const filterKey = this.getFilterKey(column);
-    if (!filterKey) {
-      console.warn('No valid filter key found for column:', column.title);
-      return;
-    }
-    const existingFilter = this.columnFilters[filterKey] || {
-      value: undefined,
-      min: undefined,
-      max: undefined,
-      operation: this.getDefaultOperation(column.filterConfig?.type)
-    };
-    this.columnFilters[filterKey] = operation === 'range'
-      ? { min: existingFilter.min, max: existingFilter.max, operation }
-      : { value: existingFilter.value, operation };
-    if (this.filterControls[filterKey]) {
-      if (operation === 'range') {
-        this.filterControls[filterKey]['value']?.setValue(null, { emitEvent: false });
-      } else {
-        this.filterControls[filterKey]['min']?.setValue(null, { emitEvent: false });
-        this.filterControls[filterKey]['max']?.setValue(null, { emitEvent: false });
-      }
-    }
-    const filterEvent: FilterEvent = operation === 'range'
-      ? { key: filterKey, min: existingFilter.min, max: existingFilter.max, operation }
-      : { key: filterKey, value: existingFilter.value, operation };
-    console.log('Emitting filterChanged (operation):', filterEvent);
-    this.filterChanged.emit(filterEvent);
-    let paginationEvent: PaginationEvent = {
-      pageNumber: 1,
-      pageSize: this.paginationEvent?.pageSize ?? this.internalPageSize
-    };
-    this.paginationEvent = paginationEvent;
-    let tableStateEvent: TableStateEvent = {
-      searchText: this.searchText,
-      paginationEvent: paginationEvent,
-      tableSortEvent: this.tableSortEvent,
-      columnFilters: { ...this.columnFilters }
-    };
-    this.emitTableStateChanged(tableStateEvent);
-    this.onValueChange(tableStateEvent);
-  }
-
-  public getDefaultOperation(type?: string): string {
+  getDefaultOperation(type?: string): string {
     switch (type) {
       case 'text':
         return 'contains';
       case 'number':
       case 'date':
-        return 'equal';
+        return 'equals';
       case 'select':
         return 'equals';
       default:
@@ -439,7 +477,7 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
     }
   }
 
-  public getFilterOperations(type?: string): { value: string; label: string }[] {
+  getFilterOperations(type?: string): { value: string; label: string }[] {
     switch (type) {
       case 'text':
         return [
@@ -473,72 +511,71 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
       value = column.key.split('.').reduce((acc, part) => acc && acc[part], item);
     }
     if (column.formatter) {
-      return column.formatter ? column.formatter(value) : value;
+      return column.formatter(value);
     } else if (column.objectFormatter) {
-      return column.objectFormatter ? column.objectFormatter(item) : item;
+      return column.objectFormatter(item);
     } else {
       return value;
     }
   }
 
-  onPageChange(event: PaginationEvent) {
-    this.paginationEvent = event;
-    let tableStateEvent: TableStateEvent = {
-      searchText: this.searchText,
-      paginationEvent: event,
-      tableSortEvent: this.tableSortEvent,
-      columnFilters: this.columnFilters
-    };
-    this.pageChange.emit(event);
-    this.emitTableStateChanged(tableStateEvent);
-    this.onValueChange(tableStateEvent);
+ getCellClass(column: ColumnDef): string {
+  let classes = this.getAlignmentClass(column);
+  
+  if (column.type === 'actions') {
+    classes += ' sticky right-0 z-[40] bg-white shadow-[-2px_0_4px_rgba(0,0,0,0.1)] border-l-2 border-gray-300 w-32 min-w-[128px] max-w-[128px]';
+  } else {
+    classes += ' ' + this.getColumnWidthClass(column);
   }
-
-  onSortChanged(event: TableSortEvent) {
-    this.tableSortEvent = event;
-    let tableStateEvent: TableStateEvent = {
-      searchText: this.searchText,
-      paginationEvent: {
-        pageNumber: 1,
-        pageSize: this.paginationEvent?.pageSize ?? this.internalPageSize
-      },
-      tableSortEvent: event,
-      columnFilters: this.columnFilters
-    };
-    this.sortChanged.emit(event);
-    this.emitTableStateChanged(tableStateEvent);
-    this.onValueChange(tableStateEvent);
-  }
-
-getThTrClass(cellOrColumn: HeaderCell | ColumnDef) {
-  const alignment = 'node' in cellOrColumn ? cellOrColumn.node.alignment : cellOrColumn.alignment;
-  switch (alignment) {
-    case 'left':
-      return 'text-left !important';
-    case 'center':
-      return 'text-center !important';
-    case 'right':
-      return 'text-right !important';
-    default:
-      return 'text-left !important';
-  }
+  
+  return classes;
 }
 
-getFlexJustifyClass(cell: HeaderCell): string {
-  const alignment = cell.node.alignment;
-  switch (alignment) {
-    case 'left':
-      return 'justify-start';
-    case 'center':
-      return 'justify-center';
-    case 'right':
-      return 'justify-end';
-    default:
-      return 'justify-start';
+getHeaderThClass(cell: HeaderCell): string {
+  let classes = this.getAlignmentClass(cell.node);
+  
+  if (!this.isColumnGroup(cell.node) && (cell.node as ColumnDef).type === 'actions') {
+    classes += ' sticky right-0 z-[110] bg-gray-100 shadow-[-2px_0_4px_rgba(0,0,0,0.1)] border-l-2 border-gray-300 w-32 min-w-[128px] max-w-[128px]';
+  } else {
+    classes += ' ' + this.getColumnWidthClass(cell.node);
   }
+  
+  if (this.isColumnGroup(cell.node) && cell.colspan > 1) {
+    classes += ' border-r-2 border-gray-400';
+  }
+  
+  return classes;
 }
 
-  getFlexJustify(column: ColumnDef) {
+  private getAlignmentClass(node: ColumnNode): string {
+    const alignment = node.alignment;
+    switch (alignment) {
+      case 'left':
+        return 'text-left';
+      case 'center':
+        return 'text-center';
+      case 'right':
+        return 'text-right';
+      default:
+        return 'text-left';
+    }
+  }
+
+  getFlexJustifyClass(cell: HeaderCell): string {
+    const alignment = cell.node.alignment;
+    switch (alignment) {
+      case 'left':
+        return 'justify-start';
+      case 'center':
+        return 'justify-center';
+      case 'right':
+        return 'justify-end';
+      default:
+        return 'justify-start';
+    }
+  }
+
+  getFlexJustify(column: ColumnDef): string {
     switch (column.alignment) {
       case 'left':
         return 'justify-start';
@@ -551,11 +588,117 @@ getFlexJustifyClass(cell: HeaderCell): string {
     }
   }
 
+getColumnWidthClass(node: ColumnNode): string {
+  if ('children' in node) return '';
+
+  const column = node as ColumnDef;
+  switch (column.type) {
+    case 'checkbox':
+      return 'w-12 min-w-[48px] max-w-[48px]';
+    case 'actions':
+      return 'w-32 min-w-[128px] max-w-[128px]'; // Increased width for better button spacing
+    default:
+      if (column.key === 'id') {
+        return 'w-16 min-w-[64px] max-w-[80px]';
+      } else if (column.key === 'name' || column.title?.toLowerCase().includes('name')) {
+        return 'w-48 min-w-[200px] max-w-[300px]';
+      } else if (column.key === 'email' || column.title?.toLowerCase().includes('email')) {
+        return 'w-56 min-w-[220px] max-w-[280px]';
+      } else if (column.key === 'phone' || column.title?.toLowerCase().includes('phone')) {
+        return 'w-40 min-w-[140px] max-w-[160px]';
+      } else if (column.key === 'age' || column.title?.toLowerCase().includes('age')) {
+        return 'w-20 min-w-[80px] max-w-[80px]';
+      } else if (column.type === 'badge' || column.title?.toLowerCase().includes('status')) {
+        return 'w-32 min-w-[120px] max-w-[150px]';
+      } else if (column.key === 'role' || column.title?.toLowerCase().includes('role')) {
+        return 'w-32 min-w-[100px] max-w-[150px]';
+      } else if (column.title?.toLowerCase().includes('city')) {
+        return 'w-36 min-w-[120px] max-w-[180px]';
+      } else {
+        return 'w-40 min-w-[120px] max-w-[200px]';
+      }
+  }
+}
+
+getTableStyles(): string {
+  return `
+    /* Custom shadow for sticky elements */
+    .shadow-right {
+      box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Ensure proper table layout */
+    .table-fixed {
+      table-layout: fixed;
+    }
+    
+    /* Enhanced hover effects */
+    .group:hover .group-hover\\:bg-blue-50 {
+      background-color: rgb(239 246 255);
+    }
+    
+    .group:hover .group-hover\\:bg-blue-200 {
+      background-color: rgb(191 219 254);
+    }
+    
+    /* Context menu positioning fix */
+    app-context-menu-button {
+      position: relative;
+      z-index: 70;
+    }
+    
+    /* Ensure actions column stays fixed */
+    td[class*="actions"] {
+      position: sticky;
+      right: 0;
+      background: inherit;
+    }
+    
+    th[class*="actions"] {
+      position: sticky;
+      right: 0;
+      background: inherit;
+    }
+    
+    /* Better scrollbar styling */
+    .overflow-auto::-webkit-scrollbar {
+      height: 8px;
+      width: 8px;
+    }
+    
+    .overflow-auto::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+    
+    .overflow-auto::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    
+    .overflow-auto::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    
+    /* Fix for border gaps on scroll */
+    table {
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    
+    /* Ensure consistent border rendering */
+    td, th {
+      border-style: solid;
+      border-color: inherit;
+    }
+  `;
+}
+
   getBadgeProperty(item: any, column: ColumnDef): BadgeConfigProperty | null {
-    let badgeConfigProperties = column.badgeConfig?.properties ?? [];
+    const badgeConfigProperties = column.badgeConfig?.properties ?? [];
     let matchedBadgeConfigProperty: BadgeConfigProperty | null = null;
+    const value = this.getPropertyValue(item, column);
     badgeConfigProperties.forEach(badgeConfigProperty => {
-      let value = this.getPropertyValue(item, column);
       if (value === badgeConfigProperty.data) {
         matchedBadgeConfigProperty = badgeConfigProperty;
       }
@@ -570,68 +713,45 @@ getFlexJustifyClass(cell: HeaderCell): string {
     } else if (actions) {
       actionConfigs = actions;
     }
-    return actionConfigs.map(action => {
-      let configAction: ContextMenuButtonAction = {
-        iconPath: action.iconPath,
-        label: action.label,
-        actionKey: action.actionKey
-      };
-      return configAction;
-    });
+    return actionConfigs.map(action => ({
+      iconPath: action.iconPath,
+      label: action.label,
+      actionKey: action.actionKey
+    }));
   }
 
-  _onActionClicked($event: string, item: any, mouseEvent: MouseEvent | null) {
+  _onActionClicked(actionKey: string, item: any, mouseEvent: MouseEvent | null): void {
     if (mouseEvent) {
       mouseEvent.stopPropagation();
     }
-    let tableActionEvent: TableActionEvent = {
-      actionKey: $event,
-      item: item
+    const tableActionEvent: TableActionEvent = {
+      actionKey,
+      item
     };
-    this.onActionPerformed.emit(tableActionEvent);
-    console.log('Action clicked:', tableActionEvent);
+    this.actionPerformed.emit(tableActionEvent);
   }
 
   expandedRowIndex = signal<number | null>(null);
 
-  onRowExpandedClicked(i: number) {
-    if (this.expandedRowIndex() == i) {
-      this.expandedRowIndex.set(null);
-    } else {
-      this.expandedRowIndex.set(i);
-    }
+  onRowExpandedClicked(i: number): void {
+    this.expandedRowIndex.set(this.expandedRowIndex() === i ? null : i);
   }
 
-  _onRowClicked(item: any) {
-    this.onRowClicked.emit(item);
+  onRowClicked(item: any): void {
+    this.rowClicked.emit(item);
   }
 
-  onCellActionPerformed($event: TableActionEvent) {
-    this.onActionPerformed.emit($event);
-    console.log('Cell action performed:', $event);
+  onCellActionPerformed(event: TableActionEvent): void {
+    this.actionPerformed.emit(event);
   }
 
-  onRowActionPerformed($event: TableActionEvent) {
-    this.onActionPerformed.emit($event);
-    console.log('Row action performed:', $event);
+  onRowActionPerformed(event: TableActionEvent): void {
+    this.actionPerformed.emit(event);
   }
 
   isRowSelected(item: any): boolean {
     const id = this.getItemId(item);
     return this.selectedIds().includes(id);
-  }
-
-  onRowSelectionChange(selected: boolean, item: any) {
-    const id = this.getItemId(item);
-    let updatedIds: any[];
-    if (selected) {
-      updatedIds = [...this.selectedIds(), id];
-    } else {
-      updatedIds = this.selectedIds().filter(selectedId => selectedId !== id);
-    }
-    this.selectedIds.set(updatedIds);
-    this.rowSelectionChange.emit(this.selectedIds());
-    console.log('Row selection changed:', this.selectedIds());
   }
 
   private getItemId(item: any): any {
@@ -644,21 +764,7 @@ getFlexJustifyClass(cell: HeaderCell): string {
     return this.data().every((item: any) => this.isRowSelected(item));
   }
 
-  onSelectAllRows(selected: boolean) {
-    let updatedIds: any[];
-    if (selected) {
-      const newIds = this.data().map((item: any) => this.getItemId(item)).filter((id: any) => !this.selectedIds().includes(id));
-      updatedIds = [...this.selectedIds(), ...newIds];
-    } else {
-      const currentPageIds = this.data().map((item: any) => this.getItemId(item));
-      updatedIds = this.selectedIds().filter(id => !currentPageIds.includes(id));
-    }
-    this.selectedIds.set(updatedIds);
-    this.rowSelectionChange.emit(this.selectedIds());
-    console.log('Select all changed:', this.selectedIds());
-  }
-
-  // Nested header functions
+  // Nested header utilities
   getMaxDepth(): number {
     const nodes = this.columnGroupsSignal();
     let max = 1;
@@ -690,202 +796,54 @@ getFlexJustifyClass(cell: HeaderCell): string {
     return leaves;
   }
 
-  getLeafCount(node: ColumnNode): number {
+  private getLeafCount(node: ColumnNode): number {
     if (!('children' in node)) return (node.visible ?? true) ? 1 : 0;
     return node.children.reduce((sum, child) => sum + this.getLeafCount(child), 0);
   }
 
-getHeaderCellsAtLevel(level: number): HeaderCell[] {
-  const cells: HeaderCell[] = [];
-  const maxDepth = this.getMaxDepth();
-  const traverse = (node: ColumnNode, currentLevel: number) => {
-    if (currentLevel === level) {
-      const isGroup = 'children' in node;
-      const colspan = this.getLeafCount(node);
-      let rowspan = 1;
-      if (!isGroup) {
-        rowspan = maxDepth - currentLevel;
+  getHeaderCellsAtLevel(level: number): HeaderCell[] {
+    const cells: HeaderCell[] = [];
+    const maxDepth = this.getMaxDepth();
+    const traverse = (node: ColumnNode, currentLevel: number) => {
+      if (currentLevel === level) {
+        const isGroup = 'children' in node;
+        const colspan = this.getLeafCount(node);
+        let rowspan = 1;
+        if (!isGroup) {
+          rowspan = maxDepth - currentLevel;
+        }
+        if (colspan > 0) {
+          cells.push({
+            title: node.title,
+            colspan,
+            rowspan,
+            node,
+            sortKey: isGroup ? undefined : node.sortKey,
+            alignment: node.alignment
+          });
+        }
+      } else if ('children' in node) {
+        node.children.forEach(child => traverse(child, currentLevel + 1));
       }
-      if (colspan > 0) {
-        cells.push({
-          title: node.title,
-          colspan,
-          rowspan,
-          node,
-          sortKey: isGroup ? undefined : node.sortKey,
-          pinned: this.getNodePinned(node),
-          alignment: node.alignment
-        });
-      }
-    } else if ('children' in node) {
-      node.children.forEach(child => traverse(child, currentLevel + 1));
-    }
-  };
-  this.columnGroupsSignal().forEach(node => traverse(node, 0));
-  return cells;
-}
+    };
+    this.columnGroupsSignal().forEach(node => traverse(node, 0));
+    return cells;
+  }
 
   isColumnGroup(node: ColumnNode): node is ColumnGroup {
     return 'children' in node;
   }
 
-  getNodePinned(node: ColumnNode): 'left' | 'right' | null {
-    if (!('children' in node)) return node.pinned ?? null;
-    const childPinneds = node.children.map(child => this.getNodePinned(child)).filter(p => p !== null);
-    const first = childPinneds[0];
-    if (childPinneds.length > 0 && childPinneds.every(p => p === first)) {
-      return first;
-    }
-    return null;
-  }
-
-  private getFirstLeaf(node: ColumnNode): ColumnDef {
-    if (!('children' in node)) return node;
-    return this.getFirstLeaf(node.children[0]);
+  hasActionColumn(): boolean {
+    return this.allLeafColumns().some(col => col.type === 'actions');
   }
 
   getHeaderRowSpan(): number {
     return this.getMaxDepth();
   }
-
-  // Pinning functionality
-  onPinToggle(column: ColumnDef) {
-    console.log('Pin toggle for column:', column.title);
-    let newPinnedValue: 'left' | 'right' | null;
-    if (column.pinned === null) {
-      newPinnedValue = 'left';
-    } else if (column.pinned === 'left') {
-      newPinnedValue = 'right';
-    } else {
-      newPinnedValue = null;
-    }
-
-    // Check max pinned limit
-    const leftPinnedCount = this.allLeafColumns().filter(col => col.pinned === 'left').length;
-    const rightPinnedCount = this.allLeafColumns().filter(col => col.pinned === 'right').length;
-
-    if (newPinnedValue === 'left' && leftPinnedCount >= this.maxPinnedLeft() && column.pinned !== 'left') {
-      console.warn('Maximum left-pinned columns reached:', this.maxPinnedLeft());
-      return;
-    }
-    if (newPinnedValue === 'right' && rightPinnedCount >= this.maxPinnedRight() && column.pinned !== 'right') {
-      console.warn('Maximum right-pinned columns reached:', this.maxPinnedRight());
-      return;
-    }
-
-    // Update the column's pinned property
-    this.columnGroupsSignal.update(nodes => nodes.map(node => this.updatePinnedInNode(node, column, newPinnedValue)));
-
-    // Emit pinning change
-    this.pinChanged.emit({ column, pinned: newPinnedValue });
-
-    // Trigger change detection
-    this.cdr.detectChanges();
-  }
-
-  private updatePinnedInNode(node: ColumnNode, target: ColumnDef, newPinned: 'left' | 'right' | null): ColumnNode {
-    if (node === target) {
-      return { ...node, pinned: newPinned };
-    }
-    if ('children' in node) {
-      return {
-        ...node,
-        children: node.children.map(child => this.updatePinnedInNode(child, target, newPinned))
-      };
-    }
-    return node;
-  }
-
-  private getLeafHeaderRow(): HTMLElement | null {
-    if (this.tableRef) {
-      const headerRows = this.tableRef.nativeElement.querySelectorAll('thead tr');
-      const index = headerRows.length - (this.hasFilterConfig() ? 2 : 1);
-      return headerRows[index] as HTMLElement;
-    }
-    return null;
-  }
-
-  getPinnedLeftOffset(node: ColumnNode): string {
-    const pinned = this.getNodePinned(node);
-    if (pinned !== 'left') return '0';
-
-    const firstLeaf = this.getFirstLeaf(node);
-    const leftPinnedLeaves = this.allLeafColumns().filter(c => c.pinned === 'left');
-    const index = leftPinnedLeaves.findIndex(c => c === firstLeaf);
-    if (index === -1) return '0';
-
-    let offset = 0;
-    const headerRow = this.getLeafHeaderRow();
-    if (headerRow) {
-      const thElements = headerRow.querySelectorAll('th.sticky[pinned="left"]');
-      if (thElements.length > 0) {
-        for (let i = 0; i < index; i++) {
-          offset += (thElements[i] as HTMLElement).offsetWidth;
-        }
-      }
-    }
-
-    // Fallback if DOM not ready
-    if (offset === 0 && index > 0) {
-      for (let i = 0; i < index; i++) {
-        offset += leftPinnedLeaves[i].width ?? 120;
-      }
-    }
-
-    if (this.enableRowSelection()) offset += 48; // Checkbox width
-    return `${offset}px`;
-  }
-
-  getPinnedRightOffset(node: ColumnNode): string {
-    const pinned = this.getNodePinned(node);
-    if (pinned !== 'right') return '0';
-
-    const firstLeaf = this.getFirstLeaf(node);
-    const rightPinnedLeaves = this.allLeafColumns().filter(c => c.pinned === 'right');
-    const index = rightPinnedLeaves.findIndex(c => c === firstLeaf);
-    if (index === -1) return '0';
-
-    let offset = 0;
-    const headerRow = this.getLeafHeaderRow();
-    if (headerRow) {
-      const thElements = headerRow.querySelectorAll('th.sticky[pinned="right"]');
-      if (thElements.length > 0) {
-        for (let i = index + 1; i < rightPinnedLeaves.length; i++) {
-          offset += (thElements[i] as HTMLElement).offsetWidth;
-        }
-      }
-    }
-
-    // Fallback
-    if (offset === 0) {
-      for (let i = index + 1; i < rightPinnedLeaves.length; i++) {
-        offset += rightPinnedLeaves[i].width ?? 120;
-      }
-    }
-
-    return `${offset}px`;
-  }
-
-  getPinnedZIndex(node: ColumnNode): number {
-    const pinned = this.getNodePinned(node);
-    if (!pinned) return 0;
-
-    const firstLeaf = this.getFirstLeaf(node);
-    const pinnedLeaves = this.allLeafColumns().filter(c => c.pinned === pinned);
-    let index = pinnedLeaves.findIndex(c => c === firstLeaf);
-
-    if (pinned === 'right') {
-      index = pinnedLeaves.length - 1 - index;
-    }
-
-    return 30 - index;
-  }
-
-  getCheckboxColumnOffset(): string {
-    return this.enableRowSelection() ? '0' : '';
-  }
 }
 
+// Interfaces and types (unchanged, but placed at the bottom for clarity)
 export type ColumnNode = ColumnDef | ColumnGroup;
 
 export interface ColumnGroup {
@@ -900,10 +858,8 @@ export interface HeaderCell {
   rowspan: number;
   node: ColumnNode;
   sortKey?: string;
-  pinned?: 'left' | 'right' | null;
   alignment?: 'left' | 'center' | 'right';
 }
-
 
 export interface ColumnDef {
   title: string;
@@ -912,7 +868,6 @@ export interface ColumnDef {
   sortKey?: string;
   alignment?: 'left' | 'center' | 'right';
   type: 'text' | 'date' | 'badge' | 'custom' | 'actions' | 'checkbox';
-  pinned?: 'left' | 'right' | null;
   visible?: boolean | null;
   component?: Type<any>;
   textConfig?: TextConfig;

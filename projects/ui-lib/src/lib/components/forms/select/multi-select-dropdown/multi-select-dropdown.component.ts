@@ -9,11 +9,11 @@ import {
     viewChild,
     ViewChild
 } from '@angular/core';
-import {FormControl, FormsModule, NgControl} from "@angular/forms";
-import {CdkConnectedOverlay, Overlay} from "@angular/cdk/overlay";
-import {NgClass} from "@angular/common";
-import {resolveTemplateWithObject} from "../../../../core/template-resolver";
-import {deepEqual} from "../../../../core/base-input-utils";
+import { FormControl, FormsModule, NgControl } from "@angular/forms";
+import { CdkConnectedOverlay, Overlay } from "@angular/cdk/overlay";
+import { NgClass } from "@angular/common";
+import { resolveTemplateWithObject } from "../../../../core/template-resolver";
+import { deepEqual } from "../../../../core/base-input-utils";
 import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
 import { BaseInputComponent } from '../../../../core/base-input/base-input.component';
 import { HumanizeFormMessagesPipe } from '../../../../core/humanize-form-messages.pipe';
@@ -66,14 +66,14 @@ export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor im
     filteredList = signal<T[]>([]);
     errorMessages = signal<{ [key: string]: string }>({});
 
-    @ViewChild('dropdownButton', {static: true}) dropdownButton!: ElementRef;
-    @ViewChild('dropdownListContainer', {static: false}) dropdownListContainer!: ElementRef;
-    @ViewChild('dropdownList', {static: false}) dropdownList!: ElementRef;
+    @ViewChild('dropdownButton', { static: true }) dropdownButton!: ElementRef;
+    @ViewChild('dropdownListContainer', { static: false }) dropdownListContainer!: ElementRef;
+    @ViewChild('dropdownList', { static: false }) dropdownList!: ElementRef;
     private searchField = viewChild<ElementRef<HTMLInputElement>>('searchField');
 
     scrollStrategy = this.overlay.scrollStrategies.block();
 
-    ngControl = inject(NgControl, {optional: true, self: true});
+    ngControl = inject(NgControl, { optional: true, self: true });
 
     MultiSelectDropdownAppearance = MultiSelectDropdownAppearance;
 
@@ -244,8 +244,10 @@ export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor im
     }
 
     updateFilteredList(searchKeyword?: string) {
-
         if (!searchKeyword || searchKeyword.trim() === '') {
+            // Reset full list when search is cleared
+            this.filteredList.set(this.items());
+            this.highlightedIndex.set(0);
             return;
         }
 
@@ -260,6 +262,7 @@ export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor im
         this.filteredList.set(filterResult);
         this.updateHighlightedIndex();
     }
+
 
     findFirstMatch(searchKeyword?: string): T | null {
         if (!searchKeyword || searchKeyword.trim() === '') {
@@ -297,16 +300,20 @@ export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor im
     toggleDropdown(): void {
         this.isOpen.update(prev => !prev);
         if (this.isOpen()) {
-            this.filteredList.set(this.items());
+            this.filteredList.set(this.items());  // always start with full list
             this.updateHighlightedIndex();
             this.adjustDropdownPosition();
             this.setPopupWidth();
             this.cdr.detectChanges();
             this.setDropdownMaxHeight();
             this.scrollToHighlightedItem();
-            this.searchField()?.nativeElement.focus();
+
+            if (this.enableSearch()) {
+                this.searchField()?.nativeElement.focus();
+            }
         }
     }
+
 
     setDropdownMaxHeight() {
         const buttonRect = this.dropdownButton.nativeElement.getBoundingClientRect();
@@ -335,7 +342,7 @@ export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor im
     scrollToHighlightedItem() {
         if (this.dropdownList && this.dropdownList.nativeElement.children[this.highlightedIndex()]) {
             const highlightedItem = this.dropdownList.nativeElement.children[this.highlightedIndex()];
-            highlightedItem.scrollIntoView({block: 'nearest'});
+            highlightedItem.scrollIntoView({ block: 'nearest' });
         }
     }
 
@@ -380,14 +387,14 @@ export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor im
             let key = event.key;
             if (key.length === 1 && /^[a-zA-Z]$/.test(key)) {
                 const matchingIndex = this.filteredList().findIndex(item => {
-                        let resolvedText = '';
-                        if (this.searchKeyMatch() != null && this.searchKeyMatch() != '') {
-                            resolvedText = resolveTemplateWithObject(item as any, `$${this.searchKeyMatch()}`);
-                        } else {
-                            resolvedText = this.getDisplayString(item);
-                        }
-                        return resolvedText.toLowerCase().startsWith(key);
+                    let resolvedText = '';
+                    if (this.searchKeyMatch() != null && this.searchKeyMatch() != '') {
+                        resolvedText = resolveTemplateWithObject(item as any, `$${this.searchKeyMatch()}`);
+                    } else {
+                        resolvedText = this.getDisplayString(item);
                     }
+                    return resolvedText.toLowerCase().startsWith(key);
+                }
                 );
 
                 if (matchingIndex !== -1) {

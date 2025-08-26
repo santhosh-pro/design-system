@@ -1,132 +1,220 @@
-<app-base-input [title]="title()" [fullWidth]="fullWidth()" (keydown)="handleKeydown($event)"
-                [isRequiredField]="hasRequiredValidator()">
+<app-base-input
+  [title]="title()"
+  [fullWidth]="fullWidth()"
+  (keydown)="handleKeydown($event)"
+  [isRequiredField]="hasRequiredValidator()"
+  class="w-full"
+>
+  <!-- Dropdown Button -->
+  <div #dropdownButton input class="relative w-full min-w-[13rem]">
+    <button
+      (click)="toggleDropdown()"
+      type="button"
+      tabindex="0"
+      [attr.aria-expanded]="isOpen()"
+      class="dropdown-button w-full h-12 flex items-center justify-between px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-neutral-200 rounded-md shadow-sm focus:ring-2 focus:ring-primary-500 focus:outline-none transition-all duration-200"
+    >
+      @switch (appearance()) {
+        @case (MultiSelectDropdownAppearance.standard) {
+          <span
+            class="text-sm truncate flex-1 text-left"
+            [ngClass]="{
+              'text-black': (formControl.value?.length > 0 || selectedItems().length > 0),
+              'text-gray-400': !(formControl.value?.length > 0 || selectedItems().length > 0)
+            }"
+          >
+            {{ (selectedItems().length > 0 || formControl.value?.length > 0) ? (selectedItems().length || formControl.value?.length) + ' Selected' : placeholder() }}
+          </span>
+        }
+        @case (MultiSelectDropdownAppearance.csv) {
+          <div class="flex flex-wrap gap-2 w-full">
+            <span
+              class="text-sm truncate text-left w-full"
+              [ngClass]="{
+                'text-black': (formControl.value?.length > 0 || selectedItems().length > 0),
+                'text-gray-400': !(formControl.value?.length > 0 || selectedItems().length > 0)
+              }"
+            >
+              {{ getCsv() ?? placeholder() }}
+            </span>
+          </div>
+        }
+        @default {
+          <span
+            class="text-sm truncate flex-1 text-left"
+            [ngClass]="{
+              'text-black': (formControl.value?.length > 0 || selectedItems().length > 0),
+              'text-gray-400': !(formControl.value?.length > 0 || selectedItems().length > 0)
+            }"
+          >
+            {{ (selectedItems().length > 0 || formControl.value?.length > 0) ? (selectedItems().length || formControl.value?.length) + ' Selected' : placeholder() }}
+          </span>
+        }
+      }
+      <div class="flex items-center">
+        <svg
+          class="h-5 w-5 text-gray-500"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            d="M7.41 8.58L12 13.17l4.59-4.59L18 10l-6 6-6-6 1.41-1.42z"
+            fill="currentColor"
+          />
+        </svg>
+      </div>
+    </button>
+  </div>
 
-    <div #dropdownButton input class="relative inline-block text-left min-w-52">
-        <div>
-            <button (click)="toggleDropdown()"
-                    type="button"
-                    tabindex="0"
-                    [attr.aria-expanded]="isOpen()"
-                    class="h-[46px] inline-flex items-center w-full px-4 py-2 text-sm justify-between font-medium text-gray-700 bg-white border-none outline-none border-gray-300 ring-1 focus:ring-2 ring-neutral-300 focus:ring-primary-500 rounded-md shadow-1 focus:border-none focus:outline-none transition-all duration-300">
-                @switch (appearance()) {
-                    @case (MultiSelectDropdownAppearance.standard) {
-                        <span class="text-body1 text-left overflow-ellipsis"
-                              [ngClass]="((formControl.value != null && formControl.value?.length > 0) || selectedItems().length > 0) ? 'text-black' : 'text-gray-400'">{{ ((selectedItems().length > 0 || formControl.value?.length > 0) ? (selectedItems().length || formControl.value?.length) + ' Selected' : placeholder()) }}</span>
-                    }
-                    @case (MultiSelectDropdownAppearance.csv) {
-                        <div class="flex flex-wrap gap-2 w-full">
-                            <span class="text-body1 text-left w-full truncate overflow-ellipsis"
-                                  [ngClass]="((formControl.value != null && formControl.value?.length > 0) || selectedItems().length > 0) ? 'text-black' : 'text-gray-400'">{{ getCsv() ?? placeholder() }}</span>
-                        </div>
-                    }
-                    @default {
-                        <span class="text-body1 text-left overflow-ellipsis"
-                              [ngClass]="((formControl.value != null && formControl.value?.length > 0) || selectedItems().length > 0) ? 'text-black' : 'text-gray-400'">{{ ((selectedItems().length > 0 || formControl.value?.length > 0) ? (selectedItems().length || formControl.value?.length) + ' Selected' : placeholder()) }}</span>
-                    }
-                }
-                <div class="flex items-center gap-2 -mr-1">
-                    <svg class="h-[20px] w-[20px] text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M7.41 8.57996L12 13.17L16.59 8.57996L18 9.99996L12 16L6 9.99996L7.41 8.57996Z"
-                              fill="currentColor"/>
-                    </svg>
-                </div>
-
-            </button>
+  <!-- Dropdown Menu -->
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOrigin]="dropdownButton"
+  [cdkConnectedOverlayOpen]="isOpen()"
+  [cdkConnectedOverlayHasBackdrop]="true"
+  [cdkConnectedOverlayBackdropClass]="['custom-backdrop']" 
+  (overlayOutsideClick)="onClickOutside()"
+  [cdkConnectedOverlayPositions]="[
+    { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top' },
+    { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom' }
+  ]"
+  [cdkConnectedOverlayScrollStrategy]="scrollStrategy"
+  [cdkConnectedOverlayOffsetY]="8"
+>
+  <div
+    #dropdownListContainer
+    class="dropdown-container bg-white rounded-md shadow-lg ring-1 ring-neutral-200 max-h-[300px] overflow-hidden z-50" 
+    [style.width.px]="dropdownWidth()"
+  >
+      <!-- Search Bar -->
+  <!-- Search Bar -->
+@if (enableSearch()) {
+  <div class="relative flex items-center border-b border-neutral-200 px-3 py-2">
+    <svg
+      class="absolute h-5 w-5 text-neutral-400 ml-2"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path
+        d="M9.5 3a6.5 6.5 0 100 13 6.5 6.5 0 000-13zm0 11a4.5 4.5 0 110-9 4.5 4.5 0 010 9zm5.79 1.21L20 20l-1.41 1.41-4.79-4.79 1.41-1.41z"
+        fill="currentColor"
+      />
+    </svg>
+    <input
+      #searchField
+      (input)="filterList($event)"
+      (keydown)="handleKeydown($event)"
+      class="w-full pl-10 pr-10 py-2 text-sm text-black placeholder-neutral-400 border-none focus:ring-0 focus:outline-none"
+      placeholder="Search..."
+    />
+    <!-- Fix: Remove parentheses after searchField -->
+    @if (searchField?.value) {
+      <button
+        (click)="onClearSearchClicked()"
+        class="absolute right-2 p-1 hover:bg-neutral-100 rounded-full"
+        aria-label="Clear search"
+      >
+        <svg
+          class="h-4 w-4 text-neutral-400"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path
+            d="M12 2a10 10 0 110 20 10 10 0 010-20zm3.59 5L12 10.59 8.41 7 7 8.41 10.59 12 7 15.59 8.41 17 12 13.41 15.59 17 17 15.59 13.41 12 17 8.41 15.59 7z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
+    }
+  </div>
+}
+      <!-- Add Action -->
+      @if (addActionText()) {
+        <div
+          class="flex items-center gap-2 px-4 py-3 bg-neutral-50 border-b border-neutral-100 cursor-pointer hover:bg-neutral-100"
+          (click)="onAddActionClicked()"
+        >
+          <svg
+            class="h-5 w-5 text-primary-500"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor" />
+          </svg>
+          <span class="text-sm font-medium text-primary-500">{{
+            addActionText()
+          }}</span>
         </div>
+      }
+
+      <!-- Select All / Clear -->
+      <div class="flex justify-between px-4 py-3 bg-neutral-50 border-b border-neutral-100">
+        <button
+          class="text-xs font-semibold text-primary-600 hover:text-primary-700"
+          (click)="onSelectAllClicked()"
+        >
+          SELECT ALL
+        </button>
+        <button
+          class="text-xs font-semibold text-primary-600 hover:text-primary-700"
+          (click)="onClearSelectionClicked()"
+        >
+          CLEAR
+        </button>
+      </div>
+
+      <!-- Dropdown Items -->
+      <div
+        #dropdownList
+        class="dropdown-list overflow-y-auto scrollbar-thin scrollbar-thumb-neutral-400 scrollbar-track-neutral-100"
+        role="listbox"
+        aria-labelledby="options-menu"
+        [style.maxHeight.px]="dropdownWidth()"
+      >
+        @for (item of filteredList(); track item; let i = $index) {
+          <div
+            (click)="onItemClicked(item)"
+            class="flex items-center gap-3 px-4 py-2.5 hover:bg-neutral-100 cursor-pointer transition-colors"
+            [ngClass]="{
+              'bg-neutral-100': highlightedIndex() === i,
+              'bg-primary-50 bg-opacity-50': isItemExistInFormControl(item) || isItemExistInNormalSelectionList(item)
+            }"
+            role="option"
+            [attr.aria-selected]="isItemExistInFormControl(item) || isItemExistInNormalSelectionList(item)"
+            tabindex="0"
+          >
+            <app-checkbox
+              [ngModel]="isItemExistInFormControl(item) || isItemExistInNormalSelectionList(item)"
+              class="pointer-events-none"
+            ></app-checkbox>
+            <span class="text-sm text-gray-700 truncate">{{
+              getDisplayString(item)
+            }}</span>
+          </div>
+        } @empty {
+          <span
+            class="block px-4 py-3 text-sm text-gray-400 select-none"
+            role="option"
+            >{{ noDataMessage() || 'No options available' }}</span>
+        }
+      </div>
     </div>
-
-    <ng-template cdkConnectedOverlay
-                 [cdkConnectedOverlayOrigin]="dropdownButton"
-                 [cdkConnectedOverlayOpen]="isOpen()"
-                 [cdkConnectedOverlayHasBackdrop]="false"
-                 [cdkConnectedOverlayBackdropClass]="['bg-black', 'bg-opacity-20']"
-                 (overlayOutsideClick)="onClickOutside()"
-                 [cdkConnectedOverlayPositions]="[
-                        {originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top'},
-                        {originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom'}
-                     ]"
-                 [cdkConnectedOverlayScrollStrategy]="scrollStrategy"
-                 [cdkConnectedOverlayOffsetY]="10">
-        <div #dropdownListContainer
-             class="flex flex-col rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none overflow-clip">
-
-            @if (enableSearch()) {
-                <div class="relative flex items-center w-full text-neutral-400 bg-white border border-b border-neutral-200">
-                    <svg class="absolute pointer-events-none ml-3 text-neutral-400 w-[20px] h-[20px]"
-                         viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                                d="M9.5 3C11.2239 3 12.8772 3.68482 14.0962 4.90381C15.3152 6.12279 16 7.77609 16 9.5C16 11.11 15.41 12.59 14.44 13.73L14.71 14H15.5L20.5 19L19 20.5L14 15.5V14.71L13.73 14.44C12.59 15.41 11.11 16 9.5 16C7.77609 16 6.12279 15.3152 4.90381 14.0962C3.68482 12.8772 3 11.2239 3 9.5C3 7.77609 3.68482 6.12279 4.90381 4.90381C6.12279 3.68482 7.77609 3 9.5 3ZM9.5 5C7 5 5 7 5 9.5C5 12 7 14 9.5 14C12 14 14 12 14 9.5C14 7 12 5 9.5 5Z"
-                                fill="currentColor"/>
-                    </svg>
-
-                    <input (input)="filterList($event)" (keydown)="handleKeydown($event)" #searchField
-                           class="h-[46px] pr-3 pl-10 placeholder-neutral-400 text-black border-none outline-none focus:border-none w-full">
-
-                    <div
-                            class="absolute right-2 p-2 flex justify-center items-center hover:bg-neutral-100 rounded-full cursor-pointer"
-                            (click)="onClearSearchClicked()">
-                        <svg class="h-[16px] w-[16px] text-neutral-400" xmlns="http://www.w3.org/2000/svg"
-                             viewBox="0 0 24 24"
-                             fill="none">
-                            <path
-                                    d="M12 2C17.53 2 22 6.47 22 12C22 17.53 17.53 22 12 22C6.47 22 2 17.53 2 12C2 6.47 6.47 2 12 2ZM15.59 7L12 10.59L8.41 7L7 8.41L10.59 12L7 15.59L8.41 17L12 13.41L15.59 17L17 15.59L13.41 12L17 8.41L15.59 7Z"
-                                    fill="currentColor"/>
-                        </svg>
-                    </div>
-                </div>
-            }
-
-            @if(addActionText()) {
-                <div class="flex gap-3 px-4 py-4 bg-neutral-50 w-full cursor-pointer border-b border-neutral-100" (click)="onAddActionClicked()">
-                    <svg class="text-primary-500 h-[18px] w-[18px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-                        <path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z" fill="currentColor"/>
-                    </svg>
-                    <span class="text-body2 text-primary-500">{{ addActionText() }}</span>
-                </div>
-            }
-
-            <div class="flex items-center justify-between px-4 py-4 bg-neutral-50">
-                <span class="text-overline text-blue-500 cursor-pointer"
-                      (click)="onSelectAllClicked()">SELECT ALL</span>
-                <span class="text-overline text-blue-500 cursor-pointer"
-                      (click)="onClearSelectionClicked()">CLEAR</span>
-            </div>
-
-            <div #dropdownList class="overflow-y-scroll scrollbar scrollbar-thumb-gray-500 scrollbar-track-gray-300"
-                 role="menu" aria-orientation="vertical" aria-labelledby="options-menu" tabindex="-1"
-                 [style.width.px]="dropdownWidth()">
-
-                @for (item of filteredList(); track item; let i = $index) {
-                    <div (click)="onItemClicked(item)"
-                         class="flex gap-2 items-center px-2 hover:bg-neutral-100 cursor-pointer"
-                         [ngClass]="{
-                              'bg-neutral-200': (highlightedIndex() == i),
-                              'bg-primary-50': isItemExistInFormControl(item) || isItemExistInNormalSelectionList(item),
-                              'bg-opacity-30': isItemExistInFormControl(item) || isItemExistInNormalSelectionList(item),
-                           }"
-                         role="menuitem"
-                         tabindex="-1">
-                        <app-checkbox
-                                [ngModel]="isItemExistInFormControl(item) || isItemExistInNormalSelectionList(item)"></app-checkbox>
-                        <span class="text-gray-700 block text-sm">{{ getDisplayString(item) }}</span>
-                    </div>
-                } @empty {
-                    <span class="text-gray-400 block px-4 py-4 text-sm select-none" role="menuitem" tabindex="-1">No options available</span>
-                }
-            </div>
-        </div>
-    </ng-template>
-
+  </ng-template>
 </app-base-input>
 
+<!-- Error Messages -->
 @if (formControl.errors && hasErrors) {
-    <div class="mb-3">
-        <span class="text-caption text-red-500">{{ formControl.errors | humanizeFormMessages: errorMessages() }}</span>
-    </div>
+  <div class="mt-1">
+    <span class="text-xs text-red-500">{{
+      formControl.errors | humanizeFormMessages: errorMessages()
+    }}</span>
+  </div>
 } @else {
-    @if (showErrorSpace()) {
-        <div class="mb-3">
-            <span class="text-caption text-transparent">.</span>
-        </div>
-    }
+  @if (showErrorSpace()) {
+    <div class="mt-1">
+      <span class="text-xs text-transparent">.</span>
+    </div>
+  }
 }
