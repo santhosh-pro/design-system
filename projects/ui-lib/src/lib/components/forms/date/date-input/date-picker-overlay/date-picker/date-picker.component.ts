@@ -1,6 +1,6 @@
 import {Component, input, OnInit, output, signal} from '@angular/core';
 import {NgClass} from "@angular/common";
-import { BaseControlValueAccessorV3 } from '../../../../../../core/base-control-value-accessor-v3';
+import { BaseControlValueAccessor } from '../../../../../../core/base-control-value-accessor';
 
 export type Weekday = 'sunday' | 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday';
 
@@ -13,7 +13,7 @@ export type Weekday = 'sunday' | 'monday' | 'tuesday' | 'wednesday' | 'thursday'
   templateUrl: './date-picker.component.html',
   styleUrl: './date-picker.component.scss'
 })
-export class DatePickerComponent extends BaseControlValueAccessorV3<Date> implements OnInit {
+export class DatePickerComponent extends BaseControlValueAccessor<Date> implements OnInit {
   minDate = input<Date | null>();
   maxDate = input<Date | null>();
   allowOnlyPast = input<boolean>(false);

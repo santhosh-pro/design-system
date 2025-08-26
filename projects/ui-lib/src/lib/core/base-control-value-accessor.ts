@@ -1,48 +1,69 @@
-import {AbstractControl, ControlValueAccessor, FormControl} from "@angular/forms";
-import {signal} from "@angular/core";
+import { AbstractControl, ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
+import { AfterContentInit, Component, computed, inject, input, output, signal } from '@angular/core';
 
-export abstract class BaseControlValueAccessor implements ControlValueAccessor {
+@Component({
+  template: '',
+})
+export abstract class BaseControlValueAccessor<T> implements ControlValueAccessor, AfterContentInit {
+  // Inputs
+  errorMessages = input<{ [key: string]: string }>({});
 
-  disabled = signal(false);
-  touched = signal(false);
-  public formControl = new FormControl();
-  writeToInherited = false;
+  // Outputs
+  valueChange = output<T>(); // Renamed from valueChanged to align with [property]Change
 
-  get hasErrors() {
-    return this.formControl && this.formControl.touched && this.formControl.errors;
-  }
+  // Signals
+  isDisabled = signal(false); // Renamed from disabled to follow boolean naming
+  isTouched = signal(false); // Renamed from touched to follow boolean naming
+  formControl = new FormControl<T | null>(null);
 
-  onChange: any = () => {
-  };
+  // Computed
+  hasErrors = computed(() => this.formControl.touched && !!this.formControl.errors);
 
-  onTouched: any = () => {
-  };
+  // Injected NgControl
+  private ngControl = inject(NgControl, { optional: true, self: true });
 
-  writeValue(value: any): void {
-    if (value !== null && value !== undefined && !this.writeToInherited) {
-      this.onWriteValue(value);
-      this.writeToInherited = true;
+
+  // Abstract method for subclasses to implement
+  protected abstract onValueReady(value: T | null): void;
+
+  constructor() {
+    if (this.ngControl) {
+      this.ngControl.valueAccessor = this;
     }
   }
 
-  protected abstract onWriteValue(obj: any): void;
+  ngAfterContentInit(): void {
+    if (this.ngControl?.control) {
+      this.formControl = this.ngControl.control as FormControl<T | null>;
+    }
+  }
 
-  registerOnChange(fn: any): void {
+  // ControlValueAccessor methods
+  writeValue(value: T | null): void {
+    if (value !== this.formControl.value) {
+      this.formControl.setValue(value, { emitEvent: false });
+    }
+    this.onValueReady(value);
+  }
+
+  registerOnChange(fn: (value: T | null) => void): void {
     this.onChange = fn;
   }
 
-  registerOnTouched(fn: any): void {
+  registerOnTouched(fn: () => void): void {
     this.onTouched = fn;
   }
 
-  setDisabledState?(isDisabled: boolean): void {
-    this.disabled.set(isDisabled);
+  setDisabledState(isDisabled: boolean): void {
+    this.isDisabled.set(isDisabled);
+    this.formControl[isDisabled ? 'disable' : 'enable']({ emitEvent: false });
   }
 
-  markAsTouched() {
-    if (!this.touched()) {
+  // Public methods
+  markTouched(): void {
+    if (!this.isTouched()) {
       this.onTouched();
-      this.touched.set(true);
+      this.isTouched.set(true);
     }
   }
 
@@ -54,4 +75,15 @@ export abstract class BaseControlValueAccessor implements ControlValueAccessor {
     return false;
   }
 
+  // Protected methods
+  protected onValueChange(value: T | null): void {
+    if (value !== null) {
+      this.valueChange.emit(value);
+      this.onChange(value);
+    }
+  }
+
+  // ControlValueAccessor callbacks
+  private onChange: (value: T | null) => void = () => { };
+  private onTouched: () => void = () => { };
 }

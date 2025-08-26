@@ -1,6 +1,6 @@
 import {AfterContentInit, Component, input, OnInit, signal} from '@angular/core';
 import {ReactiveFormsModule} from "@angular/forms";
-import { BaseControlValueAccessorV3 } from '../../../core/base-control-value-accessor-v3';
+import { BaseControlValueAccessor } from '../../../core/base-control-value-accessor';
 
 
 
@@ -13,7 +13,7 @@ import { BaseControlValueAccessorV3 } from '../../../core/base-control-value-acc
   templateUrl: './checkbox.component.html',
   styleUrl: './checkbox.component.scss'
 })
-export class CheckboxComponent extends BaseControlValueAccessorV3<boolean> implements OnInit, AfterContentInit {
+export class CheckboxComponent extends BaseControlValueAccessor<boolean> implements OnInit, AfterContentInit {
   title = input<string | null>();
   id = signal<string>('');
 

@@ -1,9 +1,9 @@
 import { AfterContentInit, Component, computed, input, output, signal } from '@angular/core';
 import { NgClass, NgStyle } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-import { BaseControlValueAccessorV3 } from '../../../../core/base-control-value-accessor-v3';
+import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
 import { BaseInputComponent } from '../../../../core/base-input/base-input.component';
-import { HumanizeFormMessagesPipe } from '../../../../core/humanize-form-messages.pipe';
+import { HumanizeFormMessagesPipe } from '../../../misc/humanize-form-messages.pipe';
 import { resolveTemplateWithObject } from '../../../../core/template-resolver';
 import { ShimmerComponent } from '../../../feedback/shimmer/shimmer.component';
 import { AppSvgIconComponent } from '../../../misc/app-svg-icon/app-svg-icon.component';
@@ -18,12 +18,11 @@ import { AppSvgIconComponent } from '../../../misc/app-svg-icon/app-svg-icon.com
     HumanizeFormMessagesPipe,
     AppSvgIconComponent,
     NgStyle,
-    ShimmerComponent,
   ],
   templateUrl: './single-selection-field.component.html',
   styleUrl: './single-selection-field.component.scss',
 })
-export class SingleSelectionFieldComponent<T> extends BaseControlValueAccessorV3<T | null> implements AfterContentInit {
+export class SingleSelectionFieldComponent<T> extends BaseControlValueAccessor<T | null> implements AfterContentInit {
   // Inputs
   label = input<string | null>(null);
   options = input<T[]>([]);

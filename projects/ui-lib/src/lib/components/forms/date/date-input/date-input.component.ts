@@ -6,22 +6,19 @@ import {isValidDate} from "rxjs/internal/util/isDate";
 import {Weekday} from './date-picker-overlay/date-picker/date-picker.component';
 import {DatePickerOverlayComponent} from './date-picker-overlay/date-picker-overlay.component';
 import {DatePickerComponent} from './date-picker-overlay/date-picker/date-picker.component';
-import { BaseControlValueAccessorV3 } from '../../../../core/base-control-value-accessor-v3';
+import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
 import { BaseInputComponent } from '../../../../core/base-input/base-input.component';
 import { FormValidationUtils } from '../../../../core/form-validation-utils';
-import { HumanizeFormMessagesPipe } from '../../../../core/humanize-form-messages.pipe';
+import { HumanizeFormMessagesPipe } from '../../../misc/humanize-form-messages.pipe';
 import { onlyFutureDateValidator } from '../../../../core/validators/only-future-date-validator';
 import { onlyPastDateValidator } from '../../../../core/validators/only-past-date-validator';
 import { AppSvgIconComponent } from '../../../misc/app-svg-icon/app-svg-icon.component';
 import { OverlayService } from '../../../overlay/overlay.service';
 import { NgxMaskDirective } from '../../../forms/input-mask/ngx-mask.directive';
+import { InputDateFormat } from '../date-format';
 
-export enum InputDateFormat {
-  mmddyyyy,
-  ddmmyyyy
-}
 
-export type ViewType = 'picker' | 'calendar';
+type ViewType = 'picker' | 'calendar';
 
 @Component({
   selector: 'app-date-input',
@@ -39,7 +36,7 @@ export type ViewType = 'picker' | 'calendar';
   templateUrl: './date-input.component.html',
   styleUrl: './date-input.component.scss'
 })
-export class DateInputComponent extends BaseControlValueAccessorV3<Date | null> implements OnDestroy {
+export class DateInputComponent extends BaseControlValueAccessor<Date | null> implements OnDestroy {
   @ViewChild('trigger', {static: false}) trigger?: ElementRef; // Changed to optional and static: false
 
   label = input<string | null>();

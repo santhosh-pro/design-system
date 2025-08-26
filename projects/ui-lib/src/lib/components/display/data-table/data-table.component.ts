@@ -19,7 +19,7 @@ import { DatePipe } from '@angular/common';
 import { StatusBadgeComponent } from '../../feedback/status-badge/status-badge.component';
 import { SortableTableDirective, TableSortEvent } from './base-table/sortable-table.directive';
 import { FormsModule, FormControl, ReactiveFormsModule } from '@angular/forms';
-import { BaseControlValueAccessorV3 } from '../../../core/base-control-value-accessor-v3';
+import { BaseControlValueAccessor } from '../../../core/base-control-value-accessor';
 import { MultiSelectDropdownComponent } from '../../forms/select/multi-select-dropdown/multi-select-dropdown.component';
 import { debounceTime } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
@@ -29,8 +29,9 @@ import { DynamicRendererComponent } from '../../misc/dynamic-renderer/dynamic-re
 import { ContextMenuButtonAction, ContextMenuButtonComponent } from '../../overlay/context-menu-button/context-menu-button.component';
 import { CheckboxComponent } from '../../forms/checkbox/checkbox.component';
 import { TextInputComponent } from '../../forms/text-input/text-input.component';
-import { DateInputComponent, InputDateFormat } from '../../forms/date/date-input/date-input.component';
+import { DateInputComponent } from '../../forms/date/date-input/date-input.component';
 import { AppSvgIconComponent } from "../../misc/app-svg-icon/app-svg-icon.component";
+import { InputDateFormat } from '../../forms/date/date-format';
 
 @Component({
   selector: 'app-data-table',
@@ -54,7 +55,7 @@ import { AppSvgIconComponent } from "../../misc/app-svg-icon/app-svg-icon.compon
   templateUrl: './data-table.component.html',
   styles: []
 })
-export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableStateEvent> implements OnInit, AfterViewInit, OnDestroy {
+export class DataTableComponent<T> extends BaseControlValueAccessor<TableStateEvent> implements OnInit, AfterViewInit, OnDestroy {
   @ContentChildren('filter') headerComponents!: QueryList<any>;
   @ViewChild('table', { static: false }) tableRef!: ElementRef;
 

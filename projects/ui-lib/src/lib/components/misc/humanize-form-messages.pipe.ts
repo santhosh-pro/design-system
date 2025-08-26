@@ -1,6 +1,6 @@
 import {Inject, Pipe, PipeTransform} from '@angular/core';
 import {ValidationErrors} from '@angular/forms';
-import {FORM_ERRORS} from './form-errors';
+import {FORM_ERRORS} from '../../core/form-errors';
 
 @Pipe({standalone: true, name: 'humanizeFormMessages'})
 export class HumanizeFormMessagesPipe implements PipeTransform {

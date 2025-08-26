@@ -1,6 +1,6 @@
 import { Component, input, OnInit, output, signal } from "@angular/core";
 import { NgClass } from "@angular/common";
-import { BaseControlValueAccessorV3 } from "../../../../../../core/base-control-value-accessor-v3";
+import { BaseControlValueAccessor } from "../../../../../../core/base-control-value-accessor";
 import { Weekday } from "../../../date-input/date-picker-overlay/date-picker/date-picker.component";
 
 export interface DateRangeEvent {
@@ -16,7 +16,7 @@ export interface DateRangeEvent {
   styleUrl: "./date-range-picker.component.css",
 })
 export class DateRangePickerComponent
-  extends BaseControlValueAccessorV3<DateRangeEvent | null>
+  extends BaseControlValueAccessor<DateRangeEvent | null>
   implements OnInit
 {
   minDate = input<Date | null>(null);

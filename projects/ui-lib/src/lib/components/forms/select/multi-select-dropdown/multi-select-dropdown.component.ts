@@ -16,11 +16,11 @@ import { FormControl, FormsModule, NgControl } from "@angular/forms";
 import { CdkConnectedOverlay, Overlay } from "@angular/cdk/overlay";
 import { NgClass } from "@angular/common";
 import { resolveTemplateWithObject } from "../../../../core/template-resolver";
-import { deepEqual } from "../../../../core/base-input-utils";
+import { deepEqual } from "../../../../core/core-utils";
 import { BaseInputComponent } from '../../../../core/base-input/base-input.component';
-import { HumanizeFormMessagesPipe } from '../../../../core/humanize-form-messages.pipe';
+import { HumanizeFormMessagesPipe } from '../../../misc/humanize-form-messages.pipe';
 import { CheckboxComponent } from '../../checkbox/checkbox.component';
-import { BaseControlValueAccessorV3 } from '../../../../core/base-control-value-accessor-v3';
+import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
 
 export enum MultiSelectDropdownAppearance {
     standard,
@@ -42,7 +42,7 @@ export enum MultiSelectDropdownAppearance {
     templateUrl: './multi-select-dropdown.component.html',
     styleUrl: './multi-select-dropdown.component.scss'
 })
-export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessorV3<T[]> implements AfterContentInit {
+export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor<T[]> implements AfterContentInit {
     cdr = inject(ChangeDetectorRef);
     renderer = inject(Renderer2);
     overlay = inject(Overlay);

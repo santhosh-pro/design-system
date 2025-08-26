@@ -5,20 +5,17 @@ import { Subscription } from 'rxjs';
 import { isValidDate } from 'rxjs/internal/util/isDate';
 import { MultiDatePickerOverlayComponent } from './multi-date-picker-overlay/multi-date-picker-overlay.component';
 import { Weekday } from './multi-date-picker-overlay/multi-date-picker/multi-date-picker.component';
-import { BaseControlValueAccessorV3 } from 'src/lib/core/base-control-value-accessor-v3';
-import { BaseInputComponent } from 'src/lib/core/base-input/base-input.component';
-import { FormValidationUtils } from 'src/lib/core/form-validation-utils';
-import { HumanizeFormMessagesPipe } from 'src/lib/core/humanize-form-messages.pipe';
-import { onlyFutureDateValidator } from 'src/lib/core/validators/only-future-date-validator';
-import { onlyPastDateValidator } from 'src/lib/core/validators/only-past-date-validator';
+import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
+import { BaseInputComponent } from '../../../../core/base-input/base-input.component';
+import { FormValidationUtils } from '../../../../core/form-validation-utils';
+import { HumanizeFormMessagesPipe } from '../../../../components/misc/humanize-form-messages.pipe';
+import { onlyFutureDateValidator } from '../../../../core/validators/only-future-date-validator';
+import { onlyPastDateValidator } from '../../../../core/validators/only-past-date-validator';
 import { AppSvgIconComponent } from '../../../misc/app-svg-icon/app-svg-icon.component';
 import { NgxMaskDirective } from '../../../forms/input-mask/ngx-mask.directive';
 import { OverlayService } from '../../../overlay/overlay.service';
+import { InputDateFormat } from '../date-format';
 
-export enum InputDateFormat {
-  mmddyyyy,
-  ddmmyyyy
-}
 
 @Component({
   selector: 'app-multi-date-input',
@@ -35,7 +32,7 @@ export enum InputDateFormat {
   templateUrl: './multi-date-input.component.html',
   styleUrl: './multi-date-input.component.css'
 })
-export class MultiDateInputComponent extends BaseControlValueAccessorV3<Date[]> implements OnDestroy {
+export class MultiDateInputComponent extends BaseControlValueAccessor<Date[]> implements OnDestroy {
   @ViewChild('trigger', { static: false }) trigger?: ElementRef;
 
   label = input<string | null>();
@@ -130,13 +127,13 @@ export class MultiDateInputComponent extends BaseControlValueAccessorV3<Date[]> 
 
   onBlur() {
     this.isFocused.set(false);
-    this.onTouched();
+    this.markTouched();
   }
 
   onDatePickerIconClicked() {
     const dialogData = {
       data: {
-        selectedDates: this.controlValue || [],
+        selectedDates: this.formControl || [],
         minDate: this.minDate(),
         maxDate: this.maxDate(),
         allowOnlyPast: this.allowOnlyPast(),
@@ -170,7 +167,7 @@ export class MultiDateInputComponent extends BaseControlValueAccessorV3<Date[]> 
   }
 
   removeDate(index: number) {
-    const currentDates = this.controlValue || [];
+    const currentDates = this.formControl.value || [];
     const updatedDates = [...currentDates.slice(0, index), ...currentDates.slice(index + 1)];
     this.textInputValue.set('');
     this.onValueChange(updatedDates);

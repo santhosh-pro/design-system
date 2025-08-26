@@ -16,20 +16,17 @@ import { NgClass } from "@angular/common";
 import { Subscription } from "rxjs";
 import { isValidDate } from "rxjs/internal/util/isDate";
 import { DateRangePickerOverlayComponent } from "./date-range-picker-overlay/date-range-picker-overlay.component";
-import { BaseControlValueAccessorV3 } from "../../../../core/base-control-value-accessor-v3";
+import { BaseControlValueAccessor } from "../../../../core/base-control-value-accessor";
 import { BaseInputComponent } from "../../../../core/base-input/base-input.component";
 import { FormValidationUtils } from "../../../../core/form-validation-utils";
-import { HumanizeFormMessagesPipe } from "../../../../core/humanize-form-messages.pipe";
+import { HumanizeFormMessagesPipe } from "../../../misc/humanize-form-messages.pipe";
 import { onlyFutureDateValidator } from "../../../../core/validators/only-future-date-validator";
 import { onlyPastDateValidator } from "../../../../core/validators/only-past-date-validator";
 import { AppSvgIconComponent } from "../../../misc/app-svg-icon/app-svg-icon.component";
 import { OverlayService } from "../../../overlay/overlay.service";
 import { DateRangeEvent } from "./date-range-picker-overlay/date-range-picker/date-range-picker.component";
+import { InputDateFormat } from "../date-format";
 
-export enum InputDateFormat {
-  mmddyyyy,
-  ddmmyyyy,
-}
 
 @Component({
   selector: "app-date-range-input",
@@ -45,7 +42,7 @@ export enum InputDateFormat {
   templateUrl: "./date-range-input.component.html",
 })
 export class DateRangeInputComponent
-  extends BaseControlValueAccessorV3<DateRangeEvent | null>
+  extends BaseControlValueAccessor<DateRangeEvent | null>
   implements OnInit, OnDestroy
 {
   @ViewChild("trigger", { static: false }) trigger?: ElementRef;

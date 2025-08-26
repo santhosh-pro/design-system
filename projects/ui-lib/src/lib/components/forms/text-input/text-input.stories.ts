@@ -4,7 +4,7 @@ import { ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { TextInputComponent } from './text-input.component';
 import { BaseInputComponent } from '../../../core/base-input/base-input.component';
-import { HumanizeFormMessagesPipe } from '../../../core/humanize-form-messages.pipe';
+import { HumanizeFormMessagesPipe } from '../../misc/humanize-form-messages.pipe';
 import { AppSvgIconComponent } from '../../misc/app-svg-icon/app-svg-icon.component';
 import { NgxMaskDirective } from '../../forms/input-mask/ngx-mask.directive';
 import { provideNgxMask } from '../../forms/input-mask/ngx-mask.providers';

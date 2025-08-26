@@ -11,9 +11,9 @@ import {
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { NgClass, CommonModule } from '@angular/common';
 import { debounceTime, Subject, takeUntil } from 'rxjs';
-import { BaseControlValueAccessorV3 } from '../../../core/base-control-value-accessor-v3';
+import { BaseControlValueAccessor } from '../../../core/base-control-value-accessor';
 import { BaseInputComponent } from '../../../core/base-input/base-input.component';
-import { HumanizeFormMessagesPipe } from '../../../core/humanize-form-messages.pipe';
+import { HumanizeFormMessagesPipe } from '../../misc/humanize-form-messages.pipe';
 import { AppSvgIconComponent } from '../../misc/app-svg-icon/app-svg-icon.component';
 import { NgxMaskDirective } from '../input-mask/ngx-mask.directive';
 interface SelectOption {
@@ -36,7 +36,7 @@ interface SelectOption {
   templateUrl: './text-input.component.html',
   styleUrl: './text-input.component.scss',
 })
-export class TextInputComponent extends BaseControlValueAccessorV3<string | null> implements OnInit, OnDestroy {
+export class TextInputComponent extends BaseControlValueAccessor<string | null> implements OnInit, OnDestroy {
   // Inputs (unchanged)
   appearance = input<'fill' | 'outline'>('outline');
   type = input<'text' | 'email' | 'password' | 'number' | 'search' | 'tel' | 'url' | 'time'>('text');
