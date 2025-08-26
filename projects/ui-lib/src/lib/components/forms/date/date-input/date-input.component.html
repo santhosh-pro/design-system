@@ -45,7 +45,7 @@
   </div>
 }
 
-@if (formControl.errors && hasErrors) {
+@if (formControl.errors && hasErrors()) {
   <div class="mt-1">
     <span class="text-caption text-red-500">{{ formControl.errors | humanizeFormMessages: errorMessages() }}</span>
   </div>

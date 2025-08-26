@@ -81,9 +81,9 @@ nestedColumns = signal<ColumnNode[]>([
         alignment: 'center',
         dateConfig: { dateFormat: 'MMM d, y', showIcon: true },
       },
-      { title: 'Department', key: 'department', type: 'text', sortKey: 'department', alignment: 'left' },
-      { title: 'Manager', key: 'manager', type: 'text', sortKey: 'manager', alignment: 'left' },
-      { title: 'Salary', key: 'salary', type: 'text', sortKey: 'salary', alignment: 'right' },
+      { title: 'Department', key: 'department', type: 'text', sortKey: 'department', alignment: 'center' },
+      { title: 'Manager', key: 'manager', type: 'text', sortKey: 'manager', alignment: 'center' },
+      { title: 'Salary', key: 'salary', type: 'text', sortKey: 'salary', alignment: 'center' },
     ]
   },
   {

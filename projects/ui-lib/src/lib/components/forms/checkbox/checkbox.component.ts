@@ -24,8 +24,8 @@ export class CheckboxComponent extends BaseControlValueAccessorV3<boolean> imple
   protected override onValueReady(value: boolean): void {}
 
   onCheckboxSelected($event: Event, enterKeyPressed: boolean = false) {
-    if (!this.disabled()) {
-      this.markAsTouched();
+    if (!this.isDisabled()) {
+      this.markTouched();
       let checkbox = $event.target as HTMLInputElement;
       let value = ($event.target as HTMLInputElement).checked;
       if(enterKeyPressed) {

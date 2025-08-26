@@ -10,7 +10,7 @@
       <app-single-selection-field
         [formControl]="basicControl"
         title="Select Your Favorite Color"
-        [items]="colors()"
+        [options]="colors()"
         [fullWidth]="true">
       </app-single-selection-field>
       <p class="text-sm text-gray-600 mt-2">
@@ -26,7 +26,7 @@
       <app-single-selection-field
         [formControl]="countryControl"
         title="Select Country"
-        [items]="countries()"
+        [options]="countries()"
         [fullWidth]="true"
         labelKey="name"
         valueKey="code">
@@ -44,7 +44,7 @@
       <app-single-selection-field
         [formControl]="categoryControl"
         title="Select a Fruit"
-        [items]="categories()"
+        [options]="categories()"
         [fullWidth]="true"
         labelKey="name"
         categoryKey="category">

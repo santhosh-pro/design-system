@@ -200,7 +200,7 @@ export class DateRangeInputComponent
 
   onBlur() {
     this.isFocused.set(false);
-    this.onTouched();
+    this.markTouched();
   }
 
   onDatePickerIconClicked() {
@@ -285,7 +285,7 @@ export class DateRangeInputComponent
     this.updateValueFromPicker(null);
   }
 
-  formatDateRange(range: DateRangeEvent): string {
+  formatDateRange(range: DateRangeEvent | null): string {
     if (!range || !range.startDate || !range.endDate) {
       return "";
     }

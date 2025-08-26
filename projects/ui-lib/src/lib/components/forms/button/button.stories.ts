@@ -70,7 +70,7 @@ export default {
       options: ['small', 'medium', 'large'],
       description: 'Button size',
     },
-    buttonClick: {
+    click: {
       action: 'buttonClick',
       description: 'Emitted when the button is clicked',
     },

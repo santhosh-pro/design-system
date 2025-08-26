@@ -6,6 +6,7 @@ import {
   AfterContentInit,
   OnDestroy,
   OnInit,
+  computed,
 } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { NgClass, CommonModule } from '@angular/common';
@@ -35,76 +36,71 @@ interface SelectOption {
   templateUrl: './text-input.component.html',
   styleUrl: './text-input.component.scss',
 })
-export class TextInputComponent extends BaseControlValueAccessorV3<string | null>  implements OnInit, OnDestroy
-{
- 
+export class TextInputComponent extends BaseControlValueAccessorV3<string | null> implements OnInit, OnDestroy {
+  // Inputs (unchanged)
   appearance = input<'fill' | 'outline'>('outline');
   type = input<'text' | 'email' | 'password' | 'number' | 'search' | 'tel' | 'url' | 'time'>('text');
-  viewType = input<'text' | 'text-area'>('text');
-  iconSrc = input<string | null>();
-  actionIcon = input<string | null>();
-  label = input<string | null>();
+  viewType = input<'text' | 'textarea'>('text');
+  iconSrc = input<string | null>(null);
+  actionIcon = input<string | null>(null);
+  label = input<string | null>(null);
   fullWidth = input<boolean>(false);
   placeholder = input<string>('');
   showErrorSpace = input<boolean>(false);
   mask = input<string | null>(null);
   debounceSearchEnabled = input<boolean>(true);
-  isPrefixSelect = input<boolean>(false);
+  hasPrefixSelect = input<boolean>(false);
   prefixOptions = input<SelectOption[]>([]);
   defaultPrefixValue = input<string | null>(null);
 
-  changeValue = output<string>();
-  actionIconClicked = output();
-  prefixChanged = output<string>();
+  // Outputs
+  actionClick = output<void>(); // Updated name
+  prefixChange = output<string>();
 
+  // Signals and other properties (unchanged)
   isFocused = signal(false);
-  prefixControl = new FormControl('');
-
+  prefixControl = new FormControl<string>('');
+  protected inputClass = computed(() => (this.fullWidth() ? 'w-full' : ''));
 
   private input$ = new Subject<string>();
   private destroy$ = new Subject<void>();
 
-
   ngOnInit(): void {
-    this.input$
-    .pipe(
-      this.debounceSearchEnabled() ? debounceTime(1200) : (source) => source,
-      takeUntil(this.destroy$)
-    )
-    .subscribe((value) => this.changeValue.emit(value));
+    this.setupInputDebounce();
+    this.prefixControl.setValue(this.defaultPrefixValue() ?? '', { emitEvent: false });
+  }
 
-    this.prefixControl.setValue(this.defaultPrefixValue());
+  private setupInputDebounce(): void {
+    this.input$
+      .pipe(
+        debounceTime(this.debounceSearchEnabled() ? 1200 : 0),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((value) => this.valueChange.emit(value));
   }
 
   protected override onValueReady(value: string | null): void {
-    console.log('onValueReady:', value);
-    this.input$?.next(value ?? '');
+    this.input$.next(value ?? '');
   }
 
-  onPrefixChanged(value: string) {
-    console.log('onPrefixChanged:', value);
-    this.prefixChanged.emit(value);
+  protected onInput(value: string | null): void {
+    this.onValueReady(value);
   }
 
-  getClass() {
-    let cls = '';
-    if (this.fullWidth()) {
-      cls += 'w-full ';
-    }
-    return cls;
+  protected onPrefixChange(value: string): void {
+    this.prefixChange.emit(value);
   }
 
-  onActionClicked() {
-    console.log('onActionClicked');
-    this.actionIconClicked.emit();
+  protected onActionClick(): void {
+    this.actionClick.emit();
   }
 
-  onFocus() {
+  protected onFocus(): void {
     this.isFocused.set(true);
   }
 
-  onBlur() {
-    this.onTouched();
+  protected onBlur(): void {
+    this.markTouched();
     this.isFocused.set(false);
   }
 
@@ -112,5 +108,4 @@ export class TextInputComponent extends BaseControlValueAccessorV3<string | null
     this.destroy$.next();
     this.destroy$.complete();
   }
-
 }

@@ -152,7 +152,7 @@ export class DateInputComponent extends BaseControlValueAccessorV3<Date | null> 
 
   onBlur() {
     this.isFocused.set(false);
-    this.onTouched();
+    this.markTouched();
   }
 
   onInputChanged($event: Event) {
@@ -176,7 +176,7 @@ export class DateInputComponent extends BaseControlValueAccessorV3<Date | null> 
 
     let dialogRef = this.overlayService.openNearElement(DatePickerOverlayComponent, this.trigger.nativeElement, {
       data: {
-        selectedDate: this.controlValue,
+        selectedDate: this.value,
         minDate: this.minDate(),
         maxDate: this.maxDate(),
         allowOnlyPast: this.allowOnlyPast(),

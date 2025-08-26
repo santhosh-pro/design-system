@@ -1,6 +1,6 @@
-import { Component, ElementRef, EventEmitter, inject, input, Input, OnInit, output, Output, Renderer2 } from '@angular/core';
-import { DOCUMENT, NgClass } from "@angular/common";
+import { Component, computed, inject, input, output, Signal } from '@angular/core';
 import { FormGroup, FormGroupDirective } from "@angular/forms";
+import { NgClass } from "@angular/common";
 import { SpinnerComponent } from '../../feedback/spinner/spinner.component';
 import { AppSvgIconComponent } from '../../misc/app-svg-icon/app-svg-icon.component';
 
@@ -15,106 +15,108 @@ import { AppSvgIconComponent } from '../../misc/app-svg-icon/app-svg-icon.compon
   templateUrl: './button.component.html',
 })
 export class ButtonComponent {
-  elementRef = inject(ElementRef);
-  document = inject(DOCUMENT);
-  renderer = inject(Renderer2);
   formGroupDirective = inject(FormGroupDirective, { optional: true });
-
 
   type = input<'button' | 'submit' | 'reset'>('button');
   disabled = input<boolean>(false);
   fullWidth = input<boolean>(false);
-  appearance = input<'textType' | 'primary' | 'outline' | 'primaryRounded' | 'outlineRounded'>('primary');
+  // Renamed 'textType' to 'text' for clarity and standard naming
+  appearance = input<'text' | 'primary' | 'outline' | 'primaryRounded' | 'outlineRounded'>('primary');
   loading = input<boolean>(false);
   iconSize = input<number>(18);
-  iconSrc = input<string | null>();
+  iconSrc = input<string | null>(null);
   iconColor = input<string | null>(null);
   buttonColor = input<string>('bg-primary-500');
   outlineColor = input<string>('border-primary-500');
   textButtonColor = input<string>('text-primary-500');
   size = input<'small' | 'medium' | 'large'>('medium');
 
-  buttonClick = output<void>();
+  click = output<void>();
 
-  getButtonClass(): string {
-    let base = 'inline-flex items-center justify-center text-button leading-5 transition-all duration-200';
+  protected buttonClass: Signal<string> = computed(() => {
+    const base = 'inline-flex items-center justify-center text-button leading-5 transition-all duration-200';
 
-    const sizeClasses = {
+    const sizeClass = {
       small: 'px-4 py-2 text-sm',
       medium: 'px-6 py-3 text-base',
       large: 'px-6 py-4 text-lg'
-    };
+    }[this.size()];
 
-    const appearanceClasses = {
-      primary: `text-white rounded-md ${this.buttonColor()}`,
-      primaryRounded: `text-white rounded-full ${this.buttonColor()}`,
-      outline: `${this.textButtonColor()} rounded-md bg-white border ${this.outlineColor()} outline-none`,
-      outlineRounded: `${this.textButtonColor()} rounded-full bg-white border ${this.outlineColor()} outline-none`,
-      textType: `${this.textButtonColor()} rounded-md border border-transparent rounded-md bg-white outline-none focus:outline-none`
-    };
+    let appearanceClass: string;
+    switch (this.appearance()) {
+      case 'primary':
+        appearanceClass = `text-white rounded-md ${this.buttonColor()}`;
+        break;
+      case 'primaryRounded':
+        appearanceClass = `text-white rounded-full ${this.buttonColor()}`;
+        break;
+      case 'outline':
+        appearanceClass = `${this.textButtonColor()} rounded-md bg-white border ${this.outlineColor()} outline-none`;
+        break;
+      case 'outlineRounded':
+        appearanceClass = `${this.textButtonColor()} rounded-full bg-white border ${this.outlineColor()} outline-none`;
+        break;
+      case 'text':
+        // Removed duplicate 'rounded-md' and fixed for clarity
+        appearanceClass = `${this.textButtonColor()} rounded-md border border-transparent bg-white outline-none focus:outline-none`;
+        break;
+      default:
+        appearanceClass = '';
+    }
 
-    return `${base} ${sizeClasses[this.size()]} ${appearanceClasses[this.appearance()]} ${this.disabled() ? 'cursor-not-allowed' : ''} ${this.fullWidth() ? 'w-full' : ''}`;
-  }
+    const disabledClass = this.disabled() || this.loading() ? 'cursor-not-allowed' : '';
+    const fullWidthClass = this.fullWidth() ? 'w-full' : '';
 
-  getIconClass() {
-    if (this.iconColor() != null) {
-      return this.iconColor();
+    return [base, sizeClass, appearanceClass, disabledClass, fullWidthClass].filter(Boolean).join(' ');
+  });
+
+  protected iconClass: Signal<string> = computed(() => {
+    if (this.iconColor() !== null) {
+      return this.iconColor()!;
     }
 
     switch (this.appearance()) {
       case 'outline':
-        return 'text-primary-500';
       case 'outlineRounded':
-        return 'text-primary-500';
-      case 'textType':
+      case 'text':
         return 'text-primary-500';
       case 'primaryRounded':
-        return 'text-white';
       case 'primary':
       default:
         return 'text-white';
     }
-  }
+  });
 
-  getLoaderColor() {
-    let borderClass = 'border-white';
+  protected loaderColor: Signal<string> = computed(() => {
     switch (this.appearance()) {
       case 'outline':
-        borderClass = 'border-primary-500';
-        break;
       case 'outlineRounded':
-        borderClass = 'border-primary-500';
-        break;
-      case 'textType':
-        borderClass = 'border-primary-500';
-        break;
+      case 'text':
+        return 'border-primary-500';
       case 'primaryRounded':
-        borderClass = 'border-white';
-        break;
       case 'primary':
       default:
-        borderClass = 'border-white';
-        break;
+        return 'border-white';
     }
+  });
 
-    return borderClass
-  }
-
-  onClick(): void {
-    if (this.loading()) {
+  onClick(event: MouseEvent): void {
+    // Since [disabled] is set, this early return is precautionary
+    if (this.loading() || this.disabled()) {
+      event.preventDefault();
       return;
     }
-    if (this.type() == 'submit' && this.formGroupDirective) {
+
+    if (this.type() === 'submit' && this.formGroupDirective) {
       const formGroup = this.formGroupDirective.form;
       this.validateForm(formGroup);
     }
-    if(!this.disabled()) {
-    this.buttonClick.emit();
-    }
+
+    this.click.emit();
   }
 
-  validateForm(formGroup: FormGroup) {
+  private validateForm(formGroup: FormGroup): void {
     formGroup.markAllAsTouched();
-    formGroup.markAsPristine();
+    // Removed markAsPristine() as it contradicts the purpose of showing validation errors
   }
 }

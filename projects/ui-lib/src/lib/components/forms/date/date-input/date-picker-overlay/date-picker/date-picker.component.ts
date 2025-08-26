@@ -77,7 +77,7 @@ export class DatePickerComponent extends BaseControlValueAccessorV3<Date> implem
   }
 
   initDate() {
-    let today = this.controlValue ?? new Date();
+    let today = this.formControl.value ?? new Date();
     this.activeMonth = today.getMonth();
     this.activeYear = today.getFullYear();
   }

@@ -15,7 +15,7 @@
     [totalCount]="nestedData().length"
     [enableSearch]="true"
     [formControl]="basicControl"
-    (stateChanged)="onTableStateChanged($event)">
+    (stateChange)="onTableStateChanged($event)">
   </app-data-table>
       <p class="text-sm text-gray-600 mt-2">
         {{selectedRows | json}}

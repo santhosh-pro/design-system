@@ -1,79 +1,72 @@
-import { AbstractControl, ControlValueAccessor, FormControl, NgControl } from "@angular/forms";
-import { AfterContentInit, Component, EventEmitter, inject, input, Output, signal } from "@angular/core";
+import { AbstractControl, ControlValueAccessor, FormControl, NgControl } from '@angular/forms';
+import { AfterContentInit, Component, computed, inject, input, output, signal } from '@angular/core';
 
 @Component({
   template: '',
 })
 export abstract class BaseControlValueAccessorV3<T> implements ControlValueAccessor, AfterContentInit {
+  // Inputs
   errorMessages = input<{ [key: string]: string }>({});
 
-  @Output() valueChanged = new EventEmitter<T>();
+  // Outputs
+  valueChange = output<T>(); // Renamed from valueChanged to align with [property]Change
 
-  disabled = signal(false);
-  touched = signal(false);
-  public formControl = new FormControl();
+  // Signals
+  isDisabled = signal(false); // Renamed from disabled to follow boolean naming
+  isTouched = signal(false); // Renamed from touched to follow boolean naming
+  formControl = new FormControl<T | null>(null);
 
-  ngControl = inject(NgControl, { optional: true, self: true });
+  // Computed
+  hasErrors = computed(() => this.formControl.touched && !!this.formControl.errors);
 
-  actualValue: T | undefined;
+  // Injected NgControl
+  private ngControl = inject(NgControl, { optional: true, self: true });
 
-  protected abstract onValueReady(value: T): void;
+  // Internal value
+  protected value: T | null = null; // Renamed from actualValue for clarity
 
-  get controlValue(): T | undefined {
-    return this.formControl.value ?? this.actualValue;
-  }
+  // Abstract method for subclasses to implement
+  protected abstract onValueReady(value: T | null): void;
 
   constructor() {
     if (this.ngControl) {
-      this.ngControl!.valueAccessor = this;
+      this.ngControl.valueAccessor = this;
     }
   }
 
-  ngAfterContentInit() {
-    let formControl = this.ngControl?.control as FormControl;
-    if (formControl) {
-      this.formControl = this.ngControl?.control as FormControl;
+  ngAfterContentInit(): void {
+    if (this.ngControl?.control) {
+      this.formControl = this.ngControl.control as FormControl<T | null>;
     }
   }
 
-  get hasErrors() {
-    return this.formControl && this.formControl.touched && this.formControl.errors;
-  }
-
-  private onChange: any = () => {};
-
-  onTouched: any = () => {};
-
-  writeValue(value: T): void {
+  // ControlValueAccessor methods
+  writeValue(value: T | null): void {
     if (value !== this.formControl.value) {
       this.formControl.setValue(value, { emitEvent: false });
     }
-    this.actualValue = value;
-    this.onValueReady(value); // Removed setTimeout for synchronous updates
+    this.value = value;
+    this.onValueReady(value);
   }
 
-  onValueChange(value: T) {
-    this.valueChanged.emit(value);
-    this.actualValue = value;
-    this.onChange(value);
-  }
-
-  registerOnChange(fn: any): void {
+  registerOnChange(fn: (value: T | null) => void): void {
     this.onChange = fn;
   }
 
-  registerOnTouched(fn: any): void {
+  registerOnTouched(fn: () => void): void {
     this.onTouched = fn;
   }
 
-  setDisabledState?(isDisabled: boolean): void {
-    this.disabled.set(isDisabled);
+  setDisabledState(isDisabled: boolean): void {
+    this.isDisabled.set(isDisabled);
+    this.formControl[isDisabled ? 'disable' : 'enable']({ emitEvent: false });
   }
 
-  markAsTouched() {
-    if (!this.touched()) {
+  // Public methods
+  markTouched(): void {
+    if (!this.isTouched()) {
       this.onTouched();
-      this.touched.set(true);
+      this.isTouched.set(true);
     }
   }
 
@@ -84,4 +77,17 @@ export abstract class BaseControlValueAccessorV3<T> implements ControlValueAcces
     }
     return false;
   }
+
+  // Protected methods
+  protected onValueChange(value: T | null): void {
+    this.value = value;
+    if (value !== null) {
+      this.valueChange.emit(value);
+      this.onChange(value);
+    }
+  }
+
+  // ControlValueAccessor callbacks
+  private onChange: (value: T | null) => void = () => { };
+  private onTouched: () => void = () => { };
 }

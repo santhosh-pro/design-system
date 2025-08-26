@@ -1,12 +1,6 @@
-import {
-  AfterContentInit,
-  Component,
-  input,
-  output,
-  signal
-} from '@angular/core';
-import {NgClass, NgStyle} from "@angular/common";
-import {ReactiveFormsModule} from "@angular/forms";
+import { AfterContentInit, Component, computed, input, output, signal } from '@angular/core';
+import { NgClass, NgStyle } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
 import { BaseControlValueAccessorV3 } from '../../../../core/base-control-value-accessor-v3';
 import { BaseInputComponent } from '../../../../core/base-input/base-input.component';
 import { HumanizeFormMessagesPipe } from '../../../../core/humanize-form-messages.pipe';
@@ -24,175 +18,137 @@ import { AppSvgIconComponent } from '../../../misc/app-svg-icon/app-svg-icon.com
     HumanizeFormMessagesPipe,
     AppSvgIconComponent,
     NgStyle,
-    ShimmerComponent
+    ShimmerComponent,
   ],
   templateUrl: './single-selection-field.component.html',
-  styleUrl: './single-selection-field.component.scss'
+  styleUrl: './single-selection-field.component.scss',
 })
-export class SingleSelectionFieldComponent<T> extends BaseControlValueAccessorV3<any> {
-  title = input<string | null>();
-  items = input<T[]>([]);
-  display = input<string>();
-  displayTemplate = input<string | null>();
-  iconSrc = input<string | null>();
-  dynamicIconPath = input<string>();
-  imageUrl = input<string | null>();
-  dynamicImageUrlPath = input<string>();
-  iconColor = input<string>();
-  dynamicIconColor = input<string>();
-  value = input<string>();
-  noDataMessage = input<string>();
-  customActionText = input<string>();
-  fullWidth = input(false);
+export class SingleSelectionFieldComponent<T> extends BaseControlValueAccessorV3<T | null> implements AfterContentInit {
+  // Inputs
+  label = input<string | null>(null);
+  options = input<T[]>([]);
+  displayProperty = input<string>('');
+  displayTemplate = input<string | null>(null);
+  iconSrc = input<string | null>(null);
+  dynamicIconPath = input<string>('');
+  imageUrl = input<string | null>(null);
+  dynamicImageUrlPath = input<string>('');
+  iconColor = input<string>('');
+  dynamicIconColorPath = input<string>('');
+  valueProperty = input<string>('');
+  emptyMessage = input<string>('');
+  customActionText = input<string>('');
+  fullWidth = input<boolean>(false);
   itemWidth = input<number | null>(null);
   isItemCentered = input<boolean>(false);
-  showSelectionTickMark = input<boolean>(true);
+  showSelectionTick = input<boolean>(true);
   itemPlacement = input<'start' | 'space-between'>('start');
-  maximumDisplayItems = input<number | null>(null);
+  maxVisibleItems = input<number | null>(null);
 
-  // Remove the duplicate valueChanged output since it's now in the base class
-  onCustomActionClicked = output<void>();
+  // Outputs
+  customActionClick = output<void>();
 
+  // Signals
   selectedItem = signal<T | null>(null);
   showAll = signal(false);
 
-  protected onValueReady(value: any): void {
-    // Find the corresponding item when value is set
-    if (value !== null && value !== undefined) {
-      const matchingItem = this.items().find(item => this.getPropertyId(item) === value);
-      if (matchingItem) {
-        this.selectedItem.set(matchingItem);
-      }
-    } else {
-      this.selectedItem.set(null);
-    }
-  }
+  // Computed
+  visibleItems = computed(() =>
+    this.showAll() || this.maxVisibleItems() === null
+      ? this.options()
+      : this.options().slice(0, this.maxVisibleItems()!)
+  );
 
-  getVisibleItems(): T[] {
-    if (this.showAll()) return this.items();
-    return this.maximumDisplayItems() !== null ? this.items().slice(0, this.maximumDisplayItems()!) : this.items();
-  }
+  showMore = computed(() => !this.showAll() && this.maxVisibleItems() !== null && this.options().length > this.maxVisibleItems()!);
 
-  showMoreButton(): boolean {
-    return !this.showAll() && this.maximumDisplayItems() !== null && this.items().length > this.maximumDisplayItems()!;
-  }
+  showLess = computed(() => this.showAll() && this.maxVisibleItems() !== null);
 
-  showLessButton(): boolean {
-    return this.showAll() && this.maximumDisplayItems() !== null;
-  }
+  containerClass = computed(() => ({
+    'justify-start': this.itemPlacement() === 'start',
+    'justify-between': this.itemPlacement() === 'space-between',
+  }));
 
-  showAllItems() {
-    this.showAll.set(true);
-  }
+  itemStyle = computed(() => ({
+    width: this.itemWidth() ? `${this.itemWidth()}px` : null,
+  }));
 
-  shrinkItems() {
-    this.showAll.set(false);
-  }
+  itemClass = computed(() => (item: T) => ({
+    'border-primary-600': this.isSelected()(item),
+    'justify-center': this.isItemCentered(),
+  }));
 
-  getDisplayString(item: T): any {
-    let object = item as any;
-    if(object == null) {
-      return null;
-    }
+  isSelected = computed(() => (item: T) => this.getValueId(item) === this.formControl.value || this.selectedItem() === item);
 
-    if(this.display() != null && this.display() != '') {
-      return this.display()!.split('.').reduce((acc, part) => acc && acc[part], object);
-    }
-
-    if(this.displayTemplate() != null && this.displayTemplate() != '') {
-      return resolveTemplateWithObject(object, this.displayTemplate()!);
-    }
-
-    return item;
-  }
-
-  getPropertyId(item: T | null): any {
-    if (this.value() == null || this.value() == '') {
-      return item;
-    }
-    let object = item as any;
-    return this.value()!.split('.').reduce((acc, part) => acc && acc[part], object);
-  }
-
-  getImageType(item: T): 'svg' | 'url' | null {
-    if (this.iconSrc() != null && this.iconSrc() != '') {
-      return 'svg';
-    }
-
-    if (this.dynamicIconPath() != null && this.dynamicIconPath() != '') {
-      return 'svg';
-    }
-
-    if (this.imageUrl() != null && this.imageUrl() != '') {
-      return 'url';
-    }
-
-    if (this.dynamicImageUrlPath() != null && this.dynamicImageUrlPath() != '') {
-      return 'url';
-    }
-
+  iconType = computed(() => (item: T): 'svg' | 'url' | null => {
+    if (this.iconSrc() || this.dynamicIconPath()) return 'svg';
+    if (this.imageUrl() || this.dynamicImageUrlPath()) return 'url';
     return null;
-  }
+  });
 
-  getDynamicIcon(item: T): string | null | undefined {
-    if (this.iconSrc() != null && this.iconSrc() != '') {
-      return this.iconSrc();
-    }
-
-    if (this.dynamicIconPath() != null && this.dynamicIconPath() != '') {
-      let object = item as any;
-      return this.dynamicIconPath()!.split('.').reduce((acc, part) => acc && acc[part], object);
-    }
-
-    if (this.imageUrl() != null && this.imageUrl() != '') {
-      return this.imageUrl();
-    }
-
-    if (this.dynamicImageUrlPath() != null && this.dynamicImageUrlPath() != '') {
-      let object = item as any;
-      return this.dynamicImageUrlPath()!.split('.').reduce((acc, part) => acc && acc[part], object);
-    }
+  icon = computed(() => (item: T): string | null => {
+    if (this.iconSrc()) return this.iconSrc();
+    if (this.dynamicIconPath()) return this.getNestedProperty(item, this.dynamicIconPath());
+    if (this.imageUrl()) return this.imageUrl();
+    if (this.dynamicImageUrlPath()) return this.getNestedProperty(item, this.dynamicImageUrlPath());
     return null;
+  });
+
+   itemIconColor = computed(() => (item: T): string | null => {
+    if (this.iconColor()) return this.iconColor();
+    if (this.dynamicIconColorPath()) return this.getNestedProperty(item, this.dynamicIconColorPath()) || this.iconColor();
+    return this.iconColor();
+  });
+
+  displayText = computed(() => (item: T): string | null => {
+    if (!item) return null;
+    if (this.displayProperty()) return this.getNestedProperty(item, this.displayProperty());
+    if (this.displayTemplate()) return resolveTemplateWithObject(item, this.displayTemplate()!);
+    return String(item);
+  });
+
+  protected override onValueReady(value: T | null): void {
+    const matchingItem = value != null ? this.options().find((item) => this.getValueId(item) === value) : null;
+    this.selectedItem.set(matchingItem ?? null);
   }
 
-  getDynamicIconColor(item: T): string | null | undefined {
-    if (this.iconColor()) {
-      return this.iconColor();
-    }
-
-    if (this.dynamicIconColor() == null || this.dynamicIconColor() == '') {
-      return this.iconColor();
-    }
-    let object = item as any;
-    const color = this.dynamicIconColor()!.split('.').reduce((acc, part) => acc && acc[part], object);
-    return color;
-  }
-
-  onItemClicked(item: T) {
-    this.markAsTouched();
-    const value = this.getPropertyId(item);
-    this.selectedItem.set(item);
-    
-    if (value == this.controlValue) {
-      // Deselect if clicking on already selected item
+  protected onItemClick(item: T): void {
+    this.markTouched();
+    const value = this.getValueId(item);
+    if (value === this.formControl.value) {
+      // Deselect if clicking the same item
       this.selectedItem.set(null);
       this.onValueChange(null);
     } else {
       // Select new item
+      this.selectedItem.set(item);
       this.onValueChange(value);
     }
   }
 
-  customActionClicked() {
-    this.onCustomActionClicked.emit();
+  protected onCustomActionClick(): void {
+    this.customActionClick.emit();
   }
 
-  handleKeydown(event: KeyboardEvent, item: T) {
-    switch (event.key) {
-      case 'Enter':
-        this.onItemClicked(item);
-        event.preventDefault();
-        break;
+  protected onItemKeydown(event: KeyboardEvent, item: T): void {
+    if (event.key === 'Enter') {
+      this.onItemClick(item);
+      event.preventDefault();
     }
+  }
+
+  protected showAllItems(): void {
+    this.showAll.set(true);
+  }
+
+  protected hideExtraItems(): void {
+    this.showAll.set(false);
+  }
+
+  private getValueId(item: T): any {
+    return this.valueProperty() ? this.getNestedProperty(item, this.valueProperty()) : item;
+  }
+
+  private getNestedProperty(item: T, path: string): any {
+    return path.split('.').reduce((acc, part) => acc && acc[part], item as any);
   }
 }

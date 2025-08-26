@@ -2,12 +2,12 @@
   <!-- Input Slot -->
   <div input class="relative flex items-center w-full bg-white border border-neutral-200 rounded-md shadow-sm focus-within:ring-2 focus-within:ring-primary-400 transition-all">
     <!-- Prefix Select -->
-    @if (isPrefixSelect()) {
+    @if (hasPrefixSelect()) {
       <div class="relative">
         <select
           [formControl]="prefixControl"
-          (ngModelChange)="onPrefixChanged($event)"
-          class="border-0 bg-transparent text-primary-800 focus:outline-none cursor-pointer pr-6 appearance-none h-[46px] pl-3"
+          (ngModelChange)="onPrefixChange($event)"
+          class="h-[46px] pl-3 pr-6 bg-transparent border-0 text-primary-800 focus:outline-none cursor-pointer appearance-none"
           [attr.aria-label]="'Prefix selection for ' + (label() || 'input')"
         >
           @for (option of prefixOptions(); track option.value) {
@@ -24,43 +24,41 @@
     }
 
     <!-- Input Field -->
-    <div class="flex-1 relative flex items-center">
+    <div class="relative flex items-center flex-1">
       @if (iconSrc()) {
-        <app-svg-icon [size]="18" [src]="iconSrc()!" class="absolute pointer-events-none ml-3 text-neutral-400"></app-svg-icon>
+        <app-svg-icon [size]="18" [src]="iconSrc()!" class="absolute ml-3 text-neutral-400 pointer-events-none"></app-svg-icon>
       }
       <input
         [mask]="mask()"
-        (input)="onValueReady(formControl.value)"
-        class="h-[46px] placeholder-neutral-400 text-black border-none outline-none focus:border-none bg-transparent flex-1"
+        (input)="onInput(formControl.value)"
+        class="h-[46px] flex-1 bg-transparent border-none outline-none placeholder-neutral-400 text-black focus:border-none"
         [class.pl-10]="iconSrc()"
         [class.pl-3]="!iconSrc()"
         [class.text-neutral-400]="formControl.disabled"
         [class.disabled-placeholder]="formControl.disabled"
         [formControl]="formControl"
-        [ngClass]="getClass()"
+        [ngClass]="inputClass()"
         [type]="type()"
         [placeholder]="placeholder()"
         (focus)="onFocus()"
         (blur)="onBlur()"
       >
       @if (actionIcon()) {
-        <div (click)="onActionClicked()" class="absolute right-2 p-2 flex justify-center items-center hover:bg-neutral-100 rounded-full">
-          <app-svg-icon [size]="18" [src]="actionIcon()!" class="text-neutral-400 cursor-pointer"></app-svg-icon>
+        <div (click)="onActionClick()" class="absolute right-2 p-2 flex justify-center items-center hover:bg-neutral-100 rounded-full cursor-pointer">
+          <app-svg-icon [size]="18" [src]="actionIcon()!" class="text-neutral-400"></app-svg-icon>
         </div>
       }
     </div>
   </div>
-     
+
   <!-- Error Slot -->
-  @if (formControl.errors && hasErrors) {
+  @if (formControl && formControl.errors && hasErrors()) {
     <div error class="mt-1">
       <span class="text-caption text-red-500">{{ formControl.errors | humanizeFormMessages: errorMessages() }}</span>
     </div>
-  } @else {
-    @if (showErrorSpace()) {
-      <div error class="mt-1">
-        <span class="text-caption text-transparent">.</span>
-      </div>
-    }
+  } @else if (showErrorSpace()) {
+    <div error class="mt-1">
+      <span class="text-caption text-transparent">.</span>
+    </div>
   }
 </app-base-input>

@@ -12,7 +12,7 @@
             placeholder="Search..." 
             type="search" 
             [fullWidth]="false"
-            (changeValue)="onSearchTextChanged($event)"
+            (valueChange)="onSearchTextChanged($event)"
             iconSrc="edit.svg"
             class="w-full">
           </app-text-input>
@@ -83,8 +83,8 @@
                             [placeholder]="column.filterConfig.placeholder || 'Filter...'"
                             [formControl]="getFilterControl(column, 'value')" 
                             [fullWidth]="true" 
-                            [isPrefixSelect]="true"
-                            (prefixChanged)="onFilterOperationChanged($event, column)"
+                            [hasPrefixSelect]="true"
+                            (prefixChange)="onFilterOperationChanged($event, column)"
                             [prefixOptions]="getFilterOperations(column.filterConfig.type)" 
                             [defaultPrefixValue]="'contains'"
                             class="flex-1 min-w-[140px]">
@@ -99,8 +99,8 @@
                             [formControl]="getFilterControl(column, 'value')"
                             (valueChanged)="onFilterChanged($event, null, null, column)" 
                             [fullWidth]="true"
-                            [isPrefixSelect]="true" 
-                            (prefixChanged)="onFilterOperationChanged($event, column)"
+                            [hasPrefixSelect]="true" 
+                            (prefixChange)="onFilterOperationChanged($event, column)"
                             [defaultPrefixValue]="'equals'" 
                             [prefixOptions]="getFilterOperations(column.filterConfig.type)"
                             class="flex-1 min-w-[120px]">

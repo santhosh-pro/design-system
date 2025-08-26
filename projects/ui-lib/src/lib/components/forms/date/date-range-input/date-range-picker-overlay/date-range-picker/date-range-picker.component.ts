@@ -26,9 +26,7 @@ export class DateRangePickerComponent
   allowToday = input<boolean>(false);
   minDaysRange = input<number | null>(null);
   maxDaysRange = input<number | null>(null);
-  value = input<DateRangeEvent | null>(null, {
-    alias: 'value',
-  });
+
 
   dateRangeSelected = output<DateRangeEvent>();
 

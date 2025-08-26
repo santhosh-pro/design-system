@@ -78,12 +78,12 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
 
   // Outputs
   pageChange = output<PaginationEvent>();
-  sortChanged = output<TableSortEvent>();
-  stateChanged = output<TableStateEvent>();
-  actionPerformed = output<TableActionEvent>(); // Renamed from onActionPerformed for consistency (no 'on' prefix)
-  filterChanged = output<FilterEvent>();
-  rowClicked = output<any>(); // Renamed from onRowClicked
-  rowSelectionChanged = output<any[]>(); // Renamed from rowSelectionChange for clarity
+  sortChange = output<TableSortEvent>();
+  stateChange = output<TableStateEvent>();
+  action = output<TableActionEvent>(); // Renamed from onActionPerformed for consistency (no 'on' prefix)
+  filterChange = output<FilterEvent>();
+  rowClick = output<any>(); // Renamed from onRowClicked
+  rowSelectionChange = output<any[]>(); // Renamed from rowSelectionChange for clarity
 
   // Signals
   private internalPageSize: number = this.pageSize();
@@ -121,7 +121,7 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
   ngAfterViewInit(): void {
     if (this.enableRowSelection() && this.defaultSelectedKeys().length > 0) {
       this.selectedIds.set([...this.defaultSelectedKeys()]);
-      this.rowSelectionChanged.emit(this.selectedIds());
+      this.rowSelectionChange.emit(this.selectedIds());
     }
 
     // Initialize filter controls and subscriptions
@@ -176,7 +176,7 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
             columnFilters: { ...this.columnFilters },
           };
           const filterEvent: FilterEvent = { key: 'custom', value: newFilters, operation: 'custom' };
-          this.filterChanged.emit(filterEvent);
+          this.filterChange.emit(filterEvent);
           this.emitTableStateChanged(updatedTableStateEvent);
         });
         this.subscriptions.push(sub);
@@ -199,7 +199,7 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
   // State management
   protected onValueReady(value: TableStateEvent): void {
     this.applyInitialState(value);
-    this.stateChanged.emit(value);
+    this.stateChange.emit(value);
   }
 
   private applyInitialState(value: TableStateEvent): void {
@@ -220,11 +220,11 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
       return;
     }
     this.lastStateChangeTimestamp = now;
-    this.stateChanged.emit(tableStateEvent);
+    this.stateChange.emit(tableStateEvent);
   }
 
   // Event handlers
-  onSearchTextChanged(event: string): void {
+  onSearchTextChanged(event: string | any): void {
     this.searchText = event;
     this.paginationEvent = {
       pageNumber: 1,
@@ -270,7 +270,7 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
     const filterEvent: FilterEvent = operation === 'range'
       ? { key: filterKey, min: parsedMin, max: parsedMax, operation }
       : { key: filterKey, value: parsedValue, operation };
-    this.filterChanged.emit(filterEvent);
+    this.filterChange.emit(filterEvent);
 
     this.paginationEvent = {
       pageNumber: 1,
@@ -313,7 +313,7 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
     const filterEvent: FilterEvent = operation === 'range'
       ? { key: filterKey, min: existingFilter.min, max: existingFilter.max, operation }
       : { key: filterKey, value: existingFilter.value, operation };
-    this.filterChanged.emit(filterEvent);
+    this.filterChange.emit(filterEvent);
 
     this.paginationEvent = {
       pageNumber: 1,
@@ -353,12 +353,12 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
       tableSortEvent: event,
       columnFilters: this.columnFilters
     };
-    this.sortChanged.emit(event);
+    this.sortChange.emit(event);
     this.emitTableStateChanged(tableStateEvent);
     this.onValueChange(tableStateEvent);
   }
 
-  onRowSelectionChange(selected: boolean, item: any): void {
+  onRowSelectionChange(selected: boolean | any, item: any): void {
     const id = this.getItemId(item);
     let updatedIds: any[];
     if (selected) {
@@ -367,10 +367,10 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
       updatedIds = this.selectedIds().filter(selectedId => selectedId !== id);
     }
     this.selectedIds.set(updatedIds);
-    this.rowSelectionChanged.emit(this.selectedIds());
+    this.rowSelectionChange.emit(this.selectedIds());
   }
 
-  onSelectAllRows(selected: boolean): void {
+  onSelectAllRows(selected: boolean | any): void {
     let updatedIds: any[];
     if (selected) {
       const newIds = this.data().map((item: any) => this.getItemId(item)).filter((id: any) => !this.selectedIds().includes(id));
@@ -380,7 +380,7 @@ export class DataTableComponent<T> extends BaseControlValueAccessorV3<TableState
       updatedIds = this.selectedIds().filter(id => !currentPageIds.includes(id));
     }
     this.selectedIds.set(updatedIds);
-    this.rowSelectionChanged.emit(this.selectedIds());
+    this.rowSelectionChange.emit(this.selectedIds());
   }
 
   // Helper methods
@@ -728,7 +728,7 @@ getTableStyles(): string {
       actionKey,
       item
     };
-    this.actionPerformed.emit(tableActionEvent);
+    this.action.emit(tableActionEvent);
   }
 
   expandedRowIndex = signal<number | null>(null);
@@ -738,15 +738,15 @@ getTableStyles(): string {
   }
 
   onRowClicked(item: any): void {
-    this.rowClicked.emit(item);
+    this.rowClick.emit(item);
   }
 
   onCellActionPerformed(event: TableActionEvent): void {
-    this.actionPerformed.emit(event);
+    this.action.emit(event);
   }
 
   onRowActionPerformed(event: TableActionEvent): void {
-    this.actionPerformed.emit(event);
+    this.action.emit(event);
   }
 
   isRowSelected(item: any): boolean {
@@ -934,7 +934,7 @@ export interface TableActionEvent {
 }
 
 export interface TableStateEvent {
-  searchText: string;
+  searchText?: string;
   paginationEvent?: PaginationEvent;
   tableSortEvent?: TableSortEvent;
   columnFilters?: { [key: string]: { value?: any; min?: any; max?: any; operation: string } };

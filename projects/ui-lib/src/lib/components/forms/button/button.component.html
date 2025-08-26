@@ -1,16 +1,17 @@
 <button
-  (click)="onClick()"
+  (click)="onClick($event)"
   [type]="type()"
+  [disabled]="disabled() || loading()"
   class="relative whitespace-nowrap cursor-pointer"
-  [ngClass]="getButtonClass()">
+  [ngClass]="buttonClass()">
 
   @if (iconSrc()) {
     <app-svg-icon [src]="iconSrc()!" [size]="iconSize()" class="mr-3"
-                  [ngClass]="loading() ? 'text-transparent' : getIconClass()"></app-svg-icon>
+                  [ngClass]="loading() ? 'text-transparent' : iconClass()"></app-svg-icon>
   }
 
   <app-spinner class="w-min absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-               [borderColor]="loading() ? getLoaderColor() : 'border-transparent'"></app-spinner>
+               [borderColor]="loading() ? loaderColor() : 'border-transparent'"></app-spinner>
 
   <div [ngClass]="loading() ? 'text-transparent' : 'text-body2'">
     <ng-content></ng-content>
