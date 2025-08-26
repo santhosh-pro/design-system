@@ -8,8 +8,8 @@ export type Weekday = 'sunday' | 'monday' | 'tuesday' | 'wednesday' | 'thursday'
   selector: 'app-multi-date-picker',
   imports: [NgClass],
   standalone: true,
-  templateUrl: './multi-date-picker.component.html',
-  styleUrl: './multi-date-picker.component.css'
+  templateUrl: './multi-date-picker.html',
+  styleUrl: './multi-date-picker.css'
 })
 export class MultiDatePickerComponent extends BaseControlValueAccessor<Date[]> implements OnInit {
   minDate = input<Date | null>();

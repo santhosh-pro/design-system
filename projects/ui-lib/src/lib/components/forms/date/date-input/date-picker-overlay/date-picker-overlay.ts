@@ -8,8 +8,8 @@ import {DatePickerComponent, Weekday} from './date-picker/date-picker';
   imports: [
     DatePickerComponent
   ],
-  templateUrl: './date-picker-overlay.component.html',
-  styleUrl: './date-picker-overlay.component.scss'
+  templateUrl: './date-picker-overlay.html',
+  styleUrl: './date-picker-overlay.scss'
 })
 export class DatePickerOverlayComponent {
 

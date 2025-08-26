@@ -13,8 +13,8 @@ import { TableActionEvent } from '../../display/data-table/data-table';
 @Component({
   standalone: true,
   selector: 'app-dynamic-renderer',
-  templateUrl: './dynamic-renderer.component.html',
-  styleUrl: './dynamic-renderer.component.scss'
+  templateUrl: './dynamic-renderer.html',
+  styleUrl: './dynamic-renderer.scss'
 })
 export class DynamicRendererComponent<T> implements OnChanges, OnDestroy {
   @Input() component!: Type<any>;

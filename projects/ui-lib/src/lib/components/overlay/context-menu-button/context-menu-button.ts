@@ -7,9 +7,9 @@ import {OverlayContextMenuComponent} from './overlay-context-menu/overlay-contex
 @Component({
   selector: 'app-context-menu-button',
   imports: [],
-  templateUrl: './context-menu-button.component.html',
+  templateUrl: './context-menu-button.html',
   standalone: true,
-  styleUrl: './context-menu-button.component.scss'
+  styleUrl: './context-menu-button.scss'
 })
 export class ContextMenuButtonComponent implements OnDestroy {
 

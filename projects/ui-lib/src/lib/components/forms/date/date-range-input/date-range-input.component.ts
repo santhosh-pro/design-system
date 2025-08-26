@@ -39,7 +39,7 @@ import { InputDateFormat } from "../date-format";
     AppSvgIconComponent,
     FormsModule,
   ],
-  templateUrl: "./date-range-input.component.html",
+  templateUrl: "./date-range-input.html",
 })
 export class DateRangeInputComponent
   extends BaseControlValueAccessor<DateRangeEvent | null>

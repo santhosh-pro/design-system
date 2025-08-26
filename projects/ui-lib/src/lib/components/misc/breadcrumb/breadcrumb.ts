@@ -8,7 +8,7 @@ import { NgClass } from '@angular/common';
   selector: 'app-breadcrumb',
   standalone: true,
   imports: [NgClass],
-  templateUrl: './breadcrumb.component.html',
+  templateUrl: './breadcrumb.html',
 })
 export class BreadcrumbComponent implements OnInit, OnDestroy {
   router = inject(Router);

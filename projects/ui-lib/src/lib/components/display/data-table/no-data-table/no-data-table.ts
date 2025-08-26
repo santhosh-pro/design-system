@@ -7,8 +7,8 @@ import {NoDataComponent} from "../../../feedback/no-data/no-data";
   imports: [
     NoDataComponent
   ],
-  templateUrl: './no-data-table.component.html',
-  styleUrl: './no-data-table.component.scss'
+  templateUrl: './no-data-table.html',
+  styleUrl: './no-data-table.scss'
 })
 export class NoDataTableComponent {
   message = input<string>();

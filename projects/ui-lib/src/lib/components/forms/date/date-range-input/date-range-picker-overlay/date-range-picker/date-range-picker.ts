@@ -12,8 +12,8 @@ export interface DateRangeEvent {
   selector: "app-date-range-picker",
   imports: [NgClass],
   standalone: true,
-  templateUrl: "./date-range-picker.component.html",
-  styleUrl: "./date-range-picker.component.css",
+  templateUrl: "./date-range-picker.html",
+  styleUrl: "./date-range-picker.css",
 })
 export class DateRangePickerComponent
   extends BaseControlValueAccessor<DateRangeEvent | null>

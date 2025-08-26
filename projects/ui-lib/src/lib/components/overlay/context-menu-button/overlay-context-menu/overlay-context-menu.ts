@@ -8,8 +8,8 @@ import { AppSvgIconComponent } from '../../../misc/app-svg-icon/app-svg-icon';
   imports: [
     AppSvgIconComponent,
   ],
-  templateUrl: './overlay-context-menu.component.html',
-  styleUrl: './overlay-context-menu.component.scss'
+  templateUrl: './overlay-context-menu.html',
+  styleUrl: './overlay-context-menu.scss'
 })
 export class OverlayContextMenuComponent {
 

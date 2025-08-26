@@ -33,8 +33,8 @@ type ViewType = 'picker' | 'calendar';
     FormsModule,
     DatePickerComponent
   ],
-  templateUrl: './date-input.component.html',
-  styleUrl: './date-input.component.scss'
+  templateUrl: './date-input.html',
+  styleUrl: './date-input.scss'
 })
 export class DateInputComponent extends BaseControlValueAccessor<Date | null> implements OnDestroy {
   @ViewChild('trigger', {static: false}) trigger?: ElementRef; // Changed to optional and static: false

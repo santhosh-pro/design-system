@@ -39,8 +39,8 @@ export enum MultiSelectDropdownAppearance {
         CheckboxComponent,
         FormsModule
     ],
-    templateUrl: './multi-select-dropdown.component.html',
-    styleUrl: './multi-select-dropdown.component.scss'
+    templateUrl: './multi-select-dropdown.html',
+    styleUrl: './multi-select-dropdown.scss'
 })
 export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor<T[]> implements AfterContentInit {
     cdr = inject(ChangeDetectorRef);

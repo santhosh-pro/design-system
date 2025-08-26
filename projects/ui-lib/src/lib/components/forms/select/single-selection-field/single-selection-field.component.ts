@@ -18,8 +18,8 @@ import { AppSvgIconComponent } from '../../../misc/app-svg-icon/app-svg-icon';
     AppSvgIconComponent,
     NgStyle,
   ],
-  templateUrl: './single-selection-field.component.html',
-  styleUrl: './single-selection-field.component.scss',
+  templateUrl: './single-selection-field.html',
+  styleUrl: './single-selection-field.scss',
 })
 export class SingleSelectionFieldComponent<T> extends BaseControlValueAccessor<T | null> implements AfterContentInit {
   // Inputs

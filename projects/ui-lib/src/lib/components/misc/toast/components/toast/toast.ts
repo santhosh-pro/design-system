@@ -22,8 +22,8 @@ import {NgClass} from "@angular/common";
     ToastCloseButtonComponent,
     NgClass
   ],
-  templateUrl: './toast.component.html',
-  styleUrl: './toast.component.scss'
+  templateUrl: './toast.html',
+  styleUrl: './toast.scss'
 })
 export class ToastComponent implements OnInit, OnDestroy {
 

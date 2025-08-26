@@ -10,8 +10,8 @@ export type Weekday = 'sunday' | 'monday' | 'tuesday' | 'wednesday' | 'thursday'
     NgClass
   ],
   standalone: true,
-  templateUrl: './date-picker.component.html',
-  styleUrl: './date-picker.component.scss'
+  templateUrl: './date-picker.html',
+  styleUrl: './date-picker.scss'
 })
 export class DatePickerComponent extends BaseControlValueAccessor<Date> implements OnInit {
   minDate = input<Date | null>();

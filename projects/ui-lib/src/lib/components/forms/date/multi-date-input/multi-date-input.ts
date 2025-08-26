@@ -29,8 +29,8 @@ import { NgxMaskDirective } from '../../input-mask/ngx-mask.directive';
     AppSvgIconComponent,
     FormsModule,
 ],
-  templateUrl: './multi-date-input.component.html',
-  styleUrl: './multi-date-input.component.css'
+  templateUrl: './multi-date-input.html',
+  styleUrl: './multi-date-input.css'
 })
 export class MultiDateInputComponent extends BaseControlValueAccessor<Date[]> implements OnDestroy {
   @ViewChild('trigger', { static: false }) trigger?: ElementRef;

@@ -10,8 +10,8 @@ import { BaseControlValueAccessor } from '../../../core/base-control-value-acces
   imports: [
     ReactiveFormsModule,
   ],
-  templateUrl: './checkbox.component.html',
-  styleUrl: './checkbox.component.scss'
+  templateUrl: './checkbox.html',
+  styleUrl: './checkbox.scss'
 })
 export class CheckboxComponent extends BaseControlValueAccessor<boolean> implements OnInit, AfterContentInit {
   title = input<string | null>();

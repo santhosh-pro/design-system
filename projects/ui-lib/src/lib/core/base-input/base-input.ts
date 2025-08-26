@@ -5,7 +5,7 @@ import { NgClass } from '@angular/common';
   selector: 'app-base-input',
   standalone: true,
   imports: [NgClass],
-  templateUrl: './base-input.component.html',
+  templateUrl: './base-input.html',
 })
 export class BaseInputComponent {
   title = input<string | null | undefined>(null);

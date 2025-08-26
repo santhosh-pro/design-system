@@ -13,9 +13,9 @@ import {
 @Component({
   selector: 'app-base-overlay',
   imports: [],
-  templateUrl: './base-overlay.component.html',
+  templateUrl: './base-overlay.html',
   standalone: true,
-  styleUrl: './base-overlay.component.css'
+  styleUrl: './base-overlay.css'
 })
 export class BaseOverlayComponent implements AfterViewInit {
 

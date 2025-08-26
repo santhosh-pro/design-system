@@ -9,8 +9,8 @@ import {NgClass} from "@angular/common";
     FormsModule,
     NgClass
   ],
-  templateUrl: './pagination.component.html',
-  styleUrl: './pagination.component.scss'
+  templateUrl: './pagination.html',
+  styleUrl: './pagination.scss'
 })
 export class PaginationComponent {
   totalItems = input<number>(0);

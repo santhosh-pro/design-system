@@ -8,8 +8,8 @@ import { ButtonComponent } from '../../forms/button/button';
   imports: [
     ButtonComponent,
   ],
-  templateUrl: './alert-dialog.component.html',
-  styleUrl: './alert-dialog.component.css'
+  templateUrl: './alert-dialog.html',
+  styleUrl: './alert-dialog.css'
 })
 export class AlertDialogComponent {
 

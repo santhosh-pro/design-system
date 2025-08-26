@@ -52,7 +52,7 @@ import { InputDateFormat } from '../../forms/date/date-format';
     AppSvgIconComponent
   ],
   providers: [provideNgxMask()],
-  templateUrl: './data-table.component.html',
+  templateUrl: './data-table.html',
   styles: []
 })
 export class DataTableComponent<T> extends BaseControlValueAccessor<TableStateEvent> implements OnInit, AfterViewInit, OnDestroy {

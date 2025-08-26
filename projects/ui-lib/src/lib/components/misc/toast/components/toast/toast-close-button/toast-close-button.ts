@@ -4,8 +4,8 @@ import {Component, EventEmitter, Output} from '@angular/core';
   selector: 'app-toast-close-button',
   standalone: true,
   imports: [],
-  templateUrl: './toast-close-button.component.html',
-  styleUrl: './toast-close-button.component.scss'
+  templateUrl: './toast-close-button.html',
+  styleUrl: './toast-close-button.scss'
 })
 export class ToastCloseButtonComponent {
 

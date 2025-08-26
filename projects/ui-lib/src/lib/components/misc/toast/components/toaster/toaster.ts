@@ -9,8 +9,8 @@ import {ToastService} from "../../toast";
   imports: [
     ToastComponent
   ],
-  templateUrl: './toaster.component.html',
-  styleUrl: './toaster.component.scss',
+  templateUrl: './toaster.html',
+  styleUrl: './toaster.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ToasterComponent implements OnInit {

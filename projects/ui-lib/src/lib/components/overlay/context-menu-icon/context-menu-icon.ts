@@ -5,8 +5,8 @@ import { Component } from '@angular/core';
   standalone: true,
     imports: [
     ],
-  templateUrl: './context-menu-icon.component.html',
-  styleUrl: './context-menu-icon.component.scss'
+  templateUrl: './context-menu-icon.html',
+  styleUrl: './context-menu-icon.scss'
 })
 export class ContextMenuIconComponent {
 

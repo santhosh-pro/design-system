@@ -12,7 +12,7 @@ import { AppSvgIconComponent } from '../../misc/app-svg-icon/app-svg-icon';
     SpinnerComponent,
     AppSvgIconComponent
   ],
-  templateUrl: './button.component.html',
+  templateUrl: './button.html',
 })
 export class ButtonComponent {
   formGroupDirective = inject(FormGroupDirective, { optional: true });

@@ -7,8 +7,8 @@ import { DateRangeEvent, DateRangePickerComponent } from "./date-range-picker/da
   selector: "app-date-range-picker-overlay",
   standalone: true,
   imports: [DateRangePickerComponent, FormsModule],
-  templateUrl: "./date-range-picker-overlay.component.html",
-  styleUrl: "./date-range-picker-overlay.component.css",
+  templateUrl: "./date-range-picker-overlay.html",
+  styleUrl: "./date-range-picker-overlay.css",
 })
 export class DateRangePickerOverlayComponent {
   dialogRef = inject(DialogRef);

@@ -7,8 +7,8 @@ import { MultiDatePickerComponent, Weekday } from './multi-date-picker/multi-dat
   selector: 'app-multi-date-picker-overlay',
   standalone: true,
   imports: [MultiDatePickerComponent, FormsModule],
-  templateUrl: './multi-date-picker-overlay.component.html',
-  styleUrl: './multi-date-picker-overlay.component.css'
+  templateUrl: './multi-date-picker-overlay.html',
+  styleUrl: './multi-date-picker-overlay.css'
 })
 export class MultiDatePickerOverlayComponent {
   dialogRef = inject(DialogRef);

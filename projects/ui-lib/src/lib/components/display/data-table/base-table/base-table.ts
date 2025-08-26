@@ -13,8 +13,8 @@ import { NoDataTableComponent } from '../no-data-table/no-data-table';
     NgClass,
     PaginationComponent
   ],
-  templateUrl: './base-table.component.html',
-  styleUrl: './base-table.component.scss'
+  templateUrl: './base-table.html',
+  styleUrl: './base-table.scss'
 })
 export class BaseTableComponent<T> implements AfterViewInit {
 

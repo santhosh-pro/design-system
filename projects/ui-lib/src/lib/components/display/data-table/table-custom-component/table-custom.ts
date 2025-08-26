@@ -5,8 +5,8 @@ import {TableActionEvent} from '../data-table';
   selector: 'lib-table-custom-component',
   standalone: true,
   imports: [],
-  templateUrl: './table-custom.component.html',
-  styleUrl: './table-custom.component.scss'
+  templateUrl: './table-custom.html',
+  styleUrl: './table-custom.scss'
 })
 export class TableCustomComponent<T> {
   @Input() rowData!: T;

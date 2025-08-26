@@ -6,9 +6,9 @@ import {NgClass} from "@angular/common";
   imports: [
     NgClass
   ],
-  templateUrl: './status-badge.component.html',
+  templateUrl: './status-badge.html',
   standalone: true,
-  styleUrls: ['./status-badge.component.scss']
+  styleUrls: ['./status-badge.scss']
 })
 export class StatusBadgeComponent {
   status = input.required<string | null | undefined>();

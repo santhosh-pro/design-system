@@ -7,7 +7,7 @@ import { SvgIconComponent } from './lib/svg-icon';
   imports: [
     SvgIconComponent
   ],
-  templateUrl: './app-svg-icon.component.html',
+  templateUrl: './app-svg-icon.html',
 })
 export class AppSvgIconComponent {
 
