@@ -8,7 +8,7 @@ import {
 } from '@angular/cdk/overlay';
 import {ComponentType} from '@angular/cdk/portal';
 import {BreakpointObserver, Breakpoints} from "@angular/cdk/layout";
-import {AlertDialogComponent} from './alert-dialog/alert-dialog.component';
+import {AlertDialogComponent} from './alert-dialog/alert-dialog';
 
 @Injectable({
   providedIn: 'root'

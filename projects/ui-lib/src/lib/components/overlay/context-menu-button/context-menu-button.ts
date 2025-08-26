@@ -2,7 +2,7 @@ import {Component, ElementRef, inject, input, OnDestroy, output, ViewChild} from
 import {FlexibleConnectedPositionStrategy, GlobalPositionStrategy, Overlay} from "@angular/cdk/overlay";
 import {Dialog, DialogRef} from "@angular/cdk/dialog";
 import {Subscription} from "rxjs";
-import {OverlayContextMenuComponent} from './overlay-context-menu/overlay-context-menu.component';
+import {OverlayContextMenuComponent} from './overlay-context-menu/overlay-context-menu';
 
 @Component({
   selector: 'app-context-menu-button',

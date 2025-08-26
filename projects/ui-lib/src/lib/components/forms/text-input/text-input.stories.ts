@@ -2,11 +2,11 @@ import { Meta, StoryObj } from '@storybook/angular';
 import { moduleMetadata } from '@storybook/angular';
 import { ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { TextInputComponent } from './text-input.component';
-import { BaseInputComponent } from '../../../core/base-input/base-input.component';
-import { HumanizeFormMessagesPipe } from '../../misc/humanize-form-messages.pipe';
-import { AppSvgIconComponent } from '../../misc/app-svg-icon/app-svg-icon.component';
-import { NgxMaskDirective } from '../../forms/input-mask/ngx-mask.directive';
+import { TextInputComponent } from './text-input';
+import { BaseInputComponent } from '../../../core/base-input/base-input';
+import { HumanizeFormMessagesPipe } from '../../misc/humanize-form-messages';
+import { AppSvgIconComponent } from '../../misc/app-svg-icon/app-svg-icon';
+import { NgxMaskDirective } from '../../forms/input-mask/ngx-mask';
 import { provideNgxMask } from '../../forms/input-mask/ngx-mask.providers';
 
 export default {

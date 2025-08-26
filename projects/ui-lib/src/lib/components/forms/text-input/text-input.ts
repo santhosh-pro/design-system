@@ -12,9 +12,9 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { NgClass, CommonModule } from '@angular/common';
 import { debounceTime, Subject, takeUntil } from 'rxjs';
 import { BaseControlValueAccessor } from '../../../core/base-control-value-accessor';
-import { BaseInputComponent } from '../../../core/base-input/base-input.component';
-import { HumanizeFormMessagesPipe } from '../../misc/humanize-form-messages.pipe';
-import { AppSvgIconComponent } from '../../misc/app-svg-icon/app-svg-icon.component';
+import { BaseInputComponent } from '../../../core/base-input/base-input';
+import { HumanizeFormMessagesPipe } from '../../misc/humanize-form-messages';
+import { AppSvgIconComponent } from '../../misc/app-svg-icon/app-svg-icon';
 import { NgxMaskDirective } from '../input-mask/ngx-mask.directive';
 interface SelectOption {
   value: string;

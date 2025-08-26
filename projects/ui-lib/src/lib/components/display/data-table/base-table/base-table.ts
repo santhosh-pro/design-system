@@ -1,8 +1,8 @@
 import {AfterViewInit, Component, input, output, signal} from '@angular/core';
-import {ShimmerComponent} from "../../../feedback/shimmer/shimmer.component";
+import {ShimmerComponent} from "../../../feedback/shimmer/shimmer";
 import {NgClass} from "@angular/common";
-import {PaginationComponent, PaginationEvent} from "../../../display/pagination/pagination.component";
-import { NoDataTableComponent } from '../no-data-table/no-data-table.component';
+import {PaginationComponent, PaginationEvent} from "../../../display/pagination/pagination";
+import { NoDataTableComponent } from '../no-data-table/no-data-table';
 
 @Component({
   selector: 'app-base-table',

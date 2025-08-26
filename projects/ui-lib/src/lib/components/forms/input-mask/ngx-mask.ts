@@ -3,8 +3,8 @@ import { inject, Pipe } from '@angular/core';
 
 import type { NgxMaskConfig } from './ngx-mask.config';
 import { NGX_MASK_CONFIG } from './ngx-mask.config';
-import { NgxMaskService } from './ngx-mask.service';
 import { MaskExpression } from './ngx-mask-expression.enum';
+import { NgxMaskService } from './ngx-mask.service';
 
 @Pipe({
     name: 'mask',

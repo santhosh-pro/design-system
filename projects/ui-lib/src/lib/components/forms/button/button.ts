@@ -1,8 +1,8 @@
 import { Component, computed, inject, input, output, Signal } from '@angular/core';
 import { FormGroup, FormGroupDirective } from "@angular/forms";
 import { NgClass } from "@angular/common";
-import { SpinnerComponent } from '../../feedback/spinner/spinner.component';
-import { AppSvgIconComponent } from '../../misc/app-svg-icon/app-svg-icon.component';
+import { SpinnerComponent } from '../../feedback/spinner/spinner';
+import { AppSvgIconComponent } from '../../misc/app-svg-icon/app-svg-icon';
 
 @Component({
   selector: 'app-button',

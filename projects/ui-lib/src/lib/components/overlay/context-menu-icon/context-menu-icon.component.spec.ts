@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ContextMenuIconComponent } from './context-menu-icon.component';
+import { ContextMenuIconComponent } from './context-menu-icon';
 
 describe('ThreeDotMenuComponent', () => {
   let component: ContextMenuIconComponent;

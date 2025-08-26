@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DatePickerOverlayComponent } from './date-picker-overlay.component';
+import { DatePickerOverlayComponent } from './date-picker-overlay';
 
 describe('DatePickerOverlayComponent', () => {
   let component: DatePickerOverlayComponent;

@@ -1,6 +1,6 @@
 import {Component, inject} from '@angular/core';
 import {DIALOG_DATA, DialogRef} from "@angular/cdk/dialog";
-import { ButtonComponent } from '../../forms/button/button.component';
+import { ButtonComponent } from '../../forms/button/button';
 
 @Component({
   selector: 'app-alert-dialog',

@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { NoDataTableComponent } from './no-data-table.component';
+import { NoDataTableComponent } from './no-data-table';
 
 describe('NoDataTableComponent', () => {
   let component: NoDataTableComponent;

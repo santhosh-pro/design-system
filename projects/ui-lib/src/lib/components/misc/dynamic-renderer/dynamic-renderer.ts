@@ -8,7 +8,7 @@ import {
   ViewChild,
   ViewContainerRef
 } from '@angular/core';
-import { TableActionEvent } from '../../display/data-table/data-table.component';
+import { TableActionEvent } from '../../display/data-table/data-table';
 
 @Component({
   standalone: true,

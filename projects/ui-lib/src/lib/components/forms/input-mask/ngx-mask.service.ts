@@ -3,8 +3,8 @@ import { DOCUMENT } from '@angular/common';
 
 import type { NgxMaskConfig } from './ngx-mask.config';
 import { NGX_MASK_CONFIG } from './ngx-mask.config';
-import { NgxMaskApplierService } from './ngx-mask-applier.service';
 import { MaskExpression } from './ngx-mask-expression.enum';
+import { NgxMaskApplierService } from './ngx-mask-applier';
 
 @Injectable()
 export class NgxMaskService extends NgxMaskApplierService {

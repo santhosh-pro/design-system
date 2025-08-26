@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, input, OnInit} from '@angular/core';
-import {ToastComponent} from "../toast/toast.component";
+import {ToastComponent} from "../toast/toast";
 import {ToastEvent} from "../../models/toast-event";
-import {ToastService} from "../../toast.service";
+import {ToastService} from "../../toast";
 
 @Component({
   selector: 'app-toaster',

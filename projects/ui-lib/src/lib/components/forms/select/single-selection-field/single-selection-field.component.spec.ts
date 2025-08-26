@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SingleSelectionFieldComponent } from './single-selection-field.component';
+import { SingleSelectionFieldComponent } from './single-selection-field';
 
 describe('SingleSelectionFieldComponent', () => {
   let component: SingleSelectionFieldComponent<any>;

@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ToastCloseButtonComponent } from './toast-close-button.component';
+import { ToastCloseButtonComponent } from './toast-close-button';
 
 describe('CloseSvgComponent', () => {
   let component: ToastCloseButtonComponent;

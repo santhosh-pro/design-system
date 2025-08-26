@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { FormsModule } from '@angular/forms';
-import { MultiDatePickerComponent, Weekday } from './multi-date-picker/multi-date-picker.component';
+import { MultiDatePickerComponent, Weekday } from './multi-date-picker/multi-date-picker';
 
 @Component({
   selector: 'app-multi-date-picker-overlay',

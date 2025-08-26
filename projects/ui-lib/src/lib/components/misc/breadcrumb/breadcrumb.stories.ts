@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from '@storybook/angular';
-import { BreadcrumbComponent } from './breadcrumb.component';
+import { BreadcrumbComponent } from './breadcrumb';
 import { NgClass } from '@angular/common';
 import { provideRouter } from '@angular/router';
 import { moduleMetadata, applicationConfig } from '@storybook/angular';

@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from '@storybook/angular';
-import { AppSvgIconComponent } from './app-svg-icon.component';
+import { AppSvgIconComponent } from './app-svg-icon';
 import { moduleMetadata } from '@storybook/angular';
-import { SvgIconComponent } from './lib/svg-icon.component';
+import { SvgIconComponent } from './lib/svg-icon';
 
 export default {
   title: 'Components/Misc/SvgIcon',

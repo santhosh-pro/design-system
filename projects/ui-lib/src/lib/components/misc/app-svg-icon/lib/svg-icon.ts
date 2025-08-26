@@ -4,7 +4,7 @@ import { Component, inject, ElementRef, KeyValueChanges, KeyValueDiffer, KeyValu
 
 import { Subscription } from 'rxjs';
 
-import { SvgIconRegistryService } from './svg-icon-registry.service';
+import { SvgIconRegistryService } from './svg-icon-registry';
 
 
 class SvgIconHelper {

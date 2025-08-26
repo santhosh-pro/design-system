@@ -17,9 +17,9 @@ import { CdkConnectedOverlay, Overlay } from "@angular/cdk/overlay";
 import { NgClass } from "@angular/common";
 import { resolveTemplateWithObject } from "../../../../core/template-resolver";
 import { deepEqual } from "../../../../core/core-utils";
-import { BaseInputComponent } from '../../../../core/base-input/base-input.component';
-import { HumanizeFormMessagesPipe } from '../../../misc/humanize-form-messages.pipe';
-import { CheckboxComponent } from '../../checkbox/checkbox.component';
+import { BaseInputComponent } from '../../../../core/base-input/base-input';
+import { HumanizeFormMessagesPipe } from '../../../misc/humanize-form-messages';
+import { CheckboxComponent } from '../../checkbox/checkbox';
 import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
 
 export enum MultiSelectDropdownAppearance {

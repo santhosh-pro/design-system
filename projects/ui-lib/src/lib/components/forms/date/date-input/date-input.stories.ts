@@ -1,12 +1,12 @@
 import { Meta, StoryObj } from '@storybook/angular';
-import { DateInputComponent, ViewType, InputDateFormat } from './date-input.component';
+import { DateInputComponent, ViewType, InputDateFormat } from './date-input';
 import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { NgClass } from '@angular/common';
 import { moduleMetadata } from '@storybook/angular';
-import { BaseInputComponent } from '../../../../core/base-input/base-input.component';
-import { HumanizeFormMessagesPipe } from '../../../misc/humanize-form-messages.pipe';
-import { AppSvgIconComponent } from '../../../misc/app-svg-icon/app-svg-icon.component';
-import { NgxMaskDirective } from '../../../forms/input-mask/ngx-mask.directive';
+import { BaseInputComponent } from '../../../../core/base-input/base-input';
+import { HumanizeFormMessagesPipe } from '../../../misc/humanize-form-messages';
+import { AppSvgIconComponent } from '../../../misc/app-svg-icon/app-svg-icon';
+import { NgxMaskDirective } from '../../../forms/input-mask/ngx-mask';
 
 export default {
   title: 'Components/Forms/Date/DateInput',

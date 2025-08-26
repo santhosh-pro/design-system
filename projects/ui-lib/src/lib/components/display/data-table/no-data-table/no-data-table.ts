@@ -1,5 +1,5 @@
 import {Component, input} from '@angular/core';
-import {NoDataComponent} from "../../../feedback/no-data/no-data.component";
+import {NoDataComponent} from "../../../feedback/no-data/no-data";
 
 @Component({
   selector: 'app-no-data-table',

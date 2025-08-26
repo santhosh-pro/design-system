@@ -1,10 +1,10 @@
 import { Meta, StoryObj } from '@storybook/angular';
-import { ButtonComponent } from './button.component';
+import { ButtonComponent } from './button';
 import { FormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
 import { moduleMetadata } from '@storybook/angular';
-import { SpinnerComponent } from '../../feedback/spinner/spinner.component';
-import { AppSvgIconComponent } from '../../misc/app-svg-icon/app-svg-icon.component';
+import { SpinnerComponent } from '../../feedback/spinner/spinner';
+import { AppSvgIconComponent } from '../../misc/app-svg-icon/app-svg-icon';
 export default {
   title: 'Components/Forms/Button',
   component: ButtonComponent,

@@ -1,7 +1,7 @@
 import { ModuleWithProviders, NgModule, Provider, makeEnvironmentProviders } from '@angular/core';
 
-import { SVG_ICON_REGISTRY_PROVIDER } from './svg-icon-registry.service';
-import { SvgIconComponent } from './svg-icon.component';
+import { SVG_ICON_REGISTRY_PROVIDER } from './svg-icon-registry';
+import { SvgIconComponent } from './svg-icon';
 import { SvgHttpLoader, SvgLoader } from './svg-loader';
 
 export interface AngularSvgIconConfig {

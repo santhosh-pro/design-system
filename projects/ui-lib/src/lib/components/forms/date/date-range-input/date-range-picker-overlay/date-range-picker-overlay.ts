@@ -1,7 +1,7 @@
 import { Component, inject } from "@angular/core";
 import { DIALOG_DATA, DialogRef } from "@angular/cdk/dialog";
 import { FormsModule } from "@angular/forms";
-import { DateRangeEvent, DateRangePickerComponent } from "./date-range-picker/date-range-picker.component";
+import { DateRangeEvent, DateRangePickerComponent } from "./date-range-picker/date-range-picker";
 
 @Component({
   selector: "app-date-range-picker-overlay",

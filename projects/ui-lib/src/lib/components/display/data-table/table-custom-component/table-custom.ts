@@ -1,5 +1,5 @@
 import {Component, input, Input, output} from '@angular/core';
-import {TableActionEvent} from '../data-table.component';
+import {TableActionEvent} from '../data-table';
 
 @Component({
   selector: 'lib-table-custom-component',

@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ShimmerComponent } from './shimmer.component';
+import { ShimmerComponent } from './shimmer';
 
 describe('ShimmerComponent', () => {
   let component: ShimmerComponent;

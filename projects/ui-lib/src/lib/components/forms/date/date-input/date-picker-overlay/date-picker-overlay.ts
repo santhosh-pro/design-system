@@ -1,6 +1,6 @@
 import {Component, inject} from '@angular/core';
 import {DIALOG_DATA, DialogRef} from "@angular/cdk/dialog";
-import {DatePickerComponent, Weekday} from './date-picker/date-picker.component';
+import {DatePickerComponent, Weekday} from './date-picker/date-picker';
 
 @Component({
   selector: 'app-date-picker-overlay',

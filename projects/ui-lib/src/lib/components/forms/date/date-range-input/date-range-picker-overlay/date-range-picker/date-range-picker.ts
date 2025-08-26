@@ -1,7 +1,7 @@
 import { Component, input, OnInit, output, signal } from "@angular/core";
 import { NgClass } from "@angular/common";
 import { BaseControlValueAccessor } from "../../../../../../core/base-control-value-accessor";
-import { Weekday } from "../../../date-input/date-picker-overlay/date-picker/date-picker.component";
+import { Weekday } from "../../../date-input/date-picker-overlay/date-picker/date-picker";
 
 export interface DateRangeEvent {
   startDate: Date;

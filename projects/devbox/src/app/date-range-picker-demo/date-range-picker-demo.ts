@@ -60,7 +60,7 @@ onValueChange(event: DateRangeEvent | null) {
     {
       name: 'icon-full-width-demo.component.ts',
       language: 'ts',
-      code: `import { InputDateFormat } from './date-range-input.component';
+      code: `import { InputDateFormat } from './date-range-input';
 iconFullWidthControl = new FormControl<DateRangeEvent | null>({
   startDate: new Date('2025-08-01'),
   endDate: new Date('2025-08-15'),

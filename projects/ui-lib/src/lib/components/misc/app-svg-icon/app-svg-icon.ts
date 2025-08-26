@@ -1,5 +1,5 @@
 import {Component, input, Input} from '@angular/core';
-import { SvgIconComponent } from './lib/svg-icon.component';
+import { SvgIconComponent } from './lib/svg-icon';
 
 @Component({
   selector: 'app-svg-icon',
