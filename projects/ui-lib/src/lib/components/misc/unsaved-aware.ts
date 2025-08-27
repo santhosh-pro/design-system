@@ -2,21 +2,18 @@ import {
   Directive,
   OnDestroy,
   HostListener,
-  inject
+  inject,
 } from '@angular/core';
 import {FormGroupDirective} from '@angular/forms';
 import {Router, NavigationStart, Event} from '@angular/router';
 import {Subscription} from 'rxjs';
 import { OverlayService } from '../overlay/overlay';
-import { UI_LIB_CONFIG } from '../../../provide-ui-lib-config';
 
 @Directive({
   standalone: true,
   selector: 'form[unSavedAware]'
 })
 export class UnsavedAwareDirective implements OnDestroy {
-  config = inject(UI_LIB_CONFIG);
-
   HANDLE_UNSAVED_CHANGES = false;
 
   formGroupDirective = inject(FormGroupDirective);
@@ -29,7 +26,7 @@ export class UnsavedAwareDirective implements OnDestroy {
   constructor() {
     this.routerSubscription = this.router.events.subscribe((event: Event) => {
 
-      if (this.config.enableUnsavedChangesWarning && !this.HANDLE_UNSAVED_CHANGES) {
+      if (!this.HANDLE_UNSAVED_CHANGES) {
         return;
       }
 
@@ -67,7 +64,7 @@ export class UnsavedAwareDirective implements OnDestroy {
 
   @HostListener('window:beforeunload', ['$event'])
   unloadNotification($event: BeforeUnloadEvent): void {
-    if (this.config.enableUnsavedChangesWarning && !this.HANDLE_UNSAVED_CHANGES) {
+    if (!this.HANDLE_UNSAVED_CHANGES) {
       return;
     }
 

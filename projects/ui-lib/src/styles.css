@@ -1,11 +1,9 @@
-/* You can add global styles to this file, and also import other style files */
+/* src/styles.css or a similar CSS file in your library */
 @import "tailwindcss";
 
 @layer theme {
   :root {
     --font-inter: "Inter", "sans-serif";
-
-    /* 🎨 Primary */
     --color-primary-50: #f3e8ff;
     --color-primary-100: #e9d5ff;
     --color-primary-200: #d8b4fe;
@@ -16,8 +14,6 @@
     --color-primary-700: #6b21a8;
     --color-primary-800: #581c87;
     --color-primary-900: #49166d;
-
-    /* ✅ Success */
     --color-success-50: #f0fdf4;
     --color-success-100: #dcfce7;
     --color-success-200: #bbf7d0;
@@ -28,8 +24,6 @@
     --color-success-700: #15803d;
     --color-success-800: #166534;
     --color-success-900: #14532d;
-
-    /* ✅ Info */
     --color-info-50: #f0f9ff;
     --color-info-100: #e0f2fe;
     --color-info-200: #bae6fd;
@@ -40,8 +34,6 @@
     --color-info-700: #0369a1;
     --color-info-800: #075985;
     --color-info-900: #0c4a6e;
-
-    /* ✅ Warning */
     --color-warning-50: #fffbeb;
     --color-warning-100: #fef3c7;
     --color-warning-200: #fde68a;
@@ -52,8 +44,6 @@
     --color-warning-700: #b45309;
     --color-warning-800: #92400e;
     --color-warning-900: #78350f;
-
-    /* ✅ Error */
     --color-error-50: #fef2f2;
     --color-error-100: #fee2e2;
     --color-error-200: #fecaca;
@@ -64,74 +54,58 @@
     --color-error-700: #b91c1c;
     --color-error-800: #991b1b;
     --color-error-900: #7f1d1d;
-
-    /* 🧱 Shadows */
     --shadow-1: 0 2px 10px rgba(168, 85, 247, 0.15);
     --shadow-2: 0 4px 12px rgba(236, 72, 153, 0.2);
     --shadow-3: 0 6px 16px rgba(253, 224, 71, 0.25);
     --shadow-4: 0 8px 20px rgba(0, 191, 255, 0.3);
-
-    /* 🔠 Typography */
     --text-h1-size: 6rem;
     --text-h1-line-height: 7rem;
     --text-h1-letter-spacing: -0.094rem;
     --text-h1-font-weight: 300;
-
     --text-h2-size: 3.75rem;
     --text-h2-line-height: 4.5rem;
     --text-h2-letter-spacing: -0.031rem;
     --text-h2-font-weight: 300;
-
     --text-h3-size: 3rem;
     --text-h3-line-height: 3.5rem;
     --text-h3-letter-spacing: 0rem;
     --text-h3-font-weight: 400;
-
     --text-h4-size: 2.125rem;
     --text-h4-line-height: 2.25rem;
     --text-h4-letter-spacing: 0rem;
     --text-h4-font-weight: 400;
-
     --text-h5-size: 1.5rem;
     --text-h5-line-height: 1.5rem;
     --text-h5-letter-spacing: 0.011rem;
     --text-h5-font-weight: 400;
-
     --text-h6-size: 1.25rem;
     --text-h6-line-height: 1.5rem;
     --text-h6-letter-spacing: 0.009rem;
     --text-h6-font-weight: 500;
-
     --text-subtitle1-size: 1rem;
     --text-subtitle1-line-height: 1.5rem;
     --text-subtitle1-letter-spacing: 0.009rem;
     --text-subtitle1-font-weight: 400;
-
     --text-subtitle2-size: 0.875rem;
     --text-subtitle2-line-height: 1.5rem;
     --text-subtitle2-letter-spacing: 0.006rem;
     --text-subtitle2-font-weight: 500;
-
     --text-body1-size: 1rem;
     --text-body1-line-height: 1.5rem;
     --text-body1-letter-spacing: 0.031rem;
     --text-body1-font-weight: 400;
-
     --text-body2-size: 0.875rem;
     --text-body2-line-height: 1.25rem;
     --text-body2-letter-spacing: 0.016rem;
     --text-body2-font-weight: 400;
-
     --text-button-size: 0.875rem;
     --text-button-line-height: 1rem;
     --text-button-letter-spacing: 0.078rem;
     --text-button-font-weight: 500;
-
     --text-caption-size: 0.75rem;
     --text-caption-line-height: 1rem;
     --text-caption-letter-spacing: 0.025rem;
     --text-caption-font-weight: 400;
-
     --text-overline-size: 0.625rem;
     --text-overline-line-height: 1rem;
     --text-overline-letter-spacing: 0.094rem;
@@ -139,51 +113,35 @@
   }
 }
 
-/* -----------------------------------------------
-   ✅ Utilities using @apply or class shortcuts
--------------------------------------------------- */
 @layer utilities {
   .app-container {
     @apply w-full p-4 mx-auto flex flex-col h-full;
   }
-
   .app-container-padding {
     @apply p-4;
   }
-
   .app-header {
     @apply flex justify-between items-center gap-5 p-4 bg-white;
   }
-
   .line {
     @apply h-[1px] bg-neutral-300 w-full;
   }
-
   .line-light {
     @apply h-[1px] bg-neutral-100 w-full;
   }
-
-  /* Optional: shadow shortcuts */
   .shadow-1 {
     box-shadow: var(--shadow-1);
   }
-
-  /* Theme example shortcut */
   .bg-primary-500 {
     background-color: var(--color-primary-500);
   }
-
   .text-primary-500 {
     color: var(--color-primary-500);
   }
 }
 
-/* -----------------------------------------------
-   ✅ Focus Ring Reset (Material CDK fix)
--------------------------------------------------- */
 .cdk-overlay-container:focus,
 .cdk-overlay-pane:focus,
 .cdk-overlay-container *:focus {
   outline: none !important;
 }
-
