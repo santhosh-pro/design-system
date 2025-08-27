@@ -22,9 +22,12 @@ export class App {
       subMenus: [
         { label: 'Button', href: '#/components/forms/button' },
         { label: 'Checkbox', href: '#/components/forms/checkbox' },
-        { label: 'Input Mask', href: '#/components/forms/input-mask' },
-        { label: 'Multi-Select Dropdown', href: 'mul-select' },
-        { label: 'Single Selection Field', href: 'single-select' },
+        { label: 'Select', 
+          subMenus:[
+            { label: 'Multi-Select Dropdown', href: 'mul-select' },
+            { label: 'Single Selection Field', href: 'single-select' },
+          ]
+         },
         { label: 'Text Input', href: '#/components/forms/text-input' },
         {
           label: 'Date',

@@ -1,415 +1,384 @@
 import {
-    AfterContentInit,
-    ChangeDetectorRef,
-    Component,
-    ElementRef,
-    HostListener,
-    inject,
-    input,
-    output,
-    Renderer2,
-    signal,
-    viewChild,
-    ViewChild
+  AfterContentInit,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  HostListener,
+  inject,
+  input,
+  output,
+  Renderer2,
+  signal,
+  viewChild,
 } from '@angular/core';
-import { FormControl, FormsModule, NgControl } from "@angular/forms";
-import { CdkConnectedOverlay, Overlay } from "@angular/cdk/overlay";
-import { NgClass } from "@angular/common";
-import { resolveTemplateWithObject } from "../../../../core/template-resolver";
-import { deepEqual } from "../../../../core/core-utils";
+import { FormsModule } from '@angular/forms';
+import { CdkConnectedOverlay, Overlay } from '@angular/cdk/overlay';
+import { NgClass } from '@angular/common';
+import { resolveTemplateWithObject } from '../../../../core/template-resolver';
+import { deepEqual } from '../../../../core/core-utils';
 import { BaseInputComponent } from '../../../../core/base-input/base-input';
 import { HumanizeFormMessagesPipe } from '../../../misc/humanize-form-messages';
 import { CheckboxComponent } from '../../checkbox/checkbox';
 import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
 
 export enum MultiSelectDropdownAppearance {
-    standard,
-    csv,
-    chips
+  standard,
+  csv,
+  chips,
 }
 
 @Component({
-    selector: 'ui-multi-select-dropdown',
-    standalone: true,
-    imports: [
-        BaseInputComponent,
-        NgClass,
-        HumanizeFormMessagesPipe,
-        CdkConnectedOverlay,
-        CheckboxComponent,
-        FormsModule
-    ],
-    templateUrl: './multi-select-dropdown.html',
-    styleUrl: './multi-select-dropdown.scss'
+  selector: 'ui-multi-select-dropdown',
+  standalone: true,
+  imports: [BaseInputComponent, NgClass, HumanizeFormMessagesPipe, CdkConnectedOverlay, CheckboxComponent, FormsModule],
+  templateUrl: './multi-select-dropdown.html',
 })
 export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor<T[]> implements AfterContentInit {
-    cdr = inject(ChangeDetectorRef);
-    renderer = inject(Renderer2);
-    overlay = inject(Overlay);
+  private cdr = inject(ChangeDetectorRef);
+  private renderer = inject(Renderer2);
+  private overlay = inject(Overlay);
 
-    title = input<string | null>();
-    items = input<T[]>([]);
-    placeholder = input<string>('Select');
-    display = input<string | null>();
-    displayTemplate = input<string | null>();
-    value = input<string>(''); 
-    identifier = input<string>('id');
-    searchKeyMatch = input<string | null>();
-    noDataMessage = input<string>();
-    fullWidth = input<boolean>(false);
-    showErrorSpace = input<boolean>(false);
-    enableSearch = input<boolean>(false);
-    addActionText = input<string | null>();
-    minimumPopupWidth = input(250);
-    appearance = input<MultiSelectDropdownAppearance>(MultiSelectDropdownAppearance.standard);
+  // Inputs
+  label = input<string | null>(null);
+  options = input.required<T[]>();
+  placeholder = input<string>('Select');
+  displayProperty = input<string | null>(null);
+  displayTemplate = input<string | null>(null);
+  valueProperty = input<string>('');
+  identifierProperty = input<string>('id');
+  searchKey = input<string | null>(null);
+  noDataMessage = input<string>('No options available');
+  isFullWidth = input<boolean>(false);
+  showErrorSpace = input<boolean>(false);
+  enableSearch = input<boolean>(false);
+  addActionLabel = input<string | null>(null);
+  minimumPopupWidth = input<number>(250);
+  appearance = input<MultiSelectDropdownAppearance>(MultiSelectDropdownAppearance.standard);
 
-    addActionClicked = output<void>();
+  // Outputs
+  addAction = output<void>();
 
-    isOpen = signal(false);
-    highlightedIndex = signal(-1);
-    dropUp = signal(false);
-    dropdownWidth = signal(300);
-    selectedItems = signal<T[]>([]);
-    filteredList = signal<T[]>([]);
+  // Signals
+  isDropdownOpen = signal(false);
+  highlightedIndex = signal(-1);
+  isDropUp = signal(false);
+  dropdownWidth = signal(300);
+  selectedOptions = signal<T[]>([]);
+  filteredOptions = signal<T[]>([]);
 
-    @ViewChild('dropdownButton', { static: true }) dropdownButton!: ElementRef;
-    @ViewChild('dropdownListContainer', { static: false }) dropdownListContainer!: ElementRef;
-    @ViewChild('dropdownList', { static: false }) dropdownList!: ElementRef;
-    private searchField = viewChild<ElementRef<HTMLInputElement>>('searchField');
+  // ViewChild References
+  private dropdownButton = viewChild.required<ElementRef<HTMLDivElement>>('dropdownButton');
+  private dropdownListContainer = viewChild<ElementRef<HTMLDivElement>>('dropdownListContainer');
+  private dropdownList = viewChild<ElementRef<HTMLDivElement>>('dropdownList');
+  private searchField = viewChild<ElementRef<HTMLInputElement>>('searchField');
 
-    scrollStrategy = this.overlay.scrollStrategies.block();
-    MultiSelectDropdownAppearance = MultiSelectDropdownAppearance;
+  // Overlay Configuration
+  scrollStrategy = this.overlay.scrollStrategies.block();
+  MultiSelectDropdownAppearance = MultiSelectDropdownAppearance;
 
-    protected onValueReady(value: T[] | null): void {
-        if (value == null) {
-            this.formControl.setValue([], { emitEvent: false });
-            this.selectedItems.set([]);
-        } else {
-            this.selectedItems.set(value);
-            this.filteredList.set(this.items());
+  override ngAfterContentInit(): void {
+    this.onValueReady(this.formControl.value);
+  }
+
+  protected override onValueReady(value: any[] | null): void {
+    if (!value) {
+      this.formControl.setValue([], { emitEvent: false });
+      this.selectedOptions.set([]);
+    } else {
+      this.updateSelectedOptions(value);
+      this.filteredOptions.set(this.options());
+    }
+  }
+
+  // Event Handlers
+  protected onToggleDropdown(): void {
+    this.isDropdownOpen.update((prev) => !prev);
+    if (this.isDropdownOpen()) {
+      this.filteredOptions.set(this.options());
+      this.updateHighlightedIndex();
+      this.adjustDropdownPosition();
+      this.updateDropdownWidth();
+      this.cdr.detectChanges();
+      this.setDropdownMaxHeight();
+      this.scrollToHighlightedOption();
+
+      if (this.enableSearch()) {
+        const searchField = this.searchField()?.nativeElement;
+        if (searchField) {
+          searchField.focus();
         }
+      }
     }
+  }
 
-    getValue(item: T): any {
-        if (!this.value()) {
-            return item;
+  protected onItemSelect(item: T): void {
+  this.markTouched();
+  let updatedValue = (this.formControl.value as any[]) ?? [];
+  const isSelected = this.isOptionSelected(item);
+
+  if (isSelected) {
+    if (this.valueProperty()) {
+      const itemValue = this.getValue(item);
+      updatedValue = updatedValue.filter(v => v !== itemValue);
+    } else if (this.identifierProperty()) {
+      const itemId = this.getIdentifier(item);
+      updatedValue = updatedValue.filter(v => this.getIdentifier(v) !== itemId);
+    } else {
+      updatedValue = updatedValue.filter(v => !deepEqual(v, item));
+    }
+  } else {
+    if (this.valueProperty()) {
+      updatedValue = [...updatedValue, this.getValue(item)];
+    } else {
+      updatedValue = [...updatedValue, item];
+    }
+  }
+
+  this.formControl.setValue(updatedValue);
+  this.updateSelectedOptions(updatedValue);
+  this.onValueChange(updatedValue);
+  this.cdr.detectChanges();
+}
+
+  protected onSearchInput(event: Event): void {
+    const searchKeyword = (event.target as HTMLInputElement).value;
+    if (this.enableSearch()) {
+      this.updateFilteredOptions(searchKeyword);
+    } else {
+      const firstMatch = this.findFirstMatch(searchKeyword);
+      const index = this.filteredOptions().findIndex((item) => item === firstMatch);
+      this.highlightedIndex.set(index);
+    }
+  }
+
+  protected onClearSearch(): void {
+    const searchField = this.searchField()?.nativeElement;
+    if (searchField) {
+      searchField.value = '';
+      this.filteredOptions.set(this.options());
+      this.highlightedIndex.set(0);
+      this.scrollToHighlightedOption();
+      searchField.focus();
+    }
+  }
+
+ protected onSelectAll(): void {
+  let updatedValue: any[];
+  if (this.valueProperty()) {
+    updatedValue = this.options().map(item => this.getValue(item));
+  } else {
+    updatedValue = [...this.options()];
+  }
+  this.formControl.setValue(updatedValue);
+  this.updateSelectedOptions(updatedValue);
+  this.onValueChange(updatedValue);
+  this.cdr.detectChanges();
+}
+
+  protected onClearSelection(): void {
+  const updatedValue: any[] = [];
+  this.formControl.setValue(updatedValue);
+  this.updateSelectedOptions(updatedValue);
+  this.onValueChange(updatedValue);
+  this.cdr.detectChanges();
+}
+
+protected isAllSelected(): boolean {
+  const controlValue = (this.formControl.value as any[]) ?? [];
+  return this.options().length > 0 && this.options().every(item => this.isOptionSelected(item));
+}
+
+  protected onAddAction(): void {
+    this.addAction.emit();
+  }
+
+  @HostListener('window:resize')
+  protected onWindowResize(): void {
+    if (this.isDropdownOpen()) {
+      this.adjustDropdownPosition();
+    }
+  }
+
+  protected handleKeydown(event: KeyboardEvent): void {
+    if (!this.isDropdownOpen()) return;
+
+    switch (event.key) {
+      case 'ArrowDown':
+        if (this.highlightedIndex() < this.filteredOptions().length - 1) {
+          this.highlightedIndex.update((prev) => prev + 1);
         }
-        let object = item as any;
-        return this.value()!.split('.').reduce((acc, part) => acc && acc[part], object);
-    }
-
-    getAllValues(): any[] {
-        let items = this.selectedItems() ?? [];
-        let values = items.map((item: T) => this.getValue(item));
-        return values;
-    }
-
-    getObjectUsingValue(selectedItem: T): any {
-        if (this.value() == null || this.value() == '') {
-            return selectedItem;
+        this.scrollToHighlightedOption();
+        event.preventDefault();
+        break;
+      case 'ArrowUp':
+        if (this.highlightedIndex() > 0) {
+          this.highlightedIndex.update((prev) => prev - 1);
         }
-        let valuePath = this.value()!;
-        return this.items().find(item => {
-            const propertyValue = valuePath.split('.').reduce((acc, part) => acc && acc[part], item as any);
-            return propertyValue === this.getValue(selectedItem);
-        });
-    }
-
-    getObjectUsingIdentifier(selectedItem: T): T | undefined {
-        if (this.identifier() == null || this.identifier() == '') {
-            return selectedItem;
+        this.scrollToHighlightedOption();
+        event.preventDefault();
+        break;
+      case 'Enter':
+        if (this.filteredOptions()[this.highlightedIndex()]) {
+          this.onItemSelect(this.filteredOptions()[this.highlightedIndex()]);
         }
-        let identifierPath = this.identifier()!;
-        return this.items().find(item => {
-            const propertyValue = identifierPath.split('.').reduce((acc, part) => acc && acc[part], item as any);
-            return propertyValue === this.getIdentifier(selectedItem);
-        });
+        event.preventDefault();
+        break;
+      case 'Escape':
+        this.isDropdownOpen.set(false);
+        event.preventDefault();
+        break;
     }
 
-    getIdentifier(item: T): any {
-        if (!this.identifier()) {
-            return item;
-        }
-        let object = item as any;
-        let identifier = this.identifier()!.split('.').reduce((acc, part) => acc && acc[part], object);
-        return identifier;
+    if (!this.enableSearch() && event.key.length === 1 && /^[a-zA-Z]$/.test(event.key)) {
+      const matchingIndex = this.filteredOptions().findIndex((item) => {
+        const resolvedText = this.searchKey()
+          ? resolveTemplateWithObject(item as any, `$${this.searchKey()}`)
+          : this.getDisplayText(item);
+        return resolvedText?.toLowerCase().startsWith(event.key.toLowerCase());
+      });
+
+      if (matchingIndex !== -1) {
+        this.highlightedIndex.set(matchingIndex);
+        this.scrollToHighlightedOption();
+      }
+    }
+  }
+
+  protected onClickOutside(): void {
+    this.isDropdownOpen.set(false);
+  }
+
+  // Utility Methods
+ protected isOptionSelected(item: T): boolean {
+  const controlValue = (this.formControl.value as any[]) ?? [];
+  if (this.valueProperty()) {
+    const itemValue = this.getValue(item);
+    return controlValue.some(v => v === itemValue);
+  } else if (this.identifierProperty()) {
+    const itemId = this.getIdentifier(item);
+    return controlValue.some(v => this.getIdentifier(v) === itemId);
+  }
+  return controlValue.some(v => deepEqual(v, item));
+}
+
+  protected getCsvDisplay(): string | null {
+    const selected = this.selectedOptions();
+    const csv = selected
+      .map((item) => {
+        const displayString = this.getDisplayText(item);
+        return typeof displayString === 'string' ? displayString : '';
+      })
+      .filter((str) => str)
+      .join(', ');
+
+    return csv || null;
+  }
+
+  protected getDisplayText(item: T | null): string | null {
+    if (!item) return null;
+
+    if (this.displayProperty()) {
+      return this.displayProperty()!.split('.').reduce((acc: any, part: string) => acc && acc[part], item) ?? null;
     }
 
-    isItemExistInFormControl(item: T) {
-        const controlValue = (this.formControl.value as T[]) ?? [];
-        let identifierPath = this.identifier() ?? '';
-        let value = this.getIdentifier(item);
-
-        let anyMatch = controlValue.some(x => x == value);
-        if (anyMatch) {
-            return true;
-        }
-
-        if (identifierPath == null || identifierPath == '') {
-            return controlValue.some(x => deepEqual(x, item));
-        }
-        let isEqual = controlValue.find(x => {
-            const propertyValue = identifierPath.split('.').reduce((acc, part) => acc && acc[part], x as any);
-            return propertyValue === this.getIdentifier(item);
-        });
-        return isEqual;
+    if (this.displayTemplate()) {
+      return resolveTemplateWithObject(item as any, this.displayTemplate()!) ?? null;
     }
 
-    isItemExistInNormalSelectionList(item: T) {
-        const controlValue = (this.selectedItems()) ?? [];
-        let identifierPath = this.identifier()!;
-        if (identifierPath == null || identifierPath == '') {
-            return controlValue.some(x => deepEqual(x, item));
-        }
-        let isEqual = controlValue.find(x => {
-            const propertyValue = identifierPath.split('.').reduce((acc, part) => acc && acc[part], x as any);
-            return propertyValue === this.getIdentifier(item);
-        });
-        return isEqual;
+    return String(item);
+  }
+
+  private getValue(item: T): unknown {
+    if (!this.valueProperty()) return item;
+    return this.valueProperty().split('.').reduce((acc: any, part: string) => acc && acc[part], item);
+  }
+
+  private getAllValues(): unknown[] {
+    return this.selectedOptions().map((item) => this.getValue(item));
+  }
+
+  private getObjectFromValue(v: unknown): T | undefined {
+    if (!this.valueProperty()) return v as T;
+    return this.options().find(item => this.getValue(item) === v);
+  }
+
+  private getIdentifier(item: T): unknown {
+    if (!this.identifierProperty()) return item;
+    return this.identifierProperty().split('.').reduce((acc: any, part: string) => acc && acc[part], item);
+  }
+
+  private isObjectEqual(a: T, b: T): boolean {
+    if (this.identifierProperty()) {
+      return this.getIdentifier(a) === this.getIdentifier(b);
+    } else {
+      return deepEqual(a, b);
+    }
+  }
+
+  private updateSelectedOptions(updatedValue: any[]): void {
+    const selected = updatedValue.map(v => this.getObjectFromValue(v));
+    this.selectedOptions.set(selected.filter((s): s is T => s != null));
+  }
+
+  private updateFilteredOptions(searchKeyword?: string): void {
+    if (!searchKeyword || searchKeyword.trim() === '') {
+      this.filteredOptions.set(this.options());
+      this.highlightedIndex.set(0);
+      return;
     }
 
-    onItemClicked(item: T) {
-        this.markTouched();
-        const controlValue = (this.formControl.value as T[]) ?? [];
-        const valueExistInFormControl = this.isItemExistInFormControl(item);
-        const valueExistInSelections = this.isItemExistInNormalSelectionList(item);
+    const filtered = this.options().filter((item) => {
+      const displayString = this.getDisplayText(item);
+      return typeof displayString === 'string' && displayString.toLowerCase().includes(searchKeyword.toLowerCase());
+    });
 
-        if (valueExistInFormControl || valueExistInSelections) {
-            const newControlValue = controlValue.filter(x => !deepEqual(x, item));
-            this.formControl.setValue(newControlValue);
-            this.selectedItems.update(prev => prev.filter(x => !deepEqual(x, item)));
-        } else {
-            const newControlValue = [...controlValue, item];
-            this.formControl.setValue(newControlValue);
-            this.selectedItems.update(prev => [...prev, item]);
-        }
-        this.onValueChange(this.formControl.value);
+    this.filteredOptions.set(filtered);
+    this.updateHighlightedIndex();
+  }
+
+  private findFirstMatch(searchKeyword?: string): T | null {
+    if (!searchKeyword || searchKeyword.trim() === '') return null;
+    return (
+      this.filteredOptions().find((item) => {
+        const displayString = this.getDisplayText(item);
+        return typeof displayString === 'string' && displayString.toLowerCase().includes(searchKeyword.toLowerCase());
+      }) || null
+    );
+  }
+
+  private updateHighlightedIndex(): void {
+    this.highlightedIndex.set(0);
+  }
+
+  private updateDropdownWidth(): void {
+    const buttonWidth = this.dropdownButton().nativeElement.offsetWidth;
+    this.dropdownWidth.set(Math.max(buttonWidth, this.minimumPopupWidth()));
+  }
+
+  private setDropdownMaxHeight(): void {
+    const buttonRect = this.dropdownButton().nativeElement.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - buttonRect.bottom;
+    const spaceAbove = buttonRect.top;
+    const maxHeight = this.isDropUp() ? spaceAbove - 36 : spaceBelow - 36;
+
+    const dropdownListContainer = this.dropdownListContainer()?.nativeElement;
+    if (dropdownListContainer) {
+      this.renderer.setStyle(dropdownListContainer, 'max-height', `${maxHeight}px`);
     }
+  }
 
-    getDisplayString(item: T | null): any {
-        let object = item as any;
-        if (object == null) {
-            return null;
-        }
+  private adjustDropdownPosition(): void {
+    const buttonRect = this.dropdownButton().nativeElement.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - buttonRect.bottom;
+    const spaceAbove = buttonRect.top;
+    this.isDropUp.set(spaceAbove > spaceBelow && spaceBelow < 200);
+  }
 
-        if (this.display() != null && this.display() != '') {
-            return this.display()!.split('.').reduce((acc, part) => acc && acc[part], object);
-        }
-
-        if (this.displayTemplate() != null && this.displayTemplate() != '') {
-            return resolveTemplateWithObject(object, this.displayTemplate()!);
-        }
-
-        return item;
+  private scrollToHighlightedOption(): void {
+    const dropdownList = this.dropdownList()?.nativeElement;
+    if (dropdownList && dropdownList.children[this.highlightedIndex()]) {
+      const highlightedItem = dropdownList.children[this.highlightedIndex()] as HTMLElement;
+      highlightedItem.scrollIntoView({ block: 'nearest' });
     }
-
-    filterList(event: Event) {
-        const searchKeyword = (event.target as HTMLInputElement)?.value;
-        if (this.enableSearch()) {
-            this.updateFilteredList(searchKeyword);
-        } else {
-            const firstMatchingItem = this.findFirstMatch(searchKeyword);
-            let index = this.filteredList().findIndex(item => item == firstMatchingItem);
-            this.highlightedIndex.set(index);
-        }
-    }
-
-    updateFilteredList(searchKeyword?: string) {
-        if (!searchKeyword || searchKeyword.trim() === '') {
-            this.filteredList.set(this.items());
-            this.highlightedIndex.set(0);
-            return;
-        }
-
-        const filterResult = this.items().filter((item) => {
-            const displayString = this.getDisplayString(item);
-            if (typeof displayString === 'string') {
-                return displayString.toLowerCase().includes(searchKeyword.toLowerCase());
-            }
-            return false;
-        });
-
-        this.filteredList.set(filterResult);
-        this.updateHighlightedIndex();
-    }
-
-    findFirstMatch(searchKeyword?: string): T | null {
-        if (!searchKeyword || searchKeyword.trim() === '') {
-            return null;
-        }
-        return this.filteredList().find((item) => {
-            const displayString = this.getDisplayString(item);
-            if (typeof displayString === 'string') {
-                return displayString.toLowerCase().includes(searchKeyword.toLowerCase());
-            }
-            return false;
-        }) || null;
-    }
-
-    updateHighlightedIndex() {
-        this.highlightedIndex.set(0);
-    }
-
-    setPopupWidth() {
-        const buttonWidth = this.dropdownButton.nativeElement.offsetWidth;
-        if (buttonWidth < this.minimumPopupWidth()) {
-            this.dropdownWidth.set(this.minimumPopupWidth());
-            return;
-        }
-        this.dropdownWidth.set(this.dropdownButton.nativeElement.offsetWidth);
-    }
-
-    onClickOutside() {
-        this.isOpen.set(false);
-    }
-
-    toggleDropdown(): void {
-        this.isOpen.update(prev => !prev);
-        if (this.isOpen()) {
-            this.filteredList.set(this.items());
-            this.updateHighlightedIndex();
-            this.adjustDropdownPosition();
-            this.setPopupWidth();
-            this.cdr.detectChanges();
-            this.setDropdownMaxHeight();
-            this.scrollToHighlightedItem();
-
-            if (this.enableSearch()) {
-                this.searchField()?.nativeElement.focus();
-            }
-        }
-    }
-
-    setDropdownMaxHeight() {
-        const buttonRect = this.dropdownButton.nativeElement.getBoundingClientRect();
-        const spaceBelow = window.innerHeight - buttonRect.bottom;
-        const spaceAbove = buttonRect.top;
-
-        let maxHeight;
-        if (this.dropUp()) {
-            maxHeight = spaceAbove - 36;
-        } else {
-            maxHeight = spaceBelow - 36;
-        }
-
-        if (this.dropdownListContainer) {
-            this.renderer.setStyle(this.dropdownListContainer.nativeElement, 'max-height', `${maxHeight}px`);
-        }
-    }
-
-    adjustDropdownPosition() {
-        const buttonRect = this.dropdownButton.nativeElement.getBoundingClientRect();
-        const spaceBelow = window.innerHeight - buttonRect.bottom;
-        const spaceAbove = buttonRect.top;
-        this.dropUp.set(spaceAbove > spaceBelow && spaceBelow < 200);
-    }
-
-    scrollToHighlightedItem() {
-        if (this.dropdownList && this.dropdownList.nativeElement.children[this.highlightedIndex()]) {
-            const highlightedItem = this.dropdownList.nativeElement.children[this.highlightedIndex()];
-            highlightedItem.scrollIntoView({ block: 'nearest' });
-        }
-    }
-
-    @HostListener('window:resize')
-    onResize() {
-        if (this.isOpen()) {
-            this.adjustDropdownPosition();
-        }
-    }
-
-    handleKeydown(event: KeyboardEvent) {
-        if (!this.isOpen()) {
-            return;
-        }
-        switch (event.key) {
-            case 'ArrowDown':
-                if (this.highlightedIndex() < this.filteredList().length - 1) {
-                    this.highlightedIndex.update(prev => prev + 1);
-                }
-                this.scrollToHighlightedItem();
-                event.preventDefault();
-                break;
-            case 'ArrowUp':
-                if (this.highlightedIndex() > 0) {
-                    this.highlightedIndex.update(prev => prev - 1);
-                }
-                this.scrollToHighlightedItem();
-                event.preventDefault();
-                break;
-            case 'Enter':
-                this.onItemClicked(this.filteredList()[this.highlightedIndex()]);
-                event.preventDefault();
-                break;
-            case 'Escape':
-                this.isOpen.set(false);
-                event.preventDefault();
-                break;
-        }
-
-        if (!this.enableSearch()) {
-            let key = event.key;
-            if (key.length === 1 && /^[a-zA-Z]$/.test(key)) {
-                const matchingIndex = this.filteredList().findIndex(item => {
-                    let resolvedText = '';
-                    if (this.searchKeyMatch() != null && this.searchKeyMatch() != '') {
-                        resolvedText = resolveTemplateWithObject(item as any, `$${this.searchKeyMatch()}`);
-                    } else {
-                        resolvedText = this.getDisplayString(item);
-                    }
-                    return resolvedText.toLowerCase().startsWith(key);
-                });
-
-                if (matchingIndex !== -1) {
-                    this.highlightedIndex.set(matchingIndex);
-                    this.scrollToHighlightedItem();
-                }
-            }
-        }
-    }
-
-    onClearSearchClicked() {
-        if (this.searchField()) {
-            this.searchField()!.nativeElement.value = '';
-            this.filteredList.set(this.items());
-            this.highlightedIndex.set(0);
-            this.scrollToHighlightedItem();
-            this.searchField()!.nativeElement.focus();
-        }
-    }
-
-    onSelectAllClicked() {
-        this.formControl.setValue(this.items());
-        this.selectedItems.set(this.items());
-        this.onValueChange(this.items());
-    }
-
-    onClearSelectionClicked() {
-        this.formControl.setValue([]);
-        this.selectedItems.set([]);
-        this.onValueChange([]);
-    }
-
-    getCsv(): string | null {
-        let selectedItems = this.items().filter(x => {
-            return this.isItemExistInFormControl(x) || this.isItemExistInNormalSelectionList(x);
-        });
-
-        let csv = selectedItems.map(item => {
-            const displayString = this.getDisplayString(item);
-            if (typeof displayString === 'string') {
-                return displayString;
-            }
-            return '';
-        }).join(', ');
-
-        if (csv == '') {
-            return null;
-        }
-        return csv;
-    }
-
-    onAddActionClicked() {
-        this.addActionClicked.emit();
-    }
+  }
 }

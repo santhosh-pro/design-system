@@ -1,6 +1,6 @@
 <ui-base-input
-  [title]="title()"
-  [fullWidth]="fullWidth()"
+  [title]="label()"
+  [fullWidth]="isFullWidth()"
   (keydown)="handleKeydown($event)"
   [isRequiredField]="hasRequiredValidator()"
   class="w-full"
@@ -8,10 +8,10 @@
   <!-- Dropdown Button -->
   <div #dropdownButton input class="relative w-full min-w-[13rem]">
     <button
-      (click)="toggleDropdown()"
+      (click)="onToggleDropdown()"
       type="button"
       tabindex="0"
-      [attr.aria-expanded]="isOpen()"
+      [attr.aria-expanded]="isDropdownOpen()"
       class="dropdown-button w-full h-12 flex items-center justify-between px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-neutral-200 rounded-md shadow-sm focus:ring-2 focus:ring-primary-500 focus:outline-none transition-all duration-200"
     >
       @switch (appearance()) {
@@ -19,11 +19,11 @@
           <span
             class="text-sm truncate flex-1 text-left"
             [ngClass]="{
-              'text-black': ((formControl.value?.length ?? 0) > 0 || selectedItems().length > 0),
-              'text-gray-400': !((formControl.value?.length ?? 0) > 0 || selectedItems().length > 0)
+              'text-black': (formControl.value?.length ?? 0) > 0 || selectedOptions().length > 0,
+              'text-gray-400': (formControl.value?.length ?? 0) === 0 && selectedOptions().length === 0
             }"
           >
-            {{ ((formControl.value?.length ?? 0) > 0 || selectedItems().length > 0) ? ((formControl.value?.length ?? 0) || selectedItems().length) + ' Selected' : placeholder() }}
+            {{ (formControl.value?.length ?? 0) > 0 || selectedOptions().length > 0 ? ((formControl.value?.length ?? 0) || selectedOptions().length) + ' Selected' : placeholder() }}
           </span>
         }
         @case (MultiSelectDropdownAppearance.csv) {
@@ -31,11 +31,11 @@
             <span
               class="text-sm truncate text-left w-full"
               [ngClass]="{
-                'text-black': ((formControl.value?.length ?? 0) > 0 || selectedItems().length > 0),
-                'text-gray-400': !((formControl.value?.length ?? 0) > 0 || selectedItems().length > 0)
+                'text-black': (formControl.value?.length ?? 0) > 0 || selectedOptions().length > 0,
+                'text-gray-400': (formControl.value?.length ?? 0) === 0 && selectedOptions().length === 0
               }"
             >
-              {{ getCsv() ?? placeholder() }}
+              {{ getCsvDisplay() ?? placeholder() }}
             </span>
           </div>
         }
@@ -43,11 +43,11 @@
           <span
             class="text-sm truncate flex-1 text-left"
             [ngClass]="{
-              'text-black': ((formControl.value?.length ?? 0) > 0 || selectedItems().length > 0),
-              'text-gray-400': !((formControl.value?.length ?? 0) > 0 || selectedItems().length > 0)
+              'text-black': (formControl.value?.length ?? 0) > 0 || selectedOptions().length > 0,
+              'text-gray-400': (formControl.value?.length ?? 0) === 0 && selectedOptions().length === 0
             }"
           >
-            {{ ((formControl.value?.length ?? 0) > 0 || selectedItems().length > 0) ? ((formControl.value?.length ?? 0) || selectedItems().length) + ' Selected' : placeholder() }}
+            {{ (formControl.value?.length ?? 0) > 0 || selectedOptions().length > 0 ? ((formControl.value?.length ?? 0) || selectedOptions().length) + ' Selected' : placeholder() }}
           </span>
         }
       }
@@ -71,7 +71,7 @@
   <ng-template
     cdkConnectedOverlay
     [cdkConnectedOverlayOrigin]="dropdownButton"
-    [cdkConnectedOverlayOpen]="isOpen()"
+    [cdkConnectedOverlayOpen]="isDropdownOpen()"
     [cdkConnectedOverlayHasBackdrop]="true"
     [cdkConnectedOverlayBackdropClass]="['custom-backdrop']"
     (overlayOutsideClick)="onClickOutside()"
@@ -103,14 +103,14 @@
           </svg>
           <input
             #searchField
-            (input)="filterList($event)"
+            (input)="onSearchInput($event)"
             (keydown)="handleKeydown($event)"
             class="w-full pl-10 pr-10 py-2 text-sm text-black placeholder-neutral-400 border-none focus:ring-0 focus:outline-none"
             placeholder="Search..."
           />
           @if (searchField?.value) {
             <button
-              (click)="onClearSearchClicked()"
+              (click)="onClearSearch()"
               class="absolute right-2 p-1 hover:bg-neutral-100 rounded-full"
               aria-label="Clear search"
             >
@@ -129,10 +129,10 @@
         </div>
       }
       <!-- Add Action -->
-      @if (addActionText()) {
+      @if (addActionLabel()) {
         <div
           class="flex items-center gap-2 px-4 py-3 bg-neutral-50 border-b border-neutral-100 cursor-pointer hover:bg-neutral-100"
-          (click)="onAddActionClicked()"
+          (click)="onAddAction()"
         >
           <svg
             class="h-5 w-5 text-primary-500"
@@ -141,25 +141,26 @@
           >
             <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor" />
           </svg>
-          <span class="text-sm font-medium text-primary-500">{{ addActionText() }}</span>
+          <span class="text-sm font-medium text-primary-500">{{ addActionLabel() }}</span>
         </div>
       }
 
       <!-- Select All / Clear -->
-      <div class="flex justify-between px-4 py-3 bg-neutral-50 border-b border-neutral-100">
-        <button
-          class="text-xs font-semibold text-primary-600 hover:text-primary-700"
-          (click)="onSelectAllClicked()"
-        >
-          SELECT ALL
-        </button>
-        <button
-          class="text-xs font-semibold text-primary-600 hover:text-primary-700"
-          (click)="onClearSelectionClicked()"
-        >
-          CLEAR
-        </button>
-      </div>
+    <div class="flex justify-between px-4 py-3 bg-neutral-50 border-b border-neutral-100">
+  <div class="flex items-center gap-2 cursor-pointer" (click)="onSelectAll()">
+    <ui-checkbox
+      [ngModel]="isAllSelected()"
+      class="pointer-events-none"
+    ></ui-checkbox>
+    <span class="text-xs font-semibold text-primary-600 hover:text-primary-700">SELECT ALL</span>
+  </div>
+  <button
+    class="text-xs font-semibold text-primary-600 hover:text-primary-700"
+    (click)="onClearSelection()"
+  >
+    CLEAR
+  </button>
+</div>
 
       <!-- Dropdown Items -->
       <div
@@ -167,31 +168,31 @@
         class="dropdown-list overflow-y-auto scrollbar-thin scrollbar-thumb-neutral-400 scrollbar-track-neutral-100"
         role="listbox"
         aria-labelledby="options-menu"
-        [style.maxHeight.px]="dropdownWidth()"
+        [style.maxHeight.px]="300"
       >
-        @for (item of filteredList(); track item; let i = $index) {
+        @for (item of filteredOptions(); track item; let i = $index) {
           <div
-            (click)="onItemClicked(item)"
+            (click)="onItemSelect(item)"
             class="flex items-center gap-3 px-4 py-2.5 hover:bg-neutral-100 cursor-pointer transition-colors"
             [ngClass]="{
               'bg-neutral-100': highlightedIndex() === i,
-              'bg-primary-50 bg-opacity-50': isItemExistInFormControl(item) || isItemExistInNormalSelectionList(item)
+              'bg-primary-50 bg-opacity-50': isOptionSelected(item)
             }"
             role="option"
-            [attr.aria-selected]="isItemExistInFormControl(item) || isItemExistInNormalSelectionList(item)"
+            [attr.aria-selected]="isOptionSelected(item)"
             tabindex="0"
           >
             <ui-checkbox
-              [ngModel]="isItemExistInFormControl(item) || isItemExistInNormalSelectionList(item)"
+              [ngModel]="isOptionSelected(item)"
               class="pointer-events-none"
             ></ui-checkbox>
-            <span class="text-sm text-gray-700 truncate">{{ getDisplayString(item) }}</span>
+            <span class="text-sm text-gray-700 truncate">{{ getDisplayText(item) }}</span>
           </div>
         } @empty {
           <span
             class="block px-4 py-3 text-sm text-gray-400 select-none"
             role="option"
-            >{{ noDataMessage() || 'No options available' }}</span>
+            >{{ noDataMessage() }}</span>
         }
       </div>
     </div>
@@ -203,10 +204,8 @@
   <div class="mt-1">
     <span class="text-xs text-red-500">{{ formControl.errors | humanizeFormMessages: errorMessages() }}</span>
   </div>
-} @else {
-  @if (showErrorSpace()) {
-    <div class="mt-1">
-      <span class="text-xs text-transparent">.</span>
-    </div>
-  }
+} @else if (showErrorSpace()) {
+  <div class="mt-1">
+    <span class="text-xs text-transparent">.</span>
+  </div>
 }

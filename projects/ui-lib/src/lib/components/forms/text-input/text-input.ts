@@ -34,7 +34,6 @@ interface SelectOption {
     NgxMaskDirective,
   ],
   templateUrl: './text-input.html',
-  styleUrl: './text-input.scss',
 })
 export class TextInputComponent extends BaseControlValueAccessor<string | null> implements OnInit, OnDestroy {
   // Inputs (unchanged)

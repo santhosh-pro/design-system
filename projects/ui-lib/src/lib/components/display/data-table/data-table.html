@@ -122,12 +122,12 @@
                       @case ('select') {
                         <div class="flex items-center w-full min-w-[100px]">
                           <ui-multi-select-dropdown 
-                            [items]="column.filterConfig.options || []" 
-                            [fullWidth]="true"  
+                            [options]="column.filterConfig.options || []" 
+                            [isFullWidth]="true"  
                             [enableSearch]="true" 
                             [placeholder]="column.filterConfig.placeholder || 'Select...'" 
-                            [display]="'label'" 
-                            [value]="'value'"
+                            [displayProperty]="'label'" 
+                            [valueProperty]="'value'"
                             identifier="value" 
                             [formControl]="getFilterControl(column, 'value')"
                             class="flex-1 min-w-[100px]">
