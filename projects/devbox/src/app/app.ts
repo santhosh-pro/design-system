@@ -50,7 +50,7 @@ export class App {
     {
       label: 'Overlay / Dialog',
       subMenus: [
-        { label: 'Overlay', href: '#/components/overlay/overlay' },
+        { label: 'Overlay', href: 'overlay' },
         { label: 'Context Menu Button', href: '#/components/overlay/context-menu-button' },
         { label: 'Context Menu Icon', href: '#/components/overlay/context-menu-icon' },
       ],

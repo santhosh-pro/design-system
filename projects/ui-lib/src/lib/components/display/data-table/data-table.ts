@@ -721,7 +721,7 @@ getTableStyles(): string {
     }));
   }
 
-  _onActionClicked(actionKey: string, item: any, mouseEvent: MouseEvent | null): void {
+  onActionClicked(actionKey: string, item: any, mouseEvent: MouseEvent | null): void {
     if (mouseEvent) {
       mouseEvent.stopPropagation();
     }

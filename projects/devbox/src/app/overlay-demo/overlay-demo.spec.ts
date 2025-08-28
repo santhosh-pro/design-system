@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ShimmerComponent } from './shimmer';
+import { OverlayDemo } from './overlay-demo';
 
-describe('ShimmerComponent', () => {
-  let component: ShimmerComponent;
-  let fixture: ComponentFixture<ShimmerComponent>;
+describe('OverlayDemo', () => {
+  let component: OverlayDemo;
+  let fixture: ComponentFixture<OverlayDemo>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ShimmerComponent]
+      imports: [OverlayDemo]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ShimmerComponent);
+    fixture = TestBed.createComponent(OverlayDemo);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

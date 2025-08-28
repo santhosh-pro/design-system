@@ -1,6 +1,6 @@
 <div class="flex flex-col gap-2 min-w-[200px] py-2">
   @for (action of actions; track action.actionKey) {
-    <div (click)="_onActionClicked($event, action)"
+    <div (click)="onActionClick($event, action)"
          class="flex items-center gap-3 py-3 px-3 hover:bg-neutral-100/80 cursor-pointer">
       @if (action.iconPath != null && action.iconPath != '') {
         <ui-svg-icon class="text-neutral-600" [src]="action.iconPath" [size]="20"></ui-svg-icon>

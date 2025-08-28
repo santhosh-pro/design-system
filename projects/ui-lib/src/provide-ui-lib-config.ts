@@ -84,48 +84,4 @@ export class UiLibService {
     }
   }
 
-  getColor(category: string, shade: string): string | undefined {
-    const value = this.config.tailwindTheme?.colors?.[category as keyof typeof this.config.tailwindTheme.colors]?.[shade];
-    if (value) return value;
-    if (isPlatformBrowser(this.platformId)) {
-      return getComputedStyle(document.documentElement).getPropertyValue(`--color-${category}-${shade}`).trim() || undefined;
-    }
-    return undefined;
-  }
-
-  getFontInter(): string | undefined {
-    const value = this.config.tailwindTheme?.fonts?.inter;
-    if (value) return value;
-    if (isPlatformBrowser(this.platformId)) {
-      return getComputedStyle(document.documentElement).getPropertyValue('--font-inter').trim() || undefined;
-    }
-    return undefined;
-  }
-
-  getShadow(key: string): string | undefined {
-    const value = this.config.tailwindTheme?.shadows?.[key];
-    if (value) return value;
-    if (isPlatformBrowser(this.platformId)) {
-      return getComputedStyle(document.documentElement).getPropertyValue(`--shadow-${key}`).trim() || undefined;
-    }
-    return undefined;
-  }
-
-  getTypography(key: string): { size?: string; lineHeight?: string; letterSpacing?: string; fontWeight?: string | number } | undefined {
-    const value = this.config.tailwindTheme?.typography?.[key];
-    if (value) return value;
-    if (isPlatformBrowser(this.platformId)) {
-      const size = getComputedStyle(document.documentElement).getPropertyValue(`--text-${key}-size`).trim() || undefined;
-      const lineHeight = getComputedStyle(document.documentElement).getPropertyValue(`--text-${key}-line-height`).trim() || undefined;
-      const letterSpacing = getComputedStyle(document.documentElement).getPropertyValue(`--text-${key}-letter-spacing`).trim() || undefined;
-      const fontWeight = getComputedStyle(document.documentElement).getPropertyValue(`--text-${key}-font-weight`).trim() || undefined;
-      return {
-        size,
-        lineHeight,
-        letterSpacing,
-        fontWeight: fontWeight ? (isNaN(Number(fontWeight)) ? fontWeight : Number(fontWeight)) : undefined,
-      };
-    }
-    return undefined;
-  }
 }

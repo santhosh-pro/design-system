@@ -130,41 +130,38 @@ export class MultiDateInputComponent extends BaseControlValueAccessor<Date[]> im
     this.markTouched();
   }
 
-  onDatePickerIconClicked() {
-    const dialogData = {
-      data: {
-        selectedDates: this.formControl || [],
-        minDate: this.minDate(),
-        maxDate: this.maxDate(),
-        allowOnlyPast: this.allowOnlyPast(),
-        allowOnlyFuture: this.allowOnlyFuture(),
-        disabledDays: this.disabledDays(),
-        disabledDates: this.disabledDates()
-      },
-      positionPreference: 'bottom',
-    };
+async onDatePickerIconClicked() {
+  const dialogData = {
+    data: {
+      selectedDates: this.formControl || [],
+      minDate: this.minDate(),
+      maxDate: this.maxDate(),
+      allowOnlyPast: this.allowOnlyPast(),
+      allowOnlyFuture: this.allowOnlyFuture(),
+      disabledDays: this.disabledDays(),
+      disabledDates: this.disabledDates()
+    },
+    positionPreference: 'bottom',
+  };
 
-    let dialogRef;
-    if (!this.trigger?.nativeElement) {
-      console.warn('Trigger element is not available. Opening overlay without positioning.');
-      dialogRef = this.overlayService.openModal(MultiDatePickerOverlayComponent, dialogData);
-    } else {
-      dialogRef = this.overlayService.openNearElement(MultiDatePickerOverlayComponent, this.trigger.nativeElement, {
-        data: dialogData.data,
-        disableClose: true,
-        positionPreference: 'bottomLeft'
-      });
-    }
-
-    this.subscription?.unsubscribe(); // Unsubscribe from previous subscription
-    this.subscription = dialogRef.closed.subscribe((dates: Date[] | undefined) => {
-      if (dates && Array.isArray(dates) && dates.length > 0 && dates.every(date => date instanceof Date && isValidDate(date))) {
-        this.textInputValue.set('');
-        this.onValueChange(dates);
-      }
-      // If dates is undefined or empty, do nothing to preserve existing value
+  let result: Date[] | undefined;
+  if (!this.trigger?.nativeElement) {
+    console.warn('Trigger element is not available. Opening overlay without positioning.');
+    result = await this.overlayService.openModal(MultiDatePickerOverlayComponent, dialogData);
+  } else {
+    result = await this.overlayService.openNearElement(MultiDatePickerOverlayComponent, this.trigger.nativeElement, {
+      data: dialogData.data,
+      disableClose: true,
+      positionPreference: 'bottomLeft'
     });
   }
+
+  if (result && Array.isArray(result) && result.length > 0 && result.every(date => date instanceof Date && isValidDate(date))) {
+    this.textInputValue.set('');
+    this.onValueChange(result);
+  }
+  // If result is undefined or empty, do nothing to preserve existing value
+}
 
   removeDate(index: number) {
     const currentDates = this.formControl.value || [];

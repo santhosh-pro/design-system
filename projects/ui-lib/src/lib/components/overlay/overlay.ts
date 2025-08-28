@@ -1,32 +1,31 @@
-import {inject, Injectable, Renderer2, RendererFactory2} from '@angular/core';
-import {Dialog, DialogRef} from '@angular/cdk/dialog';
+import { inject, Injectable, Renderer2, RendererFactory2 } from '@angular/core';
+import { Dialog, DialogRef } from '@angular/cdk/dialog';
 import {
-  ConnectedPosition,
   FlexibleConnectedPositionStrategy,
   GlobalPositionStrategy,
   Overlay,
 } from '@angular/cdk/overlay';
-import {ComponentType} from '@angular/cdk/portal';
-import {BreakpointObserver, Breakpoints} from "@angular/cdk/layout";
-import {AlertDialogComponent} from './alert-dialog/alert-dialog';
+import { ComponentType } from '@angular/cdk/portal';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { AlertDialogComponent } from './alert-dialog/alert-dialog';
 
 @Injectable({
   providedIn: 'root'
 })
 export class OverlayService {
-
   private dialog = inject(Dialog);
   private overlay = inject(Overlay);
   private breakpointObserver = inject(BreakpointObserver);
   private rendererFactory = inject(RendererFactory2);
 
   private renderer!: Renderer2;
+  private activeDialogRef: DialogRef<any, any> | null = null; // Track active dialog
 
   constructor() {
     this.renderer = this.rendererFactory.createRenderer(null, null);
   }
 
-  private basePanelClass = ['bg-white', 'shadow-2'];
+  private basePanelClass = ['bg-white', 'shadow-2', 'z-50']; // Added z-50 for stacking
 
   modalMaxHeightClass = 'max-h-[80vh]';
 
@@ -34,32 +33,39 @@ export class OverlayService {
     component: ComponentType<T>,
     triggerElement: HTMLElement,
     options?: {
-      positionPreference?: 'topLeft' | 'topRight' | 'topCenter' |
-    'bottomLeft' | 'bottomRight' | 'bottomCenter' |
-    'leftTop' | 'leftCenter' | 'leftBottom' |
-    'rightTop' | 'rightCenter' | 'rightBottom' |
-    'center';
+      positionPreference?:
+        | 'topLeft'
+        | 'topRight'
+        | 'topCenter'
+        | 'bottomLeft'
+        | 'bottomRight'
+        | 'bottomCenter'
+        | 'leftTop'
+        | 'leftCenter'
+        | 'leftBottom'
+        | 'rightTop'
+        | 'rightCenter'
+        | 'rightBottom'
+        | 'center';
       disableClose?: boolean;
       data?: any;
       scrollStrategy?: 'noop' | 'block' | 'reposition' | 'close';
       isMobileResponsive?: boolean;
     }
-  ): DialogRef<any, T> {
-
+  ): Promise<any> {
     const {
-      positionPreference='center',
+      positionPreference = 'center',
       disableClose = false,
       data,
       scrollStrategy = 'block',
-      isMobileResponsive = false
+      isMobileResponsive = false,
     } = options ?? {};
 
     const isMobile = this.breakpointObserver.isMatched([Breakpoints.XSmall, Breakpoints.Small]);
 
-    let positionStrategy: FlexibleConnectedPositionStrategy | GlobalPositionStrategy | null;
+    let positionStrategy: FlexibleConnectedPositionStrategy | GlobalPositionStrategy;
 
     const positionMappings: any = {
-      // **BOTTOM POSITIONS**
       bottomRight: [
         { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 8 },
       ],
@@ -69,8 +75,6 @@ export class OverlayService {
       bottomLeft: [
         { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetY: 8 },
       ],
-
-      // **TOP POSITIONS**
       topRight: [
         { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom', offsetY: -8 },
       ],
@@ -80,8 +84,6 @@ export class OverlayService {
       topLeft: [
         { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom', offsetY: -8 },
       ],
-
-      // **LEFT POSITIONS**
       leftBottom: [
         { originX: 'start', originY: 'top', overlayX: 'end', overlayY: 'top', offsetX: -8 },
       ],
@@ -91,8 +93,6 @@ export class OverlayService {
       leftTop: [
         { originX: 'start', originY: 'bottom', overlayX: 'end', overlayY: 'bottom', offsetX: -8 },
       ],
-
-      // **RIGHT POSITIONS**
       rightBottom: [
         { originX: 'end', originY: 'top', overlayX: 'start', overlayY: 'top', offsetX: 8 },
       ],
@@ -102,25 +102,25 @@ export class OverlayService {
       rightTop: [
         { originX: 'end', originY: 'bottom', overlayX: 'start', overlayY: 'bottom', offsetX: 8 },
       ],
-
-      // **CENTER**
       center: [
         { originX: 'center', originY: 'center', overlayX: 'center', overlayY: 'center' },
-      ]
+      ],
     };
+
     if (isMobile && isMobileResponsive) {
-      positionStrategy = this.overlay.position()
+      positionStrategy = this.overlay
+        .position()
         .global()
         .centerHorizontally()
         .centerVertically();
     } else {
       positionStrategy = this.overlay
-      .position()
-      .flexibleConnectedTo(triggerElement)
-      .withFlexibleDimensions(false)
-      .withPush(true)
-      .withPositions(positionMappings[positionPreference] || positionMappings.bottomCenter);
-}
+        .position()
+        .flexibleConnectedTo(triggerElement)
+        .withFlexibleDimensions(false)
+        .withPush(true)
+        .withPositions(positionMappings[positionPreference] || positionMappings.bottomCenter);
+    }
 
     const scrollStrategyMapping = {
       noop: this.overlay.scrollStrategies.noop(),
@@ -131,42 +131,96 @@ export class OverlayService {
 
     const appliedScrollStrategy = scrollStrategyMapping[scrollStrategy] ?? this.overlay.scrollStrategies.block();
 
-    let dialogRef = this.dialog.open(component, {
+    // Close existing dialog if open
+    if (this.activeDialogRef) {
+      console.log('Closing existing dialog:', this.activeDialogRef.id);
+      this.activeDialogRef.close();
+    }
+
+    const dialogId = Math.random().toString(36).substring(2);
+    console.log('Opening dialog with ID:', dialogId);
+
+    const dialogRef = this.dialog.open(component, {
       positionStrategy: positionStrategy,
       scrollStrategy: appliedScrollStrategy,
       disableClose: disableClose,
       backdropClass: ['bg-black/5', 'overflow-clip'],
       panelClass: [...this.basePanelClass, 'rounded-3xl'],
       data: data,
+      autoFocus: false,
     });
 
-    return dialogRef;
+    this.activeDialogRef = dialogRef as DialogRef<any, any>;
 
+    return new Promise((resolve) => {
+      dialogRef.closed.subscribe(
+        (result) => {
+          console.log('Dialog closed with ID:', dialogId, 'Result:', result);
+          this.activeDialogRef = null;
+          resolve(result);
+        },
+        (error) => {
+          console.error('Dialog close error for ID:', dialogId, error);
+          this.activeDialogRef = null;
+          resolve(null);
+        }
+      );
+    });
   }
 
   openAlert(title: string, message: string): Promise<boolean> {
+    // Close existing dialog if open
+    if (this.activeDialogRef) {
+      console.log('Closing existing dialog:', this.activeDialogRef.id);
+      this.activeDialogRef.close();
+    }
+
+    const dialogId = Math.random().toString(36).substring(2);
+    console.log('Opening alert dialog with ID:', dialogId);
+
     const dialogRef = this.dialog.open(AlertDialogComponent, {
       width: '300px',
       data: { title, message },
-      panelClass: [...this.basePanelClass, 'rounded-3xl']
+      panelClass: [...this.basePanelClass, 'rounded-3xl'],
+      autoFocus: false,
     });
-  
+
+    this.activeDialogRef = dialogRef;
+
     return new Promise((resolve) => {
-      dialogRef.closed.subscribe((result) => {
-        resolve(!!result); // force to true/false
-      });
+      dialogRef.closed.subscribe(
+        (result) => {
+          console.log('Alert dialog closed with ID:', dialogId, 'Result:', result);
+          this.activeDialogRef = null;
+          resolve(!!result);
+        },
+        (error) => {
+          console.error('Alert dialog close error for ID:', dialogId, error);
+          this.activeDialogRef = null;
+          resolve(false);
+        }
+      );
     });
   }
-  
 
-  openModal<T>(component: ComponentType<T>, options?: {
-    disableClose?: boolean,
-    maxHeightClass?: string,
-    data?: any
-  }):
-    DialogRef<any, T> {
+  openModal<T>(
+    component: ComponentType<T>,
+    options?: {
+      disableClose?: boolean;
+      maxHeightClass?: string;
+      data?: any;
+    }
+  ): Promise<any> {
+    // Close existing dialog if open
+    if (this.activeDialogRef) {
+      console.log('Closing existing dialog:', this.activeDialogRef.id);
+      this.activeDialogRef.close();
+    }
 
-    const {disableClose = false, maxHeightClass, data} = options ?? {};
+    const dialogId = Math.random().toString(36).substring(2);
+    console.log('Opening modal with ID:', dialogId);
+
+    const { disableClose = false, maxHeightClass, data } = options ?? {};
 
     const positionStrategy = this.overlay
       .position()
@@ -174,17 +228,33 @@ export class OverlayService {
       .centerHorizontally()
       .centerVertically();
 
-    let dialogRef = this.dialog.open(component, {
+    const dialogRef = this.dialog.open(component, {
       positionStrategy: positionStrategy,
       disableClose: disableClose,
       backdropClass: ['bg-black/20'],
       panelClass: [...this.basePanelClass, maxHeightClass ?? this.modalMaxHeightClass, 'rounded-3xl', 'sm:w-4/5', 'md:w-3/5', 'lg:w-2/5'],
-      data: data
+      data: data,
+      autoFocus: false,
     });
+
+    this.activeDialogRef = dialogRef;
 
     this.setOverlayMaxHeight(maxHeightClass ?? this.modalMaxHeightClass);
 
-    return dialogRef;
+    return new Promise((resolve) => {
+      dialogRef.closed.subscribe(
+        (result) => {
+          console.log('Modal closed with ID:', dialogId, 'Result:', result);
+          this.activeDialogRef = null;
+          resolve(result);
+        },
+        (error) => {
+          console.error('Modal close error for ID:', dialogId, error);
+          this.activeDialogRef = null;
+          resolve(null);
+        }
+      );
+    });
   }
 
   private setOverlayMaxHeight(maxHeightClass: string): void {
@@ -200,8 +270,17 @@ export class OverlayService {
       disableClose?: boolean;
       data?: any;
     }
-  ): DialogRef<any, T> {
-    const {disableClose = false, data} = options ?? {};
+  ): Promise<any> {
+    // Close existing dialog if open
+    if (this.activeDialogRef) {
+      console.log('Closing existing dialog:', this.activeDialogRef.id);
+      this.activeDialogRef.close();
+    }
+
+    const dialogId = Math.random().toString(36).substring(2);
+    console.log('Opening backdrop with ID:', dialogId);
+
+    const { disableClose = false, data } = options ?? {};
 
     const positionStrategy = this.overlay
       .position()
@@ -209,14 +288,30 @@ export class OverlayService {
       .centerHorizontally()
       .bottom('0px');
 
-    let dialogRef = this.dialog.open(component, {
+    const dialogRef = this.dialog.open(component, {
       positionStrategy: positionStrategy,
       disableClose: disableClose,
       panelClass: [...this.basePanelClass, 'w-[100%]', 'h-[90%]', 'rounded-t-3xl', 'overflow-clip'],
-      data: data
+      data: data,
+      autoFocus: false,
     });
 
-    return dialogRef;
+    this.activeDialogRef = dialogRef;
+
+    return new Promise((resolve) => {
+      dialogRef.closed.subscribe(
+        (result) => {
+          console.log('Backdrop closed with ID:', dialogId, 'Result:', result);
+          this.activeDialogRef = null;
+          resolve(result);
+        },
+        (error) => {
+          console.error('Backdrop close error for ID:', dialogId, error);
+          this.activeDialogRef = null;
+          resolve(null);
+        }
+      );
+    });
   }
 
   openBottomSheet<T>(
@@ -225,8 +320,17 @@ export class OverlayService {
       disableClose?: boolean;
       data?: any;
     }
-  ): DialogRef<any, T> {
-    const {disableClose = false, data} = options ?? {};
+  ): Promise<any> {
+    // Close existing dialog if open
+    if (this.activeDialogRef) {
+      console.log('Closing existing dialog:', this.activeDialogRef.id);
+      this.activeDialogRef.close();
+    }
+
+    const dialogId = Math.random().toString(36).substring(2);
+    console.log('Opening bottom sheet with ID:', dialogId);
+
+    const { disableClose = false, data } = options ?? {};
 
     const positionStrategy = this.overlay
       .position()
@@ -234,14 +338,30 @@ export class OverlayService {
       .centerHorizontally()
       .bottom('0px');
 
-    let dialogRef = this.dialog.open(component, {
+    const dialogRef = this.dialog.open(component, {
       positionStrategy: positionStrategy,
       disableClose: disableClose,
       panelClass: [...this.basePanelClass, 'w-max-[300px]', 'h-[70%]', 'rounded-t-3xl', 'overflow-clip', 'overflow-y-scroll'],
-      data: data
+      data: data,
+      autoFocus: false,
     });
 
-    return dialogRef;
+    this.activeDialogRef = dialogRef;
+
+    return new Promise((resolve) => {
+      dialogRef.closed.subscribe(
+        (result) => {
+          console.log('Bottom sheet closed with ID:', dialogId, 'Result:', result);
+          this.activeDialogRef = null;
+          resolve(result);
+        },
+        (error) => {
+          console.error('Bottom sheet close error for ID:', dialogId, error);
+          this.activeDialogRef = null;
+          resolve(null);
+        }
+      );
+    });
   }
 
   openFullScreen<T>(
@@ -250,8 +370,17 @@ export class OverlayService {
       disableClose?: boolean;
       data?: any;
     }
-  ): DialogRef<any, T> {
-    const {disableClose = false, data} = options ?? {};
+  ): Promise<any> {
+    // Close existing dialog if open
+    if (this.activeDialogRef) {
+      console.log('Closing existing dialog:', this.activeDialogRef.id);
+      this.activeDialogRef.close();
+    }
+
+    const dialogId = Math.random().toString(36).substring(2);
+    console.log('Opening full screen with ID:', dialogId);
+
+    const { disableClose = false, data } = options ?? {};
 
     const positionStrategy = this.overlay
       .position()
@@ -259,14 +388,30 @@ export class OverlayService {
       .centerHorizontally()
       .bottom('0px');
 
-    let dialogRef = this.dialog.open(component, {
+    const dialogRef = this.dialog.open(component, {
       positionStrategy: positionStrategy,
       disableClose: disableClose,
       panelClass: [...this.basePanelClass, 'w-dvw', 'h-dvh', 'overflow-clip', 'overflow-y-scroll'],
-      data: data
+      data: data,
+      autoFocus: false,
     });
 
-    return dialogRef;
+    this.activeDialogRef = dialogRef;
+
+    return new Promise((resolve) => {
+      dialogRef.closed.subscribe(
+        (result) => {
+          console.log('Full screen closed with ID:', dialogId, 'Result:', result);
+          this.activeDialogRef = null;
+          resolve(result);
+        },
+        (error) => {
+          console.error('Full screen close error for ID:', dialogId, error);
+          this.activeDialogRef = null;
+          resolve(null);
+        }
+      );
+    });
   }
 
   openSidePanelRight<T>(
@@ -276,28 +421,62 @@ export class OverlayService {
       disableClose?: boolean;
       data?: any;
     }
-  ): DialogRef<any, T> {
+  ): Promise<any> {
+    // Close existing dialog if open
+    if (this.activeDialogRef) {
+      console.log('Closing existing dialog:', this.activeDialogRef.id);
+      this.activeDialogRef.close();
+    }
+
+    const dialogId = Math.random().toString(36).substring(2);
+    console.log('Opening side panel with ID:', dialogId);
+
     const {
       widthInPx = 350,
-      disableClose = false,
-      data
+      disableClose = true,
+      data,
     } = options ?? {};
 
     const positionStrategy = this.overlay
       .position()
       .global()
       .top('0px')
-      .right('0px')
-      .width(`${widthInPx}px`);
+      .right('0px');
 
-    let dialogRef = this.dialog.open(component, {
+    const dialogRef = this.dialog.open(component, {
       positionStrategy: positionStrategy,
-      disableClose: disableClose,
-      panelClass: [...this.basePanelClass, 'h-dvh', 'w-full', 'overflow-clip', 'overflow-y-scroll'],
-      data: data
+      disableClose: true,
+      width: `${widthInPx}px`,
+      panelClass: [...this.basePanelClass, 'h-dvh', 'overflow-clip', 'overflow-y-scroll'],
+      data: data,
+      backdropClass: ['bg-black/20'],
+      autoFocus: false,
     });
 
-    return dialogRef;
+    this.activeDialogRef = dialogRef;
+
+    dialogRef.backdropClick.subscribe(() => {
+      console.log('Backdrop clicked for dialog:', dialogId);
+      if (!disableClose) {
+        console.log('Closing dialog from backdrop click:', dialogId);
+        dialogRef.close();
+      }
+    });
+
+    return new Promise((resolve) => {
+      dialogRef.closed.subscribe(
+        (result) => {
+          console.log('Side panel closed with ID:', dialogId, 'Result:', result);
+          this.activeDialogRef = null;
+          resolve(result);
+        },
+        (error) => {
+          console.error('Side panel close error for ID:', dialogId, error);
+          this.activeDialogRef = null;
+          resolve(null);
+        }
+      );
+    });
   }
 
   openSidePanelLeft<T>(
@@ -307,28 +486,52 @@ export class OverlayService {
       disableClose?: boolean;
       data?: any;
     }
-  ): DialogRef<any, T> {
+  ): Promise<any> {
+    // Close existing dialog if open
+    if (this.activeDialogRef) {
+      console.log('Closing existing dialog:', this.activeDialogRef.id);
+      this.activeDialogRef.close();
+    }
+
+    const dialogId = Math.random().toString(36).substring(2);
+    console.log('Opening side panel left with ID:', dialogId);
+
     const {
       widthInPx = 350,
       disableClose = false,
-      data
+      data,
     } = options ?? {};
 
     const positionStrategy = this.overlay
       .position()
       .global()
       .top('0px')
-      .left('0px')
-      .width(`${widthInPx}px`);
+      .left('0px');
 
-    let dialogRef = this.dialog.open(component, {
+    const dialogRef = this.dialog.open(component, {
       positionStrategy: positionStrategy,
       disableClose: disableClose,
-      panelClass: [...this.basePanelClass, 'h-dvh', 'w-full', 'overflow-clip', 'overflow-y-scroll'],
-      data: data
+      width: `${widthInPx}px`,
+      panelClass: [...this.basePanelClass, 'h-dvh', 'overflow-clip', 'overflow-y-scroll'],
+      data: data,
+      autoFocus: false,
     });
 
-    return dialogRef;
-  }
+    this.activeDialogRef = dialogRef;
 
+    return new Promise((resolve) => {
+      dialogRef.closed.subscribe(
+        (result) => {
+          console.log('Side panel left closed with ID:', dialogId, 'Result:', result);
+          this.activeDialogRef = null;
+          resolve(result);
+        },
+        (error) => {
+          console.error('Side panel left close error for ID:', dialogId, error);
+          this.activeDialogRef = null;
+          resolve(null);
+        }
+      );
+    });
+  }
 }

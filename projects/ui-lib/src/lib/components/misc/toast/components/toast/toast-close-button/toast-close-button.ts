@@ -5,7 +5,6 @@ import {Component, EventEmitter, Output} from '@angular/core';
   standalone: true,
   imports: [],
   templateUrl: './toast-close-button.html',
-  styleUrl: './toast-close-button.scss'
 })
 export class ToastCloseButtonComponent {
 

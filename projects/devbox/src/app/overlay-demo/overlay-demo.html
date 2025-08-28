@@ -1,0 +1,100 @@
+<div class="p-8 mx-auto lg:flex lg:space-x-8">
+  <!-- Main Content -->
+  <div class="space-y-12 space-x-4 w-[1150px]">
+    <!-- Demo 1: Basic Alert Dialog -->
+    <app-demo-card
+      title="1. Basic Alert Dialog"
+      description="A simple alert dialog with a confirmation message."
+      [files]="alertFiles()">
+      <ui-button
+        buttonColor="bg-primary-500"
+        (click)="openBasicAlert()">
+        Open Alert
+      </ui-button>
+      <p class="text-sm text-gray-600 mt-2">
+        Result: {{ alertResult() || 'None' }}
+      </p>
+    </app-demo-card>
+
+    <!-- Demo 2: Context Menu -->
+    <app-demo-card
+      title="2. Context Menu with Actions"
+      description="A context menu triggered by a button with multiple actions."
+      [files]="contextMenuFiles()">
+      <ui-context-menu-button
+        [contextActions]="contextActions()"
+        positionPreference="bottomRight"
+        (actionClick)="onContextActionClick($event)">
+      </ui-context-menu-button>
+      <p class="text-sm text-gray-600 mt-2">
+        Selected Action: {{ contextActionResult() || 'None' }}
+      </p>
+    </app-demo-card>
+
+    <!-- Demo 3: Base Overlay with Back Button -->
+    <app-demo-card
+      title="3. Base Overlay with Back Button"
+      description="A base overlay with a title, back button, and custom content."
+      [files]="baseOverlayFiles()">
+      <ui-button
+        buttonColor="bg-primary-500"
+        (click)="openBaseOverlay()">
+        Open Overlay
+      </ui-button>
+      <p class="text-sm text-gray-600 mt-2">
+        Back Clicked: {{ backClickResult() || 'None' }}
+      </p>
+    </app-demo-card>
+
+    <!-- Demo 4: Side Panel Right -->
+    <app-demo-card
+      title="4. Side Panel (Right)"
+      description="A side panel opening from the right with custom width."
+      [files]="sidePanelFiles()">
+      <ui-button
+        buttonColor="bg-primary-500"
+        (click)="openSidePanel()">
+        Open Side Panel
+      </ui-button>
+      <p class="text-sm text-gray-600 mt-2">
+        Result: {{ sidePanelResult() || 'None' }}
+      </p>
+    </app-demo-card>
+
+    <!-- Demo 5: Full Screen Overlay -->
+    <app-demo-card
+      title="5. Full Screen Overlay"
+      description="A full-screen overlay with custom content."
+      [files]="fullScreenFiles()">
+      <ui-button
+        buttonColor="bg-primary-500"
+        (click)="openFullScreen()">
+        Open Full Screen
+      </ui-button>
+      <p class="text-sm text-gray-600 mt-2">
+        Result: {{ fullScreenResult() || 'None' }}
+      </p>
+    </app-demo-card>
+  </div>
+
+  <!-- Fixed and Scrollable Sidebar -->
+  <div class="lg:w-80 lg:fixed lg:top-8 lg:right-8 lg:max-h-[calc(100vh-4rem)] lg:overflow-y-auto">
+    <app-doc-io-list
+      class="block w-full bg-white shadow-lg p-4 rounded-lg"
+      [items]="[
+        { title: 'title', desc: 'Title of the overlay or dialog', type: 'input' },
+        { title: 'message', desc: 'Message content for alert dialogs', type: 'input' },
+        { title: 'contextActions', desc: 'List of actions for context menu', type: 'input' },
+        { title: 'positionPreference', desc: 'Preferred position for context menu or overlay', type: 'input' },
+        { title: 'showBackButton', desc: 'Show or hide back button in base overlay', type: 'input' },
+        { title: 'showTitle', desc: 'Show or hide title in base overlay', type: 'input' },
+        { title: 'disableClose', desc: 'Prevent closing of overlay/dialog', type: 'input' },
+        { title: 'data', desc: 'Custom data passed to overlay/dialog', type: 'input' },
+        { title: 'scrollStrategy', desc: 'Scroll behavior for overlay (noop, block, reposition, close)', type: 'input' },
+        { title: 'widthInPx', desc: 'Width of side panel in pixels', type: 'input' },
+        { title: 'actionClick', desc: 'Event emitted when a context menu action is clicked', type: 'output' },
+        { title: 'backClick', desc: 'Event emitted when back button is clicked', type: 'output' }
+      ]">
+    </app-doc-io-list>
+  </div>
+</div>

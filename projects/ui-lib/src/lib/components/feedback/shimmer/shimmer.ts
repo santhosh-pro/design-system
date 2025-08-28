@@ -5,7 +5,6 @@ import {Component, computed, input} from '@angular/core';
   standalone: true,
   imports: [],
   templateUrl: './shimmer.html',
-  styleUrl: './shimmer.scss'
 })
 export class ShimmerComponent {
   type = input<'grid' | 'list' | 'single-line' | 'multiline'>('grid');

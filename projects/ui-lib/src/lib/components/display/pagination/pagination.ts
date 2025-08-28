@@ -10,7 +10,6 @@ import {NgClass} from "@angular/common";
     NgClass
   ],
   templateUrl: './pagination.html',
-  styleUrl: './pagination.scss'
 })
 export class PaginationComponent {
   totalItems = input<number>(0);

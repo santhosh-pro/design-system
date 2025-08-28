@@ -9,14 +9,13 @@ import { AppSvgIconComponent } from '../../../misc/app-svg-icon/app-svg-icon';
     AppSvgIconComponent,
   ],
   templateUrl: './overlay-context-menu.html',
-  styleUrl: './overlay-context-menu.scss'
 })
 export class OverlayContextMenuComponent {
 
   dialogRef = inject(DialogRef);
   actions: ContextMenuButtonAction[] = inject(DIALOG_DATA);
 
-  _onActionClicked($event: MouseEvent, action: ContextMenuButtonAction) {
+  onActionClick($event: MouseEvent, action: ContextMenuButtonAction) {
     this.dialogRef.close(action.actionKey);
     $event.stopPropagation();
   }

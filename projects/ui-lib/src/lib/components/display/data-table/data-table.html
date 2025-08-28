@@ -249,7 +249,7 @@
                           @for (iconAction of column.actionsConfig?.iconActions; track iconAction) {
                             <button
                               type="button"
-                              (click)="_onActionClicked(iconAction.actionKey, item, $event)"
+                              (click)="onActionClicked(iconAction.actionKey, item, $event)"
                               class="flex items-center justify-center h-8 w-8 cursor-pointer rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
                               [title]="iconAction.label || iconAction.actionKey"
                             >
@@ -263,8 +263,8 @@
                           @let menuActions = getContextMenuActions(column.actionsConfig?.threeDotMenuActions, item);
                           @if (menuActions.length > 0) {
                             <ui-context-menu-button
-                              (onActionClicked)="_onActionClicked($event, item, null)"
-                              [actions]="menuActions"
+                              (actionClick)="onActionClicked($event, item, null)"
+                              [contextActions]="menuActions"
                               class="relative"
                             >
                               <button 

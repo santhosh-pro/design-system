@@ -14,7 +14,6 @@ import { TableActionEvent } from '../../display/data-table/data-table';
   standalone: true,
   selector: 'ui-dynamic-renderer',
   templateUrl: './dynamic-renderer.html',
-  styleUrl: './dynamic-renderer.scss'
 })
 export class DynamicRendererComponent<T> implements OnChanges, OnDestroy {
   @Input() component!: Type<any>;

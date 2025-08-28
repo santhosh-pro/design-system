@@ -167,28 +167,29 @@ export class DateInputComponent extends BaseControlValueAccessor<Date | null> im
     }
   }
 
-  onDatePickerIconClicked() {
-    if (!this.trigger?.nativeElement || this.viewType() !== 'picker') {
-      return; // Guard clause to prevent execution if trigger is undefined or not in picker mode
-    }
-
-    let dialogRef = this.overlayService.openNearElement(DatePickerOverlayComponent, this.trigger.nativeElement, {
-      data: {
-        selectedDate: this.value,
-        minDate: this.minDate(),
-        maxDate: this.maxDate(),
-        allowOnlyPast: this.allowOnlyPast(),
-        allowOnlyFuture: this.allowOnlyFuture(),
-        disabledDays: this.disabledDays(),
-        disabledDates: this.disabledDates()
-      }
-    });
-    this.subscription = dialogRef.closed.subscribe((date: Date) => {
-      let formattedDate = this.formatDate(date);
-      this.textInputValue.set(formattedDate);
-      this.onValueChange(date);
-    });
+async onDatePickerIconClicked() {
+  if (!this.trigger?.nativeElement || this.viewType() !== 'picker') {
+    return; // Guard clause to prevent execution if trigger is undefined or not in picker mode
   }
+
+  const result: Date | undefined = await this.overlayService.openNearElement(DatePickerOverlayComponent, this.trigger.nativeElement, {
+    data: {
+      selectedDate: this.value,
+      minDate: this.minDate(),
+      maxDate: this.maxDate(),
+      allowOnlyPast: this.allowOnlyPast(),
+      allowOnlyFuture: this.allowOnlyFuture(),
+      disabledDays: this.disabledDays(),
+      disabledDates: this.disabledDates()
+    }
+  });
+
+  if (result) {
+    const formattedDate = this.formatDate(result);
+    this.textInputValue.set(formattedDate);
+    this.onValueChange(result);
+  }
+}
 
   onDateSelected(date: Date) {
     const formattedDate = this.formatDate(date);

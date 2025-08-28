@@ -200,66 +200,61 @@ export class DateRangeInputComponent
     this.markTouched();
   }
 
-  onDatePickerIconClicked() {
-    const currentValue = this._currentValue() || this.formControl.value;
-    
-    const dialogData = {
-      data: {
-        selectedRange: currentValue,
-        minDate: this.minDate(),
-        maxDate: this.maxDate(),
-        allowOnlyPast: this.allowOnlyPast(),
-        allowOnlyFuture: this.allowOnlyFuture(),
-        allowToday: this.allowToday(),
-        minDaysRange: this.minDaysRange(),
-        maxDaysRange: this.maxDaysRange(),
-      },
-      positionPreference: "bottom",
-    };
+async onDatePickerIconClicked() {
+  const currentValue = this._currentValue() || this.formControl.value;
 
-    let dialogRef;
-    if (!this.trigger?.nativeElement) {
-      console.warn(
-        "Trigger element is not available. Opening overlay without positioning."
-      );
-      dialogRef = this.overlayService.openModal(
-        DateRangePickerOverlayComponent,
-        dialogData
-      );
-    } else {
-      dialogRef = this.overlayService.openNearElement(
-        DateRangePickerOverlayComponent,
-        this.trigger.nativeElement,
-        {
-          data: dialogData.data,
-          disableClose: false,
-          positionPreference: "bottomLeft",
-        }
-      );
-    }
+  const dialogData = {
+    data: {
+      selectedRange: currentValue,
+      minDate: this.minDate(),
+      maxDate: this.maxDate(),
+      allowOnlyPast: this.allowOnlyPast(),
+      allowOnlyFuture: this.allowOnlyFuture(),
+      allowToday: this.allowToday(),
+      minDaysRange: this.minDaysRange(),
+      maxDaysRange: this.maxDaysRange(),
+    },
+    positionPreference: "bottom",
+  };
 
-    this.subscription?.unsubscribe();
-    this.subscription = dialogRef.closed.subscribe(
-      (range: DateRangeEvent | undefined) => {
-        console.log('Dialog closed with range:', range); // Debug log
-        
-        if (range?.startDate && range?.endDate) {
-          if (isValidDate(range.startDate) && isValidDate(range.endDate)) {
-            console.log('Setting valid range:', range); // Debug log
-            // Force update both signals and form control
-            this.updateValueFromPicker(range);
-          } else {
-            console.error("Invalid date range selected:", range);
-            this.updateValueFromPicker(null);
-          }
-        } else if (range === null || range === undefined) {
-          // Handle explicit null/undefined (user cleared selection)
-          console.log('Clearing range'); // Debug log
-          this.updateValueFromPicker(null);
-        }
+  let result: DateRangeEvent | undefined | null;
+  if (!this.trigger?.nativeElement) {
+    console.warn(
+      "Trigger element is not available. Opening overlay without positioning."
+    );
+    result = await this.overlayService.openModal(
+      DateRangePickerOverlayComponent,
+      dialogData
+    );
+  } else {
+    result = await this.overlayService.openNearElement(
+      DateRangePickerOverlayComponent,
+      this.trigger.nativeElement,
+      {
+        data: dialogData.data,
+        disableClose: false,
+        positionPreference: "bottomLeft",
       }
     );
   }
+
+  console.log('Dialog closed with range:', result); // Debug log
+
+  if (result?.startDate && result?.endDate) {
+    if (isValidDate(result.startDate) && isValidDate(result.endDate)) {
+      console.log('Setting valid range:', result); // Debug log
+      // Force update both signals and form control
+      this.updateValueFromPicker(result);
+    } else {
+      console.error("Invalid date range selected:", result);
+      this.updateValueFromPicker(null);
+    }
+  } else if (result === null || result === undefined) {
+    // Handle explicit null/undefined (user cleared selection)
+    console.log('Clearing range'); // Debug log
+    this.updateValueFromPicker(null);
+  }
+}
 
   // Dedicated method for picker updates to ensure proper state sync
   private updateValueFromPicker(range: DateRangeEvent | null): void {

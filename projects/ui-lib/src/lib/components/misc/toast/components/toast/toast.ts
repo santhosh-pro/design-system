@@ -23,7 +23,6 @@ import {NgClass} from "@angular/common";
     NgClass
   ],
   templateUrl: './toast.html',
-  styleUrl: './toast.scss'
 })
 export class ToastComponent implements OnInit, OnDestroy {
 

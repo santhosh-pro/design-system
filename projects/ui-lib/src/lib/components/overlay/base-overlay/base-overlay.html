@@ -1,28 +1,29 @@
-<div class="base-overlay flex flex-col rounded-3xl h-full overflow-hidden bg-white relative">
+<div class="base-overlay flex flex-col rounded-3xl h-full overflow-hidden bg-white relative"
+  (click)="$event.stopPropagation()">
   @if (showTitle()) {
-    <div class="flex justify-center items-center px-3 py-6 border-b border-neutral-200">
-
-      @if(showBackButton()) {
-        <div class="absolute left-3 rounded-full p-3 cursor-pointer hover:bg-neutral-50 transition-all duration-500" (click)="goBack()">
-          <svg class="w-[18px] h-[18px] text-neutral-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-            <path d="M20 11V13H8.00003L13.5 18.5L12.08 19.92L4.16003 12L12.08 4.07996L13.5 5.49996L8.00003 11H20Z" fill="currentColor"/>
-          </svg>
-        </div>
-      }
-
-      <span class="text-body1">{{ title() }}</span>
-      <div class="absolute right-3 rounded-lg p-2 border border-neutral-300 cursor-pointer hover:bg-neutral-50"
-           (click)="onCloseClicked()">
-        <svg class="w-[18px] h-[18px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-          <path
-            d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z"
-            fill="currentColor"/>
-        </svg>
-      </div>
+  <div class="flex justify-center items-center px-3 py-6 border-b border-neutral-200">
+    @if (showBackButton()) {
+    <div class="absolute left-3 rounded-full p-3 cursor-pointer hover:bg-neutral-50 transition-all duration-500"
+      (click)="onBackButtonClick()">
+      <svg class="w-[18px] h-[18px] text-neutral-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+        fill="none">
+        <path d="M20 11V13H8.00003L13.5 18.5L12.08 19.92L4.16003 12L12.08 4.07996L13.5 5.49996L8.00003 11H20Z"
+          fill="currentColor" />
+      </svg>
     </div>
+    }
+
+    <span class="text-body1">{{ effectiveTitle() }}</span> <!-- Use effectiveTitle() -->
+    <div class="absolute right-3 rounded-lg p-2 border border-neutral-300 cursor-pointer hover:bg-neutral-50"
+      (click)="onCloseButtonClick(); $event.stopPropagation()">
+      <svg class="w-[18px] h-[18px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+        <path
+          d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z"
+          fill="currentColor" />
+      </svg>
+    </div>
+  </div>
   }
-
-
 
   <div class="flex-1 min-h-0 px-5 py-4 overflow-y-auto">
     <ng-content select="[body]">
@@ -30,11 +31,10 @@
     </ng-content>
   </div>
 
-
-  <div #actionsContainer class="actions-container border-t px-4 py-4">
+  <div #actionsContainer class="actions-container border-t px-4 py-4"
+    [style.display]="isActionsContainerVisible() ? 'block' : 'none'">
     <div #actions class="w-full">
       <ng-content select="[actions]"></ng-content>
     </div>
   </div>
-
 </div>

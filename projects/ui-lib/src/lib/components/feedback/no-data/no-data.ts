@@ -6,7 +6,6 @@ import {Component, input} from '@angular/core';
   imports: [
   ],
   templateUrl: './no-data.html',
-  styleUrl: './no-data.scss'
 })
 export class NoDataComponent {
   size = input(250);

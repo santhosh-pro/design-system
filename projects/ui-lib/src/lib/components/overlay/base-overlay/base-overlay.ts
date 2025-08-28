@@ -1,57 +1,65 @@
-import {DialogRef} from '@angular/cdk/dialog';
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  inject,
-  input, output,
-  Renderer2,
-  ViewChild,
-  ViewContainerRef
-} from '@angular/core';
+import { Component, ElementRef, ViewContainerRef, inject, input, output, signal, computed, effect, Renderer2, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { DialogRef, DIALOG_DATA } from '@angular/cdk/dialog';
+import { viewChild } from '@angular/core';
 
 @Component({
   selector: 'ui-base-overlay',
-  imports: [],
   templateUrl: './base-overlay.html',
   standalone: true,
-  styleUrl: './base-overlay.css'
 })
 export class BaseOverlayComponent implements AfterViewInit {
+  title = input<string>();
+  showTitle = input<boolean>(true);
+  showBackButton = input<boolean>(false);
 
-  @ViewChild('container', {read: ViewContainerRef, static: true}) container!: ViewContainerRef;
-  @ViewChild('actions', {static: false}) actionsDiv!: ElementRef<HTMLDivElement>;
-  @ViewChild('actionsContainer', {static: false}) actionsContainerDiv!: ElementRef<HTMLDivElement>;
+  backClick = output<void>();
 
-  title = input.required<String>();
-  showTitle = input(true);
-  showBackButton = input(false);
+  containerRef = viewChild.required<ViewContainerRef>('container');
+  actionsRef = viewChild<ElementRef<HTMLDivElement>>('actions');
+  actionsContainerRef = viewChild.required<ElementRef<HTMLDivElement>>('actionsContainer');
+  closeButtonRef = viewChild<ElementRef<HTMLElement>>('closeButton');
 
+  private renderer = inject(Renderer2);
+  private dialogRef = inject(DialogRef);
+  private cdr = inject(ChangeDetectorRef);
+  private data = inject(DIALOG_DATA, { optional: true }) ?? {};
 
-  onBackClicked = output<void>();
+  private hasActions = signal<boolean>(false);
 
-  renderer = inject(Renderer2);
-  dialogRef = inject(DialogRef<any>);
+  isActionsContainerVisible = computed(() => this.hasActions());
+  effectiveTitle = computed(() => this.title() ?? this.data?.title ?? '');
 
-
-  ngOnInit(): void {
-
+  constructor() {
+    effect(() => {
+      const actionsElement = this.actionsRef()?.nativeElement;
+      if (actionsElement?.children.length) {
+        this.hasActions.set(true);
+      } else {
+        this.hasActions.set(false);
+        this.renderer.setStyle(this.actionsContainerRef().nativeElement, 'display', 'none');
+      }
+    });
   }
 
   ngAfterViewInit(): void {
-    if (this.actionsDiv) {
-      const children = this.actionsDiv.nativeElement.children;
-      if (children.length === 0) {
-        this.renderer.setStyle(this.actionsContainerDiv.nativeElement, 'display', 'none');
-      }
+    const closeBtnRef = this.closeButtonRef();
+    if (closeBtnRef && closeBtnRef.nativeElement) {
+      console.log('Focusing close button');
+      this.renderer.selectRootElement(closeBtnRef.nativeElement).focus();
     }
   }
 
-  goBack() {
-    this.onBackClicked.emit();
+  protected onBackButtonClick(): void {
+    console.log('Back button clicked');
+    this.backClick.emit();
   }
 
-  onCloseClicked() {
-    this.dialogRef.close();
+  protected onCloseButtonClick(): void {
+    console.log('Close button clicked');
+    this.cdr.detectChanges();
+    setTimeout(() => {
+      console.log('Calling dialogRef.close()');
+      this.dialogRef.close();
+    }, 0);
   }
 }
