@@ -1,19 +1,22 @@
 import {
   Component,
-  ComponentRef, input,
+  ComponentRef,
+  input,
   Input,
-  OnChanges, OnDestroy, output, OutputEmitterRef, OutputRefSubscription,
+  OnChanges,
+  OnDestroy,
+  output,
   SimpleChanges,
   Type,
   ViewChild,
-  ViewContainerRef
+  ViewContainerRef,
 } from '@angular/core';
 import { TableActionEvent } from '../../display/data-table/data-table';
 
 @Component({
   standalone: true,
   selector: 'ui-dynamic-renderer',
-  templateUrl: './dynamic-renderer.html',
+  template: '<ng-container #container></ng-container>',
 })
 export class DynamicRendererComponent<T> implements OnChanges, OnDestroy {
   @Input() component!: Type<any>;
@@ -24,11 +27,11 @@ export class DynamicRendererComponent<T> implements OnChanges, OnDestroy {
 
   actionPerformed = output<TableActionEvent>();
 
-  @ViewChild('container', {read: ViewContainerRef, static: true})
+  @ViewChild('container', { read: ViewContainerRef, static: true })
   container!: ViewContainerRef;
 
   private componentRef?: ComponentRef<any>;
-  private actionSubscription?: OutputRefSubscription;
+  private actionSubscription?: any;
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['component'] || changes['rowData'] || changes['data'] || changes['rowPosition'] || changes['isLastRow']) {
@@ -38,35 +41,41 @@ export class DynamicRendererComponent<T> implements OnChanges, OnDestroy {
 
   private loadComponent(): void {
     if (!this.component) {
+      console.warn('No component provided to DynamicRendererComponent');
+      this.container.clear();
       return;
     }
 
-    this.container.clear();
+    try {
+      this.container.clear();
+      this.componentRef = this.container.createComponent(this.component);
 
-    this.componentRef = this.container.createComponent(this.component);
+      if (this.componentRef.instance) {
+        // Assign inputs
+        this.componentRef.instance.rowData = this.rowData;
+        this.componentRef.instance.data = this.data();
+        this.componentRef.instance.rowPosition = this.rowPosition();
+        this.componentRef.instance.isLastRow = this.isLastRow();
 
+        // Clean up previous subscription
+        this.actionSubscription?.unsubscribe();
 
-    if (this.componentRef.instance) {
-      (this.componentRef.instance as any).rowData = this.rowData;
-      (this.componentRef.instance as any).data = this.data();
-      (this.componentRef.instance as any).rowPosition = this.rowPosition();
-      (this.componentRef.instance as any).isLastRow = this.isLastRow();
-
-      this.actionSubscription?.unsubscribe();
-
-      let emitter: OutputEmitterRef<any> = this.componentRef.instance.actionPerformed;
-      if (emitter) {
-        this.actionSubscription = emitter.subscribe(
-          (event: any) => {
-            this.actionPerformed.emit(event);
-          }
-        );
+        // Subscribe to actionPerformed if it exists
+        if (this.componentRef.instance.actionPerformed) {
+          this.actionSubscription = this.componentRef.instance.actionPerformed.subscribe(
+            (event: TableActionEvent) => {
+              this.actionPerformed.emit(event);
+            }
+          );
+        }
       }
-
+    } catch (error) {
+      console.error('Error creating component:', error);
     }
   }
 
   ngOnDestroy(): void {
     this.actionSubscription?.unsubscribe();
+    this.container.clear();
   }
 }

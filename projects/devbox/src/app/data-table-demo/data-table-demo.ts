@@ -4,6 +4,7 @@ import { DemoCard, DemoFile } from '../core/demo-card/demo-card';
 import { DocIoList } from '../core/doc-io-list/doc-io-list';
 import { ColumnDef, ColumnNode, DataTableComponent, TableActionEvent, TableStateEvent } from 'projects/ui-lib/src/public-api';
 import { CommonModule } from '@angular/common';
+import { ExpandRowDemo } from './expand/expand-row-demo/expand-row-demo';
 
 @Component({
   selector: 'app-data-table-demo',
@@ -12,6 +13,8 @@ import { CommonModule } from '@angular/common';
   templateUrl: './data-table-demo.html',
 })
 export class DataTableDemo {
+
+  ExpandRowDemo=ExpandRowDemo;
   // Data for all variants
 nestedColumns = signal<ColumnNode[]>([
   {
@@ -48,7 +51,8 @@ nestedColumns = signal<ColumnNode[]>([
           {
             title: 'Phone',
             key: 'phone',
-            type: 'text',
+            type: 'custom',
+            component: ExpandRowDemo,
             alignment: 'left',
             sortKey: 'phone',
           },
@@ -140,7 +144,7 @@ nestedData = signal<any[]>(Array.from({ length: 20 }, (_, i) => ({
   basicColumns = signal<ColumnDef[]>([
     { title: 'ID', key: 'id', type: 'text', alignment: 'left', sortKey: 'id' },
     { title: 'Name', key: 'name', type: 'text', alignment: 'left', sortKey: 'name' },
-    { title: 'Age', key: 'age', type: 'text', alignment: 'center', sortKey: 'age' },
+    { title: 'Age', key: 'age', type: 'custom', component:ExpandRowDemo, alignment: 'center', sortKey: 'age' },
     {
       title: 'Status',
       key: 'status',
