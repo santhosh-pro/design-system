@@ -17,7 +17,6 @@ import {
 import { PaginationComponent, PaginationEvent } from '../../display/pagination/pagination';
 import { DatePipe } from '@angular/common';
 import { StatusBadgeComponent } from '../../feedback/status-badge/status-badge';
-import { SortableTableDirective, TableSortEvent } from './base-table/sortable-table';
 import { FormsModule, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { BaseControlValueAccessor } from '../../../core/base-control-value-accessor';
 import { MultiSelectDropdownComponent } from '../../forms/select/multi-select-dropdown/multi-select-dropdown';
@@ -32,6 +31,7 @@ import { TextInputComponent } from '../../forms/text-input/text-input';
 import { DateInputComponent } from '../../forms/date/date-input/date-input';
 import { AppSvgIconComponent } from "../../misc/app-svg-icon/app-svg-icon";
 import { InputDateFormat } from '../../forms/date/date-format';
+import { SortableTableDirective, TableSortEvent } from './base-table/sortable-table';
 
 @Component({
   selector: 'ui-data-table',
@@ -81,10 +81,10 @@ export class DataTableComponent<T> extends BaseControlValueAccessor<TableStateEv
   pageChange = output<PaginationEvent>();
   sortChange = output<TableSortEvent>();
   stateChange = output<TableStateEvent>();
-  action = output<TableActionEvent>(); // Renamed from onActionPerformed for consistency (no 'on' prefix)
+  action = output<TableActionEvent>(); 
   filterChange = output<FilterEvent>();
-  rowClick = output<any>(); // Renamed from onRowClicked
-  rowSelectionChange = output<any[]>(); // Renamed from rowSelectionChange for clarity
+  rowClick = output<any>(); 
+  rowSelectionChange = output<any[]>();
 
   // Signals
   private internalPageSize: number = this.pageSize();
