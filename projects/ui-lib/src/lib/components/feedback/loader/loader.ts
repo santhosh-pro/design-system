@@ -1,19 +1,15 @@
-import {Injectable, signal} from '@angular/core';
-import {Observable} from "rxjs";
-
-@Injectable({
-  providedIn: 'root'
+import {Component, inject} from '@angular/core';
+import { LoaderService } from './loader-store';
+import { SpinnerComponent } from '../spinner/spinner';
+@Component({
+  selector: 'app-loader',
+  standalone: true,
+  imports: [
+    SpinnerComponent
+  ],
+  templateUrl: './loader.html',
 })
-export class LoaderService {
+export class LoaderComponent {
 
-  loadingCount = signal(0);
-
-  show() {
-    this.loadingCount.update((current) => current + 1);
-  }
-
-  hide() {
-    this.loadingCount.update((current) => current - 1);
-  }
-
+  loaderService = inject(LoaderService);
 }

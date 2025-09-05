@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import {ToastType} from "../../models/toast-type";
 import {ToastCloseButtonComponent} from "./toast-close-button/toast-close-button";
-import {ToastService} from "../../toast";
+import {ToastService} from "../../toast-store";
 import {NgClass} from "@angular/common";
 
 @Component({

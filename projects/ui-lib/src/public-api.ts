@@ -8,7 +8,7 @@ export * from './lib/components/display/pagination/pagination';
 
 // ========== FEEDBACK ==========
 export * from './lib/components/feedback/loader/loader';
-export * from './lib/components/feedback/loader/loader';
+export * from './lib/components/feedback/loader/loader-store';
 export * from './lib/components/feedback/no-data/no-data';
 export * from './lib/components/feedback/shimmer/shimmer';
 export * from './lib/components/feedback/spinner/spinner';
@@ -36,7 +36,7 @@ export * from './lib/components/forms/input-mask/ngx-mask.providers';
 // ========== MISC ==========
 export * from './lib/components/misc/toast/components/toast/toast';
 export * from './lib/components/misc/toast/components/toaster/toaster';
-export * from './lib/components/misc/toast/toast';
+export * from './lib/components/misc/toast/toast-store';
 
 export * from './lib/components/misc/app-svg-icon/lib/svg-icon';
 export * from './lib/components/misc/app-svg-icon/lib/svg-icon-registry';

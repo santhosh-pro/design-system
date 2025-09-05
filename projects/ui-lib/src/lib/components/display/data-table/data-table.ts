@@ -53,7 +53,6 @@ import { InputDateFormat } from '../../forms/date/date-format';
   ],
   providers: [provideNgxMask()],
   templateUrl: './data-table.html',
-  styles: []
 })
 export class DataTableComponent<T> extends BaseControlValueAccessor<TableStateEvent> implements OnInit, AfterViewInit, OnDestroy {
   @ContentChildren('filter') headerComponents!: QueryList<any>;
@@ -76,6 +75,7 @@ export class DataTableComponent<T> extends BaseControlValueAccessor<TableStateEv
   initialValue = input<TableStateEvent>({ searchText: '' });
   data = input<T[]>([]);
   totalCount = input<number>(0);
+  enablePagination = input(true);
 
   // Outputs
   pageChange = output<PaginationEvent>();

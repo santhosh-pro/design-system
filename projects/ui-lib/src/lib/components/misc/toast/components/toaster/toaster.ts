@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, input, OnInit} from '@angular/core';
 import {ToastComponent} from "../toast/toast";
 import {ToastEvent} from "../../models/toast-event";
-import {ToastService} from "../../toast";
+import {ToastService} from "../../toast-store";
 
 @Component({
   selector: 'ui-toaster',
@@ -10,7 +10,6 @@ import {ToastService} from "../../toast";
     ToastComponent
   ],
   templateUrl: './toaster.html',
-  styleUrl: './toaster.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ToasterComponent implements OnInit {
