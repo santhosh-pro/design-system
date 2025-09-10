@@ -11,7 +11,7 @@
 >
   <div class="flex flex-row flex-wrap items-center gap-2 w-full">
     <div class="flex items-center gap-2 grow">
-      <label [for]="fileInputId()" class="flex items-center gap-3 text-caption cursor-pointer grow">
+      <div class="flex items-center gap-3 text-caption cursor-pointer grow">
         <svg
           viewBox="0 0 24 24"
           class="h-[24px] w-[24px] flex-shrink-0 text-neutral-500"
@@ -27,19 +27,19 @@
         @if (hasRequiredValidator()) {
           <span class="text-caption text-error-500">*</span>
         }
-      </label>
+      </div>
     </div>
 
     @if (formControl.value) {
       <div class="flex gap-3 items-center">
         <span
           class="text-body2 text-info-500 px-2 underline cursor-pointer"
-          (click)="onViewFileClicked()"
+          (click)="onViewFileClicked($event)"
         >
           {{ getFileName() }}
         </span>
         @if (!uploading()) {
-          <div class="flex items-center gap-1 cursor-pointer" (click)="onRemoveFileClicked()">
+          <div class="flex items-center gap-1 cursor-pointer" (click)="onRemoveFileClicked($event)">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               class="h-[16px] w-[16px] text-error-500"
@@ -59,17 +59,17 @@
 
     @if (!uploading() && !markedUploadLater() && !formControl.value && enableUploadLater() && onHover()) {
       <p
-        (click)="onUploadLaterClick()"
-        class="cursor-pointer text-caption text-info-500 px-2 py-1 uppercase"
+        (click)="onUploadLaterClick($event)"
+        class="cursor-pointer text-caption text-info-600 px-3 py-1 font-medium rounded bg-info-100 hover:bg-info-200 transition-colors"
       >
         Upload Later
       </p>
     }
 
     @if (!uploading() && markedUploadLater()) {
-      <div class="flex items-center gap-1 rounded border border-warning-600 px-2 py-1">
+      <div class="flex items-center gap-1 rounded border border-warning-600 px-3 py-1 bg-warning-50">
         <ui-svg-icon src="assets/icons/info.svg" [size]="16" class="text-warning-600"></ui-svg-icon>
-        <p class="text-caption text-warning-600">Upload Later</p>
+        <p class="text-caption text-warning-600 font-medium">Upload Later</p>
       </div>
     }
 
@@ -89,6 +89,6 @@
 
 @if (hasErrors()) {
   <div class="mt-1">
-    <span class="text-caption text-red-500">{{ errorMessages() | humanizeFormMessages: errorMessages() }}</span>
+    <span class="text-caption text-error-500">{{ errorMessages() | humanizeFormMessages: errorMessages() }}</span>
   </div>
 }

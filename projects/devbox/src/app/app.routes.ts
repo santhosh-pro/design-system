@@ -10,6 +10,7 @@ import { TooltipDemo } from './tooltip-demo/tooltip-demo';
 import { SingleAutoCompleteDemo } from './single-auto-complete-demo/single-auto-complete-demo';
 import { DataTablePickerDemo } from './data-table-picker-demo/data-table-picker-demo';
 import { MultiSelectDropdown } from './multi-select-dropdown/multi-select-dropdown';
+import { SingleSelectDropdownDemo } from './single-select-dropdown-demo/single-select-dropdown-demo';
 
 export const routes: Routes = [
     {
@@ -60,5 +61,9 @@ export const routes: Routes = [
     {
         path: 'multi-select-dropdown',
         component: MultiSelectDropdown
+    },
+    {
+        path: 'single-select-dropdown',
+        component: SingleSelectDropdownDemo
     }
 ];

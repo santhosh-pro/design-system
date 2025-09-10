@@ -1,0 +1,75 @@
+<div class="p-4 space-y-8 max-w-3xl mx-auto">
+      <!-- Variant 1: Basic String Options -->
+      <div>
+        <h2 class="text-lg font-semibold mb-2">Basic String Dropdown</h2>
+        <ui-single-select-dropdown
+          label="Favorite Color"
+          [options]="stringOptions"
+          [formControl]="basicControl"
+          placeholder="Select a color"
+          [isFullWidth]="true"
+        ></ui-single-select-dropdown>
+      </div>
+
+      <!-- Variant 2: Object Options with Display/Value Properties -->
+      <div>
+        <h2 class="text-lg font-semibold mb-2">Object Dropdown with Value Property</h2>
+        <ui-single-select-dropdown
+          label="Select Fruit"
+          [options]="fruitOptions"
+          [formControl]="objectControl"
+          displayProperty="name"
+          valueProperty="id"
+          identifierProperty="id"
+          placeholder="Select a fruit"
+          [isFullWidth]="true"
+          [enableSearch]="true"
+        ></ui-single-select-dropdown>
+      </div>
+
+      <!-- Variant 3: Custom Display Template -->
+      <div>
+        <h2 class="text-lg font-semibold mb-2">Dropdown with Custom Template</h2>
+        <ui-single-select-dropdown
+          label="Select Item"
+          [options]="itemOptions"
+          [formControl]="templateControl"
+          displayTemplate="${name} (${category})"
+          valueProperty="id"
+          identifierProperty="id"
+          placeholder="Select an item"
+          [isFullWidth]="true"
+          [enableSearch]="true"
+        ></ui-single-select-dropdown>
+      </div>
+
+      <!-- Variant 4: Server-Side Search -->
+      <div>
+        <h2 class="text-lg font-semibold mb-2">Server-Side Search Dropdown</h2>
+        <ui-single-select-dropdown
+          label="Search Items"
+          [options]="serverOptions"
+          [formControl]="serverControl"
+          displayProperty="name"
+          valueProperty="id"
+          identifierProperty="id"
+          placeholder="Type to search..."
+          [isFullWidth]="true"
+          [enableSearch]="true"
+          (search)="onSearch($event)"
+        ></ui-single-select-dropdown>
+      </div>
+
+      <!-- Variant 5: Required Field with Error Space -->
+      <div>
+        <h2 class="text-lg font-semibold mb-2">Required Dropdown</h2>
+        <ui-single-select-dropdown
+          label="Required Selection"
+          [options]="stringOptions"
+          [formControl]="requiredControl"
+          placeholder="Select a color"
+          [isFullWidth]="true"
+          [showErrorSpace]="true"
+        ></ui-single-select-dropdown>
+      </div>
+    </div>

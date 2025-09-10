@@ -1,0 +1,7 @@
+ :host {
+        display: block;
+        font-family: Arial, sans-serif;
+      }
+      .space-y-8 > * + * {
+        margin-top: 2rem;
+      }

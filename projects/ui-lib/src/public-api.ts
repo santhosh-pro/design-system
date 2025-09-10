@@ -45,6 +45,7 @@ export * from './lib/components/forms/select/multi-selection-field/multi-selecti
 // Select Inputs
 export * from './lib/components/forms/select/single-selection-field/single-selection-field';
 export * from './lib/components/forms/select/multi-select-dropdown/multi-select-dropdown';
+export * from './lib/components/forms/select/single-select-dropdown/single-select-dropdown';
 
 // Input Mask
 export * from './lib/components/forms/input-mask/ngx-mask.providers';

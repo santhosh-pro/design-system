@@ -23,7 +23,7 @@ export class FileUploaderComponent
   markedUploadLater = input(false);
 
   // Outputs
-  fileSelected = output<File>();
+  fileSelect = output<File>();
   fileRemoved = output<void>();
   uploadLaterClicked = output<void>();
 
@@ -52,12 +52,13 @@ export class FileUploaderComponent
     if (files && files.length > 0) {
       const firstFile = files[0];
       this.onValueChange(firstFile); // Use inherited onValueChange
-      this.fileSelected.emit(firstFile);
+      this.fileSelect.emit(firstFile);
       this.markTouched(); // Use inherited markTouched
     }
   }
 
-  onRemoveFileClicked(): void {
+  onRemoveFileClicked(event: MouseEvent): void {
+    event.stopPropagation();
     if (this.isDisabled()) return;
 
     this.onValueChange(null); // Use inherited onValueChange
@@ -70,7 +71,8 @@ export class FileUploaderComponent
     }
   }
 
-  onViewFileClicked(): void {
+  onViewFileClicked(event: MouseEvent): void {
+    event.stopPropagation();
     const value = this.formControl?.value;
     if (!value) return;
 
@@ -125,7 +127,8 @@ export class FileUploaderComponent
     this.onHover.set(false);
   }
 
-  onUploadLaterClick(): void {
+  onUploadLaterClick(event: MouseEvent): void {
+    event.stopPropagation();
     if (!this.isDisabled()) {
       this.uploadLaterClicked.emit();
     }
