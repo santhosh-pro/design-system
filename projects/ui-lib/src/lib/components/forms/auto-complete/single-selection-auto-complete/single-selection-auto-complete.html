@@ -1,0 +1,102 @@
+ <ui-base-input
+      [title]="label()"
+      [fullWidth]="fullWidth()"
+      [isRequiredField]="hasRequiredValidator()"
+      class="w-full"
+    >
+      <div #inputContainer input class="relative w-full">
+        <input
+          #searchInput
+          type="text"
+          class="w-full px-4 py-2 text-sm border border-gray-300 rounded-md  focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 disabled:bg-gray-100 disabled:cursor-not-allowed placeholder-gray-400"
+          [ngClass]="{'border-red-500 ring-red-500': hasErrors()}"
+          [disabled]="isDisabled()"
+          [value]="searchText()"
+          (input)="onSearchInput($event)"
+          (blur)="markTouched()"
+          (keydown)="handleKeydown($event)"
+          placeholder="{{ placeholder() }}"
+          aria-autocomplete="list"
+          aria-controls="autocomplete-list"
+          aria-expanded="false"
+        />
+        
+        <ng-template
+          cdkConnectedOverlay
+          [cdkConnectedOverlayOrigin]="inputContainer"
+          [cdkConnectedOverlayOpen]="showDropdown()"
+          [cdkConnectedOverlayHasBackdrop]="true"
+          [cdkConnectedOverlayBackdropClass]="['bg-black/20']"
+          (overlayOutsideClick)="onClickOutside()"
+          [cdkConnectedOverlayPositions]="[
+            { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 2 },
+            { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom', offsetY: -2 }
+          ]"
+          [cdkConnectedOverlayScrollStrategy]="scrollStrategy"
+          [cdkConnectedOverlayWidth]="dropdownWidth()"
+        >
+          <div
+            #dropdownListContainer
+            class="bg-white rounded-md shadow-md ring-1 ring-gray-200 max-h-52 overflow-hidden z-50"
+            role="listbox"
+            id="autocomplete-list"
+          >
+            <div
+              #dropdownList
+              class="overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+            >
+              @for (item of visibleItems(); track item; let i = $index) {
+                <div
+                  class="flex items-center px-4 py-2 gap-3 cursor-pointer hover:bg-gray-50 transition-colors"
+                  [ngStyle]="itemStyle()"
+                  (click)="onItemClick(item)"
+                  [ngClass]="{
+                    'bg-blue-50': isSelected()(item),
+                    'bg-gray-100': highlightedIndex() === i
+                  }"
+                  role="option"
+                  [attr.aria-selected]="isSelected()(item)"
+                  tabindex="-1"
+                >
+                  @if (icon()(item)) {
+                    @switch (iconType()(item)) {
+                      @case ('url') {
+                        <img
+                          class="object-cover h-6 w-6 rounded-full"
+                          [src]="icon()(item) || 'assets/images/placeholder.png'"
+                          [alt]="displayText()(item) || 'Item icon'"
+                          loading="lazy"
+                        />
+                      }
+                      @case ('svg') {
+                        <ui-svg-icon
+                          [src]="icon()(item)!"
+                          [size]="18"
+                          [ngStyle]="{'color': itemIconColor()(item)}"
+                        />
+                      }
+                    }
+                  }
+
+                  <span class="text-sm text-gray-800 truncate flex-1">
+                    {{ displayText()(item) }}
+                  </span>
+                </div>
+              } @empty {
+                <span class="block px-4 py-2 text-sm text-gray-500 select-none" role="option">
+                  {{ noDataMessage() }}
+                </span>
+              }
+            </div>
+          </div>
+        </ng-template>
+      </div>
+
+      <div error>
+        @if (hasErrors()) {
+          <p class="text-xs text-red-600 mt-1">
+            {{ formControl.errors ? (formControl.errors | humanizeFormMessages: errorMessages()) : '' }}
+          </p>
+        }
+      </div>
+    </ui-base-input>

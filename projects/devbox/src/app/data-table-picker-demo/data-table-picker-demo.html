@@ -1,0 +1,90 @@
+<div class="container mx-auto p-6 max-w-4xl">
+      <h1 class="text-2xl font-bold mb-6">Data Table Multi-Select Demo</h1>
+      
+      <form [formGroup]="demoForm" class="space-y-6">
+        <!-- Users Multi-Select -->
+        <div class="bg-white p-4 rounded-lg shadow">
+          <h2 class="text-lg font-semibold mb-4">Select Users</h2>
+          <ui-data-table-multi-select
+            formControlName="selectedUsers"
+            [label]="'Users'"
+            [placeholder]="'Choose users...'"
+            [columns]="userColumns()"
+            [data]="users()"
+            [valueProperty]="'id'"
+            [displayProperty]="'name'"
+            [fullWidth]="true"
+            [enablePagination]="true"
+            [pageSize]="5"
+            [enableSearch]="true"
+            [showErrorSpace]="true"
+            (valueChange)="onUsersChanged($event)"
+          />
+          
+          <div class="mt-2 text-sm text-gray-600">
+            Selected {{ selectedUsersCount() }} user(s)
+          </div>
+        </div>
+
+        <!-- Departments Multi-Select -->
+        <div class="bg-white p-4 rounded-lg shadow">
+          <h2 class="text-lg font-semibold mb-4">Select Departments</h2>
+          <ui-data-table-multi-select
+            formControlName="selectedDepartments"
+            [label]="'Departments'"
+            [placeholder]="'Choose departments...'"
+            [columns]="departmentColumns()"
+            [data]="departments()"
+            [totalCount]="60"
+            [valueProperty]="'id'"
+            [displayProperty]="'name'"
+            [fullWidth]="true"
+            [enablePagination]="false"
+            [enableSearch]="true"
+            [showErrorSpace]="true"
+            [enablePagination]="true"
+            
+            (tableStateChange)="onDepartmentTableStateChanged($event)"
+            (valueChange)="onDepartmentsChanged($event)"
+          />
+          
+          <div class="mt-2 text-sm text-gray-600">
+            Selected {{ selectedDepartmentsCount() }} department(s)
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex gap-4 pt-4">
+          <button
+            type="button"
+            (click)="loadSampleSelections()"
+            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          >
+            Load Sample Selections
+          </button>
+          
+          <button
+            type="button"
+            (click)="clearAllSelections()"
+            class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
+          >
+            Clear All
+          </button>
+          
+          <button
+            type="submit"
+            [disabled]="demoForm.invalid"
+            (click)="onSubmit()"
+            class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors disabled:bg-gray-300"
+          >
+            Submit Form
+          </button>
+        </div>
+      </form>
+
+      <!-- Debug Output -->
+      <div class="mt-8 bg-gray-100 p-4 rounded-lg">
+        <h3 class="text-lg font-semibold mb-2">Form Values (Debug)</h3>
+        <pre class="text-sm">{{ getFormValues() | json }}</pre>
+      </div>
+    </div>

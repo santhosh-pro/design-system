@@ -1,0 +1,43 @@
+<div class="flex flex-col rounded-3xl h-full overflow-hidden bg-white relative" (click)="$event.stopPropagation()">
+  <div class="flex justify-center items-center px-3 py-6 border-b border-neutral-200">
+    <span class="text-body1">{{ dialogData.title }}</span>
+    <div
+      class="absolute right-3 rounded-lg p-2 border border-neutral-300 cursor-pointer hover:bg-neutral-50"
+      (click)="onClose(); $event.stopPropagation()"
+    >
+      <svg class="w-[18px] h-[18px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+        <path
+          d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z"
+          fill="currentColor"
+        />
+      </svg>
+    </div>
+  </div>
+
+  <div class="flex-1 min-h-0 px-5 py-4 overflow-y-auto">
+    <ui-data-table
+      [columnGroups]="dialogData.columns"
+      [data]="dialogData.data"
+      [totalCount]="dialogData.totalCount"
+      [enablePagination]="dialogData.enablePagination"
+      [pageSize]="dialogData.pageSize"
+      [enableSearch]="dialogData.enableSearch"
+      [enableRowSelection]="true"
+      [defaultSelectedKeys]="selectedItems" 
+      [rowSelectionKey]="dialogData.valueProperty"
+      (rowSelectionChange)="onSelectionChange($event)"
+      (stateChange)="onTableStateChanged($event)"
+    ></ui-data-table>
+  </div>
+
+  <div class="border-t px-4 py-4">
+    <div class="w-full flex justify-end gap-2">
+      <button (click)="onCancel()" class="px-4 py-2 bg-neutral-200 text-neutral-800 rounded-md hover:bg-neutral-300 transition-colors">
+        Cancel
+      </button>
+      <button (click)="onSubmit()" class="px-4 py-2 bg-primary-500 text-white rounded-md hover:bg-primary-600 transition-colors">
+        Submit
+      </button>
+    </div>
+  </div>
+</div>

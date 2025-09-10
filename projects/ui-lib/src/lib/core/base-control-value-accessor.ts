@@ -9,11 +9,11 @@ export abstract class BaseControlValueAccessor<T> implements ControlValueAccesso
   errorMessages = input<{ [key: string]: string }>({});
 
   // Outputs
-  valueChange = output<T>(); // Renamed from valueChanged to align with [property]Change
+  valueChange = output<T>();
 
   // Signals
-  isDisabled = signal(false); // Renamed from disabled to follow boolean naming
-  isTouched = signal(false); // Renamed from touched to follow boolean naming
+  isDisabled = signal(false);
+  isTouched = signal(false);
   formControl = new FormControl<T | null>(null);
 
   // Computed
@@ -22,6 +22,8 @@ export abstract class BaseControlValueAccessor<T> implements ControlValueAccesso
   // Injected NgControl
   private ngControl = inject(NgControl, { optional: true, self: true });
 
+  // Flag to prevent recursive calls
+  private isWritingValue = false;
 
   // Abstract method for subclasses to implement
   protected abstract onValueReady(value: T | null): void;
@@ -40,10 +42,16 @@ export abstract class BaseControlValueAccessor<T> implements ControlValueAccesso
 
   // ControlValueAccessor methods
   writeValue(value: T | null): void {
-    if (value !== this.formControl.value) {
-      this.formControl.setValue(value, { emitEvent: false });
+    if (this.isWritingValue) return; // Prevent recursive calls
+    this.isWritingValue = true;
+    try {
+      if (value !== this.formControl.value) {
+        this.formControl.setValue(value, { emitEvent: false });
+      }
+      this.onValueReady(value);
+    } finally {
+      this.isWritingValue = false;
     }
-    this.onValueReady(value);
   }
 
   registerOnChange(fn: (value: T | null) => void): void {
@@ -84,6 +92,6 @@ export abstract class BaseControlValueAccessor<T> implements ControlValueAccesso
   }
 
   // ControlValueAccessor callbacks
-  private onChange: (value: T | null) => void = () => { };
-  private onTouched: () => void = () => { };
+  private onChange: (value: T | null) => void = () => {};
+  private onTouched: () => void = () => {};
 }

@@ -2,22 +2,14 @@
   <!-- Main Content -->
   <div class="space-y-12 space-x-2 w-[1150px]">
     <!-- Demo 1: Basic Table with Sorting and Pagination -->
-    <app-demo-card
-      title="Basic Data Table"
-      description="A simple data table with sorting, pagination, and badge columns."
-      [files]="basicFiles()">
-      <ui-data-table
-    [columnGroups]="nestedColumns()"
-    [data]="nestedData()"
-    [enableRowSelection]="true"
-    [rowSelectionKey]="'id'"
-    [expandableComponent]="ExpandRowDemo"
-    [pageSize]="10"
-    [totalCount]="nestedData().length"
-    [enableSearch]="true"
-    [formControl]="basicControl"
-    (stateChange)="onTableStateChanged($event)">
-  </ui-data-table>
+    <app-demo-card title="Basic Data Table"
+      description="A simple data table with sorting, pagination, and badge columns." [files]="basicFiles()">
+      <ui-data-table [columnGroups]="nestedColumns()" [data]="nestedData()" [enableRowSelection]="true"
+        [rowSelectionKey]="'id'" [footerComponent]="ExpandRowDemo" [enablePagination]="false" [pageSize]="10"
+        [totalCount]="nestedData().length" [enableSearch]="true" [formControl]="basicControl"
+        (rowSelectionChange)="onRowSelectionChange($event)"
+        (stateChange)="onTableStateChanged($event)">
+      </ui-data-table>
       <p class="text-sm text-gray-600 mt-2">
         {{selectedRows | json}}
         Table State: {{ basicControl.value | json }}
@@ -28,9 +20,7 @@
 
   <!-- Fixed and Scrollable Sidebar -->
   <div class="lg:w-80 lg:fixed lg:top-8 lg:right-8 lg:max-h-[calc(100vh-4rem)] lg:overflow-y-auto">
-    <app-doc-io-list
-      class="block w-full bg-white shadow-lg p-4 rounded-lg"
-      [items]="[
+    <app-doc-io-list class="block w-full bg-white shadow-lg p-4 rounded-lg" [items]="[
         { title: 'columnGroups', desc: 'Array of column groups defining table structure', type: 'input' },
         { title: 'pageSize', desc: 'Number of rows per page', type: 'input' },
         { title: 'enableHorizontallyScrollable', desc: 'Enables horizontal scrolling', type: 'input' },

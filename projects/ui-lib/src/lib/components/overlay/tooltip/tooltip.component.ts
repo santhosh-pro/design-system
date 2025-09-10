@@ -1,27 +1,33 @@
-import {Component, OnInit} from '@angular/core';
-import {NgClass} from "@angular/common";
-import {TooltipPosition, TooltipTheme} from "./tooltip.enums";
+import { Component, input, computed } from '@angular/core';
+import { NgClass } from '@angular/common';
+import { TooltipPosition, TooltipTheme } from './tooltip.enums';
 
 @Component({
   selector: 'app-tooltip',
   standalone: true,
-  imports: [
-    NgClass
-  ],
-  templateUrl: './tooltip.component.html',
-  styleUrl: './tooltip.component.scss'
+  imports: [NgClass],
+  template: `
+    <div class="tooltip"
+         [ngClass]="tooltipClasses()"
+         [class.tooltip--visible]="visible()"
+         [style.left]="left() + 'px'"
+         [style.top]="top() + 'px'">
+      {{tooltip()}}
+    </div>
+  `,
+  styleUrl: './tooltip.component.css',
 })
-export class TooltipComponent implements OnInit {
-  tooltipPosition: TooltipPosition = TooltipPosition.DEFAULT;
-  tooltipTheme: TooltipTheme = TooltipTheme.DEFAULT;
-  tooltip = '';
-  left = 0;
-  top = 0;
-  visible = false;
+export class TooltipComponent {
+  tooltipPosition = input<TooltipPosition>(TooltipPosition.DEFAULT);
+  tooltipTheme = input<TooltipTheme>(TooltipTheme.DEFAULT);
+  tooltip = input<string>('');
+  left = input<number>(0);
+  top = input<number>(0);
+  visible = input<boolean>(false);
 
-  constructor() {
-  }
-
-  ngOnInit(): void {
-  }
+  // Computed signal for CSS classes
+  tooltipClasses = computed(() => [
+    `tooltip--${this.tooltipPosition()}`,
+    `tooltip--${this.tooltipTheme()}`
+  ]);
 }

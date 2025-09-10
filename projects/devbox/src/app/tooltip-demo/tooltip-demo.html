@@ -1,0 +1,75 @@
+<div class="p-10 space-y-8">
+  <h1 class="text-2xl font-bold">Tooltip Demo</h1>
+
+  <!-- Example with default tooltip (above, dark theme) -->
+  <div class="flex items-center space-x-4">
+    <button
+      class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+      tooltip="Default tooltip (above, dark)"
+      >
+      Hover me (Default)
+    </button>
+  </div>
+
+  <!-- Example with below position and light theme -->
+  <div class="flex items-center space-x-4">
+    <button
+      class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+      tooltip="Tooltip below with light theme"
+      [toolTipPosition]="TooltipPosition.BELOW"
+      [theme]="TooltipTheme.LIGHT"
+      >
+      Hover me (Below, Light)
+    </button>
+  </div>
+
+  <!-- Example with right position and dark theme with delay -->
+  <div class="flex items-center space-x-4">
+    <button
+      class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600"
+      tooltip="Tooltip on right with 3000ms show delay"
+      [toolTipPosition]="TooltipPosition.RIGHT"
+      [theme]="TooltipTheme.DARK"
+      [showDelay]="3000"
+     >
+      Hover me (Right, Delayed)
+    </button>
+  </div>
+
+  <!-- Example with left position -->
+  <div class="flex items-center space-x-4">
+    <button
+      class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+      tooltip="Tooltip on the left"
+      [toolTipPosition]="TooltipPosition.LEFT"
+      [theme]="TooltipTheme.DARK"
+      >
+      Hover me (Left)
+    </button>
+  </div>
+
+  <!-- Example with dynamic position (follows mouse) -->
+  <div class="flex items-center space-x-4">
+    <button
+      class="px-4 py-2 bg-yellow-500 text-black rounded hover:bg-yellow-600"
+      tooltip="Dynamic tooltip follows your mouse!"
+      [toolTipPosition]="TooltipPosition.DYNAMIC"
+      [theme]="TooltipTheme.LIGHT"
+      >
+      Hover me (Dynamic)
+    </button>
+  </div>
+
+  <!-- Example with hide delay -->
+  <div class="flex items-center space-x-4">
+    <button
+      class="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600"
+      tooltip="This tooltip has a 1000ms hide delay"
+      [toolTipPosition]="TooltipPosition.ABOVE"
+      [theme]="TooltipTheme.DARK"
+      [hideDelay]="1000"
+      >
+      Hover me (Hide Delay)
+    </button>
+  </div>
+</div>

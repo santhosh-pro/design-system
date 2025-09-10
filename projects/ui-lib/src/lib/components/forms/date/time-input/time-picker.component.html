@@ -1,0 +1,134 @@
+<ui-base-input>
+  <div input class="relative flex items-center w-full text-neutral-400 bg-white shadow-1 rounded-md">
+    @if (iconSrc()) {
+      <ui-svg-icon [size]="18" [src]="iconSrc()!" class="absolute pointer-events-none ml-3 text-neutral-400"></ui-svg-icon>
+    }
+
+    <input
+      [mask]="'00:00'"
+      [showMaskTyped]="isFocused()"
+      class="h-[46px] placeholder-neutral-400 text-black rounded-md border-none outline-none focus:border-none ring-1 ring-neutral-300 focus:ring-primary-500 focus:ring-2 transition-all duration-300"
+      [class.text-neutral-400]="isDisabled()"
+      [class.disabled-placeholder]="isDisabled()"
+      [value]="getFormattedHours() + ':' + getFormattedMinutes()"
+      [ngClass]="getClass()"
+      [placeholder]="'HH:MM'"
+      (focus)="onFocus()"
+      (blur)="onBlur()"
+      (input)="onInputChange($event)"
+    />
+
+    @if (showTimePickerIcon()) {
+      <div #timePickerIcon (click)="onTimePickerIconClick()" class="absolute right-2 p-2 flex justify-center items-center hover:bg-neutral-100 rounded-full">
+        <svg class="w-[18px] h-[18px] text-neutral-500" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M12 20C16.4 20 20 16.4 20 12C20 7.6 16.4 4 12 4C7.6 4 4 7.6 4 12C4 16.4 7.6 20 12 20ZM12 2C17.5 2 22 6.5 22 12C22 17.5 17.5 22 12 22C6.5 22 2 17.5 2 12C2 6.5 6.5 2 12 2ZM17 13.9L16.3 15.2L11 12.3V7H12.5V11.4L17 13.9Z" fill="currentColor"/>
+        </svg>
+      </div>
+    }
+
+    @if (isTimePickerIconReady() && timePickerIcon) {
+      <ng-template
+        cdkConnectedOverlay
+        [cdkConnectedOverlayOrigin]="timePickerIcon"
+        [cdkConnectedOverlayOpen]="isOpen()"
+        [cdkConnectedOverlayBackdropClass]="['bg-black', 'bg-opacity-20']"
+        [cdkConnectedOverlayPositions]="[
+          { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top' },
+          { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom' }
+        ]"
+        [cdkConnectedOverlayScrollStrategy]="scrollStrategy"
+        [cdkConnectedOverlayOffsetY]="10"
+        (overlayOutsideClick)="onClickOutside()"
+      >
+        <div class="bg-white p-4 rounded-md shadow-lg">
+          <div class="flex flex-col gap-3">
+            <div class="flex items-center">
+              <ui-checkbox [title]="'24H'" [value]="is24HourFormat()" (valueChange)="toggle24HourFormat($event)"></ui-checkbox>
+            </div>
+
+            <div class="flex items-center gap-6">
+              <!-- Hour Controls -->
+              <div class="flex flex-col items-center gap-2">
+                <div (click)="onHourUpClicked()" class="p-2 rounded-full text-neutral-600 hover:bg-neutral-100 transition-all duration-300">
+                  <svg class="size-[24px] cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+                    <path d="M7.41 15.41L12 10.83L16.59 15.41L18 14L12 8L6 14L7.41 15.41Z" fill="currentColor"/>
+                  </svg>
+                </div>
+                <input
+                  class="text-center text-body2 border-none outline-none appearance-none w-[30px] select-none"
+                  [value]="getFormattedHours()"
+                  (blur)="validateHours($event)"
+                  type="text"
+                />
+                <div (click)="onHourDownClicked()" class="p-2 rounded-full text-neutral-600 hover:bg-neutral-100 transition-all duration-300">
+                  <svg class="size-[24px] cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+                    <path d="M7.41 8.58L12 13.17L16.59 8.58L18 10L12 16L6 10L7.41 8.58Z" fill="currentColor"/>
+                  </svg>
+                </div>
+              </div>
+
+              <span class="text-body1 select-none">:</span>
+
+              <!-- Minute Controls -->
+              <div class="flex flex-col items-center gap-2">
+                <div (click)="onMinuteUpClicked()" class="p-2 rounded-full text-neutral-600 hover:bg-neutral-100 transition-all duration-300">
+                  <svg class="size-[24px] cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+                    <path d="M7.41 15.41L12 10.83L16.59 15.41L18 14L12 8L6 14L7.41 15.41Z" fill="currentColor"/>
+                  </svg>
+                </div>
+                <input
+                  class="text-center text-body2 border-none outline-none appearance-none w-[30px] select-none"
+                  [value]="getFormattedMinutes()"
+                  (blur)="validateMinutes($event)"
+                  type="text"
+                />
+                <div (click)="onMinuteDownClicked()" class="p-2 rounded-full text-neutral-600 hover:bg-neutral-100 transition-all duration-300">
+                  <svg class="size-[24px] cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+                    <path d="M7.41 8.58L12 13.17L16.59 8.58L18 10L12 16L6 10L7.41 8.58Z" fill="currentColor"/>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- AM/PM Toggle -->
+              @if (!is24HourFormat()) {
+                <div class="flex gap-3">
+                  <span
+                    class="px-2 py-1 rounded-md text-blue-500 text-caption cursor-pointer hover:bg-neutral-100 select-none"
+                    [ngClass]="period() === 'AM' ? 'bg-primary-500 hover:bg-primary-500 text-white' : ''"
+                    (click)="togglePeriod()"
+                  >
+                    AM
+                  </span>
+                  <span
+                    class="px-2 py-1 rounded-md text-blue-500 text-caption cursor-pointer hover:bg-neutral-100 select-none"
+                    [ngClass]="period() === 'PM' ? 'bg-primary-500 hover:bg-primary-500 text-white' : ''"
+                    (click)="togglePeriod()"
+                  >
+                    PM
+                  </span>
+                </div>
+              }
+            </div>
+
+            @if (enableApplyActions()) {
+              <div class="flex items-center justify-between">
+                <button class="py-2 text-primary-500 rounded-md transition-all duration-300" (click)="onCancel()">Cancel</button>
+                <button class="px-4 py-2 text-white bg-primary-500 rounded-md hover:bg-primary-600 transition-all duration-300" (click)="onApply()">Apply</button>
+              </div>
+            }
+          </div>
+        </div>
+      </ng-template>
+    }
+  </div>
+</ui-base-input>
+
+@if (hasErrors()) {
+  <div class="mb-3">
+    <span class="text-caption text-red-500">{{ hasErrors | humanizeFormMessages: errorMessages() }}</span>
+  </div>
+} @else if (showErrorSpace()) {
+  <div class="mb-3">
+    <span class="text-caption text-transparent">.</span>
+  </div>
+}

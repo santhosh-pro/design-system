@@ -1,0 +1,27 @@
+<div class="container">
+  <h2>Time Picker Demo</h2>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="time">Select Time</label>
+      <ui-time-picker
+        formControlName="time"
+        [iconSrc]="'/assets/icons/clock.svg'"
+        [fullWidth]="true"
+        [showErrorSpace]="true"
+        [showTimePickerIcon]="true"
+        (valueChanged)="onTimeChange($event)"
+        [errorMessages]="{
+          required: 'Please select a time'
+        }"
+      ></ui-time-picker>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+  </form>
+
+  <div class="selected-time">
+    <h3>Selected Time:</h3>
+    <p>{{ getFormattedTime() }}</p>
+  </div>
+</div>

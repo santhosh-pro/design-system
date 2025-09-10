@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { NoDataTableComponent } from './no-data-table';
+import { SelectDialog } from './select-dialog';
 
-describe('NoDataTableComponent', () => {
-  let component: NoDataTableComponent;
-  let fixture: ComponentFixture<NoDataTableComponent>;
+describe('SelectDialog', () => {
+  let component: SelectDialog;
+  let fixture: ComponentFixture<SelectDialog>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NoDataTableComponent]
+      imports: [SelectDialog]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(NoDataTableComponent);
+    fixture = TestBed.createComponent(SelectDialog);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

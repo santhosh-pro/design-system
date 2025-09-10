@@ -6,7 +6,6 @@ import {TableActionEvent} from '../data-table';
   standalone: true,
   imports: [],
   templateUrl: './table-custom.html',
-  styleUrl: './table-custom.scss'
 })
 export class TableCustomComponent<T> {
   @Input() rowData!: T;

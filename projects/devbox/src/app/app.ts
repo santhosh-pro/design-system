@@ -24,11 +24,13 @@ export class App {
         { label: 'Checkbox', href: '#/components/forms/checkbox' },
         { label: 'Select', 
           subMenus:[
-            { label: 'Multi-Select Dropdown', href: 'mul-select' },
+            { label: 'Multi-Select Dropdown', href: 'multi-select' },
             { label: 'Single Selection Field', href: 'single-select' },
           ]
          },
         { label: 'Text Input', href: '#/components/forms/text-input' },
+        {label: 'file Upload', href: 'file-upload'},
+        {label: 'Time Input', href: 'time-picker'},
         {
           label: 'Date',
           subMenus: [
@@ -51,6 +53,7 @@ export class App {
       label: 'Overlay / Dialog',
       subMenus: [
         { label: 'Overlay', href: 'overlay' },
+        { label: 'Tooltip', href: 'tooltip' },
         { label: 'Context Menu Button', href: '#/components/overlay/context-menu-button' },
         { label: 'Context Menu Icon', href: '#/components/overlay/context-menu-icon' },
       ],

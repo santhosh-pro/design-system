@@ -24,14 +24,14 @@ import { debounceTime } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { resolveTemplateWithObject } from '../../../core/template-resolver';
 import { provideNgxMask } from '../../forms/input-mask/ngx-mask.providers';
-import { DynamicRendererComponent } from '../../misc/dynamic-renderer/dynamic-renderer';
+import { DynamicRendererComponent } from './dynamic-renderer';
 import { ContextMenuButtonAction, ContextMenuButtonComponent } from '../../overlay/context-menu-button/context-menu-button';
 import { CheckboxComponent } from '../../forms/checkbox/checkbox';
 import { TextInputComponent } from '../../forms/text-input/text-input';
 import { DateInputComponent } from '../../forms/date/date-input/date-input';
 import { AppSvgIconComponent } from "../../misc/app-svg-icon/app-svg-icon";
 import { InputDateFormat } from '../../forms/date/date-format';
-import { SortableTableDirective, TableSortEvent } from './base-table/sortable-table';
+import { SortableTableDirective, TableSortEvent } from './sortable-table';
 
 @Component({
   selector: 'ui-data-table',
@@ -76,6 +76,7 @@ export class DataTableComponent<T> extends BaseControlValueAccessor<TableStateEv
   data = input<T[]>([]);
   totalCount = input<number>(0);
   enablePagination = input(true);
+  footerComponent = input<any>();
 
   // Outputs
   pageChange = output<PaginationEvent>();
@@ -85,6 +86,7 @@ export class DataTableComponent<T> extends BaseControlValueAccessor<TableStateEv
   filterChange = output<FilterEvent>();
   rowClick = output<any>(); 
   rowSelectionChange = output<any[]>();
+  footerAction = output<TableActionEvent>();
 
   // Signals
   private internalPageSize: number = this.pageSize();
@@ -360,28 +362,32 @@ export class DataTableComponent<T> extends BaseControlValueAccessor<TableStateEv
   }
 
   onRowSelectionChange(selected: boolean | any, item: any): void {
-    const id = this.getItemId(item);
-    let updatedIds: any[];
-    if (selected) {
-      updatedIds = [...this.selectedIds(), id];
-    } else {
-      updatedIds = this.selectedIds().filter(selectedId => selectedId !== id);
-    }
-    this.selectedIds.set(updatedIds);
-    this.rowSelectionChange.emit(this.selectedIds());
+  const id = this.getItemId(item);
+  let updatedIds: any[];
+  if (selected) {
+    updatedIds = [...this.selectedIds(), id];
+  } else {
+    updatedIds = this.selectedIds().filter(selectedId => selectedId !== id);
   }
+  this.selectedIds.set(updatedIds);
+  this.rowSelectionChange.emit(this.selectedIds());
+}
 
   onSelectAllRows(selected: boolean | any): void {
-    let updatedIds: any[];
-    if (selected) {
-      const newIds = this.data().map((item: any) => this.getItemId(item)).filter((id: any) => !this.selectedIds().includes(id));
-      updatedIds = [...this.selectedIds(), ...newIds];
-    } else {
-      const currentPageIds = this.data().map((item: any) => this.getItemId(item));
-      updatedIds = this.selectedIds().filter(id => !currentPageIds.includes(id));
-    }
-    this.selectedIds.set(updatedIds);
-    this.rowSelectionChange.emit(this.selectedIds());
+  let updatedIds: any[];
+  if (selected) {
+    const newIds = this.data().map((item: any) => this.getItemId(item)).filter((id: any) => !this.selectedIds().includes(id));
+    updatedIds = [...this.selectedIds(), ...newIds];
+  } else {
+    const currentPageIds = this.data().map((item: any) => this.getItemId(item));
+    updatedIds = this.selectedIds().filter(id => !currentPageIds.includes(id));
+  }
+  this.selectedIds.set(updatedIds);
+  this.rowSelectionChange.emit(this.selectedIds());
+}
+
+  onFooterActionPerformed(event: TableActionEvent): void {
+    this.footerAction.emit(event);
   }
 
   // Helper methods
@@ -599,25 +605,7 @@ getColumnWidthClass(node: ColumnNode): string {
     case 'actions':
       return 'w-32 min-w-[128px] max-w-[128px]'; // Increased width for better button spacing
     default:
-      if (column.key === 'id') {
-        return 'w-16 min-w-[64px] max-w-[80px]';
-      } else if (column.key === 'name' || column.title?.toLowerCase().includes('name')) {
-        return 'w-48 min-w-[200px] max-w-[300px]';
-      } else if (column.key === 'email' || column.title?.toLowerCase().includes('email')) {
-        return 'w-56 min-w-[220px] max-w-[280px]';
-      } else if (column.key === 'phone' || column.title?.toLowerCase().includes('phone')) {
-        return 'w-40 min-w-[140px] max-w-[160px]';
-      } else if (column.key === 'age' || column.title?.toLowerCase().includes('age')) {
-        return 'w-20 min-w-[80px] max-w-[80px]';
-      } else if (column.type === 'badge' || column.title?.toLowerCase().includes('status')) {
-        return 'w-32 min-w-[120px] max-w-[150px]';
-      } else if (column.key === 'role' || column.title?.toLowerCase().includes('role')) {
-        return 'w-32 min-w-[100px] max-w-[150px]';
-      } else if (column.title?.toLowerCase().includes('city')) {
-        return 'w-36 min-w-[120px] max-w-[180px]';
-      } else {
         return 'w-40 min-w-[120px] max-w-[200px]';
-      }
   }
 }
 
@@ -751,9 +739,9 @@ getTableStyles(): string {
   }
 
   isRowSelected(item: any): boolean {
-    const id = this.getItemId(item);
-    return this.selectedIds().includes(id);
-  }
+  const id = this.getItemId(item);
+  return this.selectedIds().includes(id);
+}
 
   private getItemId(item: any): any {
     const key = this.rowSelectionKey();
@@ -844,7 +832,7 @@ getTableStyles(): string {
   }
 }
 
-// Interfaces and types (unchanged, but placed at the bottom for clarity)
+// Interfaces and types
 export type ColumnNode = ColumnDef | ColumnGroup;
 
 export interface ColumnGroup {
