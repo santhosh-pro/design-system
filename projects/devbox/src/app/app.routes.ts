@@ -9,6 +9,7 @@ import { MultiSelectFieldDemo } from './multi-select-field-demo/multi-select-fie
 import { TooltipDemo } from './tooltip-demo/tooltip-demo';
 import { SingleAutoCompleteDemo } from './single-auto-complete-demo/single-auto-complete-demo';
 import { DataTablePickerDemo } from './data-table-picker-demo/data-table-picker-demo';
+import { MultiSelectDropdown } from './multi-select-dropdown/multi-select-dropdown';
 
 export const routes: Routes = [
     {
@@ -55,5 +56,9 @@ export const routes: Routes = [
     {
         path: 'data-table-picker',
         component: DataTablePickerDemo
+    },
+    {
+        path: 'multi-select-dropdown',
+        component: MultiSelectDropdown
     }
 ];

@@ -1,0 +1,87 @@
+<div class="container">
+  <!-- Standard Appearance -->
+  <div class="section">
+    <h2 class="section-title">Standard Appearance</h2>
+    <ui-multi-select-dropdown
+      label="Select Fruits"
+      [options]="options"
+      [formControl]="standardControl"
+      [displayProperty]="'name'"
+      [valueProperty]="'value'"
+      [identifierProperty]="'id'"
+      placeholder="Select fruits"
+      [isFullWidth]="true"
+      [enableSearch]="true"
+      [showErrorSpace]="true"
+      [addActionLabel]="'Add New Fruit'"
+      (addAction)="onAddAction()"
+      (valueChange)="onStandardChange($event)"
+      [appearance]="MultiSelectDropdownAppearance.standard"
+    ></ui-multi-select-dropdown>
+  </div>
+
+  <!-- CSV Appearance -->
+  <div class="section">
+    <h2 class="section-title">CSV Appearance</h2>
+    <ui-multi-select-dropdown
+      label="Select Fruits (CSV)"
+      [options]="options"
+      [formControl]="csvControl"
+      [displayProperty]="'name'"
+      [valueProperty]="'id'"
+      [identifierProperty]="'id'"
+      placeholder="Select fruits"
+      [isFullWidth]="true"
+      [enableSearch]="true"
+      [showErrorSpace]="true"
+      (valueChange)="onCsvChange($event)"
+      [appearance]="MultiSelectDropdownAppearance.csv"
+    ></ui-multi-select-dropdown>
+  </div>
+
+<pre>{{csvControl.value | json}}</pre>
+
+  <!-- Chips Appearance -->
+  <div class="section">
+    <h2 class="section-title">Chips Appearance</h2>
+    <ui-multi-select-dropdown
+      label="Select Fruits (Chips)"
+      [options]="options"
+      [formControl]="chipsControl"
+      [displayProperty]="'name'"
+      [valueProperty]="'value'"
+      [identifierProperty]="'id'"
+      placeholder="Select fruits"
+      [isFullWidth]="true"
+      [enableSearch]="true"
+      [showErrorSpace]="true"
+      [addActionLabel]="'Add New Fruit'"
+      (addAction)="onAddAction()"
+      (valueChange)="onChipsChange($event)"
+      [appearance]="MultiSelectDropdownAppearance.chips"
+    ></ui-multi-select-dropdown>
+  </div>
+
+  <!-- Server-Side Search -->
+  <div class="section">
+    <h2 class="section-title">Server-Side Search</h2>
+    <ui-multi-select-dropdown
+      label="Select Fruits (Server Search)"
+      [options]="serverSearchOptions()"
+      [formControl]="serverSearchControl"
+      [displayProperty]="'name'"
+      [valueProperty]="'value'"
+      [identifierProperty]="'id'"
+      placeholder="Search fruits"
+      [isFullWidth]="true"
+      [enableSearch]="true"
+      [enableClientSearch]="false"
+      [showErrorSpace]="true"
+      [addActionLabel]="'Add New Fruit'"
+      (addAction)="onAddAction()"
+      (search)="onSearch($event)"
+      (valueChange)="onServerSearchChange($event)"
+      [appearance]="MultiSelectDropdownAppearance.chips"
+    ></ui-multi-select-dropdown>
+  </div>
+</div>

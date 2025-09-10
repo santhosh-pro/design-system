@@ -1,12 +1,12 @@
 import { Component, computed, input, inject, signal, AfterContentInit, output } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { Dialog, DialogRef } from '@angular/cdk/dialog';
 import { CommonModule } from '@angular/common';
 import { BaseInputComponent } from '../../../../core/base-input/base-input';
 import { HumanizeFormMessagesPipe } from '../../../../components/misc/humanize-form-messages';
 import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
 import { ColumnNode, TableStateEvent } from '../../../../components/display/data-table/data-table';
 import { SelectDialogComponent } from '../select-dialog/select-dialog';
+import { OverlayService } from '../../../../components/overlay/overlay';
 
 @Component({
   selector: 'ui-data-table-multi-select',
@@ -32,13 +32,12 @@ export class DataTableMultiSelectComponent<T> extends BaseControlValueAccessor<a
   enableSearch = input<boolean>(true);
   showErrorSpace = input<boolean>(false);
   totalCount = input<number>(0);
+  overlayType = input<'modal' | 'fullscreen' | 'bottomsheet' | 'backdrop'>('modal'); // New input for overlay type
 
-
-  tableStateChange = output<TableStateEvent>(); // To emit table state changes to parent
+  tableStateChange = output<TableStateEvent>();
 
   selectedItems = signal<T[]>([]);
   isFocused = signal<boolean>(false);
-  
 
   displayText = computed(() => {
     const items = this.selectedItems();
@@ -46,7 +45,7 @@ export class DataTableMultiSelectComponent<T> extends BaseControlValueAccessor<a
     return items.map((item) => this.getDisplayString(item)).join(', ');
   });
 
-  private dialog = inject(Dialog);
+  private overlayService = inject(OverlayService); // Inject OverlayService
 
   override ngAfterContentInit(): void {
     super.ngAfterContentInit();
@@ -92,15 +91,8 @@ export class DataTableMultiSelectComponent<T> extends BaseControlValueAccessor<a
     return this.displayProperty().split('.').reduce((acc, part) => acc && acc[part], object) || '';
   }
 
-openDialog(): void {
-  const dialogRef = this.dialog.open<SelectDialogComponent<T>>(SelectDialogComponent, {
-    width: '80vw',
-    maxWidth: '800px',
-    height: '80vh',
-    panelClass: 'custom-dialog-class',
-    autoFocus: false,
-    hasBackdrop: true,
-    data: {
+  openDialog(): void {
+    const dialogData = {
       title: this.label() || 'Select Items',
       columns: this.columns(),
       data: this.data(),
@@ -110,23 +102,52 @@ openDialog(): void {
       enablePagination: this.enablePagination(),
       pageSize: this.pageSize(),
       enableSearch: this.enableSearch(),
-      initialValue: this.formControl?.value || [], // Already an array of keys
-      stateChange: this.tableStateChange, // Add stateChange to dialog data (for later)
-    }
-  });
+      initialValue: this.formControl?.value || [],
+      stateChange: this.tableStateChange,
+    };
 
-  dialogRef.closed.subscribe((result: any[] | any) => {
-    if (result !== undefined) {
-      this.formControl?.setValue(result);
-      this.valueChange.emit(result);
+    let dialogPromise: Promise<any>;
+
+    switch (this.overlayType()) {
+      case 'fullscreen':
+        dialogPromise = this.overlayService.openFullScreen(SelectDialogComponent, {
+          disableClose: false,
+          data: dialogData,
+        });
+        break;
+      case 'bottomsheet':
+        dialogPromise = this.overlayService.openBottomSheet(SelectDialogComponent, {
+          disableClose: false,
+          data: dialogData,
+        });
+        break;
+      case 'backdrop':
+        dialogPromise = this.overlayService.openBackdrop(SelectDialogComponent, {
+          disableClose: false,
+          data: dialogData,
+        });
+        break;
+      case 'modal':
+      default:
+        dialogPromise = this.overlayService.openModal(SelectDialogComponent, {
+          disableClose: false,
+          maxHeightClass: 'max-h-[80vh]',
+          data: dialogData,
+        });
+        break;
     }
-  });
-}
+
+    dialogPromise.then((result: any[] | any) => {
+      if (result !== undefined) {
+        this.formControl?.setValue(result);
+        this.valueChange.emit(result);
+      }
+    });
+  }
 
   clearAll(event: Event): void {
     event.stopPropagation();
     this.formControl?.setValue([]);
-    // don't call the private onChange from the base class; rely on the form control and the valueChange output
     this.valueChange.emit([]);
   }
 

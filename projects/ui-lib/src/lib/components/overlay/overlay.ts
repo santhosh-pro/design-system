@@ -232,7 +232,7 @@ export class OverlayService {
       positionStrategy: positionStrategy,
       disableClose: disableClose,
       backdropClass: ['bg-black/20'],
-      panelClass: [...this.basePanelClass, maxHeightClass ?? this.modalMaxHeightClass, 'rounded-3xl', 'sm:w-4/5', 'md:w-3/5', 'lg:w-2/5'],
+      panelClass: [...this.basePanelClass, 'w-max-[300px]', 'h-[70%]', 'rounded-t-3xl', 'overflow-clip', 'overflow-y-scroll'],
       data: data,
       autoFocus: false,
     });

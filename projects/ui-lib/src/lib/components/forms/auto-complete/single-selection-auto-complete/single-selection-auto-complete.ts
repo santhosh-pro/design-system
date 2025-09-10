@@ -1,31 +1,30 @@
 import { NgClass, NgStyle } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { AfterContentInit, ChangeDetectorRef, Component, computed, ElementRef, inject, input, output, signal, viewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
+import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { AppSvgIconComponent } from '../../../../components/misc/app-svg-icon/app-svg-icon';
 import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
 import { BaseInputComponent } from '../../../../core/base-input/base-input';
 import { resolveTemplateWithObject } from '../../../../core/template-resolver';
 import { HumanizeFormMessagesPipe } from '../../../misc/humanize-form-messages';
-import { CdkConnectedOverlay, Overlay } from '@angular/cdk/overlay';
+import { AutocompleteDropdownComponent } from './autocomplete-dropdown.component';
+
 @Component({
   selector: 'ui-single-selection-auto-complete',
+  standalone: true,
   imports: [
     BaseInputComponent,
     NgClass,
     ReactiveFormsModule,
     HumanizeFormMessagesPipe,
-    AppSvgIconComponent,
     NgStyle,
-    CdkConnectedOverlay,
     FormsModule,
+    AutocompleteDropdownComponent,
   ],
   templateUrl: './single-selection-auto-complete.html',
 })
 export class SingleSelectionAutoComplete<T> extends BaseControlValueAccessor<T | null> implements AfterContentInit {
-private cdr = inject(ChangeDetectorRef);
-  private overlay = inject(Overlay);
+  private cdr = inject(ChangeDetectorRef);
 
   // Inputs
   label = input<string | null>(null);
@@ -60,12 +59,7 @@ private cdr = inject(ChangeDetectorRef);
 
   // ViewChild References
   private inputContainer = viewChild.required<ElementRef<HTMLDivElement>>('inputContainer');
-  private dropdownListContainer = viewChild<ElementRef<HTMLDivElement>>('dropdownListContainer');
-  private dropdownList = viewChild<ElementRef<HTMLDivElement>>('dropdownList');
   private searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
-
-  // Overlay Configuration
-  scrollStrategy = this.overlay.scrollStrategies.block();
 
   // Search subject for debouncing
   private searchSubject = new Subject<string>();
@@ -107,11 +101,6 @@ private cdr = inject(ChangeDetectorRef);
     this.customActionClick.emit();
   }
 
-  protected onClickOutside(): void {
-    this.showDropdown.set(false);
-    this.cdr.detectChanges();
-  }
-
   protected handleKeydown(event: KeyboardEvent): void {
     if (!this.showDropdown()) return;
 
@@ -119,14 +108,12 @@ private cdr = inject(ChangeDetectorRef);
       case 'ArrowDown':
         if (this.highlightedIndex() < this.visibleItems().length - 1) {
           this.highlightedIndex.update((prev) => prev + 1);
-          this.scrollToHighlightedOption();
         }
         event.preventDefault();
         break;
       case 'ArrowUp':
         if (this.highlightedIndex() > 0) {
           this.highlightedIndex.update((prev) => prev - 1);
-          this.scrollToHighlightedOption();
         }
         event.preventDefault();
         break;
@@ -143,10 +130,10 @@ private cdr = inject(ChangeDetectorRef);
     }
   }
 
-  protected onImageLoad(item: T, event: Event): void {
+  protected onImageLoad({ item, event }: { item: T; event: Event }): void {
     const img = event.target as HTMLImageElement;
     if (img.complete && img.naturalHeight !== 0) {
-      this.isImageLoaded.update(map => {
+      this.isImageLoaded.update((map) => {
         map.set(item, true);
         return new Map(map);
       });
@@ -154,18 +141,11 @@ private cdr = inject(ChangeDetectorRef);
     }
   }
 
-
-
   // Computed
   visibleItems = computed(() => this.options());
 
   itemStyle = computed(() => ({
     width: this.itemWidth() ? `${this.itemWidth()}px` : '100%',
-  }));
-
-  itemClass = computed(() => (item: T) => ({
-    'bg-blue-50': this.isSelected()(item),
-    'bg-gray-100': this.highlightedIndex() === this.visibleItems().indexOf(item),
   }));
 
   isSelected = computed(() => (item: T) => this.getValueId(item) === this.formControl.value);
@@ -212,12 +192,11 @@ private cdr = inject(ChangeDetectorRef);
   });
 
   private setupSearch(): void {
-    this.searchSubject.pipe(
-      debounceTime(this.debounceTimeMs()),
-      distinctUntilChanged()
-    ).subscribe((searchTerm) => {
-      this.searchChange.emit(searchTerm);
-    });
+    this.searchSubject
+      .pipe(debounceTime(this.debounceTimeMs()), distinctUntilChanged())
+      .subscribe((searchTerm) => {
+        this.searchChange.emit(searchTerm);
+      });
   }
 
   private getValueId(item: T): any {
@@ -238,13 +217,5 @@ private cdr = inject(ChangeDetectorRef);
     const spaceBelow = window.innerHeight - inputRect.bottom;
     const spaceAbove = inputRect.top;
     this.isDropUp.set(spaceAbove > spaceBelow && spaceBelow < 200);
-  }
-
-  private scrollToHighlightedOption(): void {
-    const dropdownList = this.dropdownList()?.nativeElement;
-    if (dropdownList && dropdownList.children[this.highlightedIndex()]) {
-      const highlightedItem = dropdownList.children[this.highlightedIndex()] as HTMLElement;
-      highlightedItem.scrollIntoView({ block: 'nearest' });
-    }
   }
 }

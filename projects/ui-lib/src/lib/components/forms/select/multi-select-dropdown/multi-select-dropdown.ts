@@ -51,12 +51,14 @@ export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor<T[
   isFullWidth = input<boolean>(false);
   showErrorSpace = input<boolean>(false);
   enableSearch = input<boolean>(false);
+  enableClientSearch = input<boolean>(true);
   addActionLabel = input<string | null>(null);
   minimumPopupWidth = input<number>(250);
   appearance = input<MultiSelectDropdownAppearance>(MultiSelectDropdownAppearance.standard);
 
   // Outputs
   addAction = output<void>();
+  search = output<string>();
 
   // Signals
   isDropdownOpen = signal(false);
@@ -112,38 +114,43 @@ export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor<T[
   }
 
   protected onItemSelect(item: T): void {
-  this.markTouched();
-  let updatedValue = (this.formControl.value as any[]) ?? [];
-  const isSelected = this.isOptionSelected(item);
+    this.markTouched();
+    let updatedValue = (this.formControl.value as any[]) ?? [];
+    const isSelected = this.isOptionSelected(item);
 
-  if (isSelected) {
-    if (this.valueProperty()) {
-      const itemValue = this.getValue(item);
-      updatedValue = updatedValue.filter(v => v !== itemValue);
-    } else if (this.identifierProperty()) {
-      const itemId = this.getIdentifier(item);
-      updatedValue = updatedValue.filter(v => this.getIdentifier(v) !== itemId);
+    if (isSelected) {
+      if (this.valueProperty()) {
+        const itemValue = this.getValue(item);
+        updatedValue = updatedValue.filter(v => v !== itemValue);
+      } else if (this.identifierProperty()) {
+        const itemId = this.getIdentifier(item);
+        updatedValue = updatedValue.filter(v => this.getIdentifier(v) !== itemId);
+      } else {
+        updatedValue = updatedValue.filter(v => !deepEqual(v, item));
+      }
     } else {
-      updatedValue = updatedValue.filter(v => !deepEqual(v, item));
+      if (this.valueProperty()) {
+        updatedValue = [...updatedValue, this.getValue(item)];
+      } else {
+        updatedValue = [...updatedValue, item];
+      }
     }
-  } else {
-    if (this.valueProperty()) {
-      updatedValue = [...updatedValue, this.getValue(item)];
-    } else {
-      updatedValue = [...updatedValue, item];
-    }
+
+    this.formControl.setValue(updatedValue);
+    this.updateSelectedOptions(updatedValue);
+    this.onValueChange(updatedValue);
+    this.cdr.detectChanges();
   }
-
-  this.formControl.setValue(updatedValue);
-  this.updateSelectedOptions(updatedValue);
-  this.onValueChange(updatedValue);
-  this.cdr.detectChanges();
-}
 
   protected onSearchInput(event: Event): void {
     const searchKeyword = (event.target as HTMLInputElement).value;
     if (this.enableSearch()) {
-      this.updateFilteredOptions(searchKeyword);
+      if (this.enableClientSearch()) {
+        this.updateFilteredOptions(searchKeyword);
+      } else {
+        this.search.emit(searchKeyword);
+        this.filteredOptions.set(this.options());
+      }
     } else {
       const firstMatch = this.findFirstMatch(searchKeyword);
       const index = this.filteredOptions().findIndex((item) => item === firstMatch);
@@ -155,41 +162,50 @@ export class MultiSelectDropdownComponent<T> extends BaseControlValueAccessor<T[
     const searchField = this.searchField()?.nativeElement;
     if (searchField) {
       searchField.value = '';
-      this.filteredOptions.set(this.options());
+      if (this.enableClientSearch()) {
+        this.filteredOptions.set(this.options());
+      } else {
+        this.search.emit('');
+      }
       this.highlightedIndex.set(0);
       this.scrollToHighlightedOption();
       searchField.focus();
     }
   }
 
- protected onSelectAll(): void {
-  let updatedValue: any[];
-  if (this.valueProperty()) {
-    updatedValue = this.options().map(item => this.getValue(item));
-  } else {
-    updatedValue = [...this.options()];
+  protected onSelectAll(): void {
+    let updatedValue: any[];
+    if (this.valueProperty()) {
+      updatedValue = this.options().map(item => this.getValue(item));
+    } else {
+      updatedValue = [...this.options()];
+    }
+    this.formControl.setValue(updatedValue);
+    this.updateSelectedOptions(updatedValue);
+    this.onValueChange(updatedValue);
+    this.cdr.detectChanges();
   }
-  this.formControl.setValue(updatedValue);
-  this.updateSelectedOptions(updatedValue);
-  this.onValueChange(updatedValue);
-  this.cdr.detectChanges();
-}
 
   protected onClearSelection(): void {
-  const updatedValue: any[] = [];
-  this.formControl.setValue(updatedValue);
-  this.updateSelectedOptions(updatedValue);
-  this.onValueChange(updatedValue);
-  this.cdr.detectChanges();
-}
+    const updatedValue: any[] = [];
+    this.formControl.setValue(updatedValue);
+    this.updateSelectedOptions(updatedValue);
+    this.onValueChange(updatedValue);
+    this.cdr.detectChanges();
+  }
 
-protected isAllSelected(): boolean {
-  const controlValue = (this.formControl.value as any[]) ?? [];
-  return this.options().length > 0 && this.options().every(item => this.isOptionSelected(item));
-}
+  protected isAllSelected(): boolean {
+    const controlValue = (this.formControl.value as any[]) ?? [];
+    return this.options().length > 0 && this.options().every(item => this.isOptionSelected(item));
+  }
 
   protected onAddAction(): void {
     this.addAction.emit();
+  }
+
+  protected onRemoveChip(item: T, event: Event): void {
+    event.stopPropagation();
+    this.onItemSelect(item);
   }
 
   @HostListener('window:resize')
@@ -249,17 +265,17 @@ protected isAllSelected(): boolean {
   }
 
   // Utility Methods
- protected isOptionSelected(item: T): boolean {
-  const controlValue = (this.formControl.value as any[]) ?? [];
-  if (this.valueProperty()) {
-    const itemValue = this.getValue(item);
-    return controlValue.some(v => v === itemValue);
-  } else if (this.identifierProperty()) {
-    const itemId = this.getIdentifier(item);
-    return controlValue.some(v => this.getIdentifier(v) === itemId);
+  protected isOptionSelected(item: T): boolean {
+    const controlValue = (this.formControl.value as any[]) ?? [];
+    if (this.valueProperty()) {
+      const itemValue = this.getValue(item);
+      return controlValue.some(v => v === itemValue);
+    } else if (this.identifierProperty()) {
+      const itemId = this.getIdentifier(item);
+      return controlValue.some(v => this.getIdentifier(v) === itemId);
+    }
+    return controlValue.some(v => deepEqual(v, item));
   }
-  return controlValue.some(v => deepEqual(v, item));
-}
 
   protected getCsvDisplay(): string | null {
     const selected = this.selectedOptions();
