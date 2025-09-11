@@ -1,0 +1,68 @@
+<!-- <ui-text-field
+    label="Small Field"
+    type="time"
+    width="md"
+    placeholder="Enter text (xl)"
+  ></ui-text-field>
+
+  <ui-textarea-field
+    label="Textarea Field"
+    width="3xl"
+    lines='8'
+    placeholder="Enter text (xl)"
+  ></ui-textarea-field> -->
+
+  <!-- <ui-search-field
+    label="Search Field"
+    width="md"
+    placeholder="Search here..."
+    (searchChange)="onSearch($event)"
+  ></ui-search-field>  -->
+
+  <ui-number-prefix-select-field
+          [label]="'Number Input'"
+          [width]="'xxl'"
+          [placeholder]="'Enter number'"
+          [hasPrefixSelect]="true"
+          [prefixOptions]="prefixNumOptions"
+          [defaultPrefixValue]="defaultPrefix"
+          [iconSrc]="'/assets/icons/number.svg'"
+          (prefixChange)="onPrefixChange($event)"
+          (valueChange)="onValueChange($event)"
+        ></ui-number-prefix-select-field>
+
+
+  <ui-text-prefix-select-field
+    label="Text Prefix Select Field"
+    width="lg"
+    placeholder="Select prefix..."
+    [hasPrefixSelect]="true"
+    [defaultPrefixValue]="defaultPrefix"
+    [prefixOptions]="prefixOptions"
+    (prefixChange)="onPrefixChange($event)"
+  ></ui-text-prefix-select-field>
+
+  <!-- <ui-password-field
+    label="Password Field"
+    width="md"
+    placeholder="Enter password..."
+    [showEye]="true"
+  ></ui-password-field>
+
+  <ui-number-field
+    label="Number Field"
+    width="md"
+    placeholder="Enter number..."
+    [min]="0"
+    [max]="100"
+    [step]="1"
+    actionIcon="assets/icons/refresh.svg"
+  ></ui-number-field> -->
+
+  <!-- <ui-otp-field
+    label="OTP Field"
+    width="xxl"
+    [length]="6"
+    placeholder="Enter OTP"
+    (complete)="onOtpComplete($event)"
+  ></ui-otp-field> -->

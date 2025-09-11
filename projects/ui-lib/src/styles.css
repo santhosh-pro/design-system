@@ -1,6 +1,7 @@
 /* src/styles.css or a similar CSS file in your library */
 @import "tailwindcss";
 
+
 @layer theme {
   :root {
     --font-inter: "Inter", "sans-serif";

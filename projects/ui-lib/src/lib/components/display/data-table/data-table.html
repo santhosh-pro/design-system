@@ -6,9 +6,9 @@
   <div class="flex px-6 py-5 border-b border-gray-300 justify-between items-center bg-white flex-shrink-0">
     @if (enableSearch()) {
     <div class="flex-1 max-w-md">
-      <ui-text-input placeholder="Search..." type="search" [fullWidth]="false"
+      <!-- <ui-text-input placeholder="Search..." type="search" [fullWidth]="false"
         (valueChange)="onSearchTextChanged($event)" iconSrc="edit.svg" class="w-full">
-      </ui-text-input>
+      </ui-text-input> -->
     </div>
     }
     <div class="flex items-center gap-4">
@@ -89,13 +89,13 @@
               }
               @case ('number') {
               <div class="flex items-center w-full min-w-[120px]">
-                <ui-text-input type="number" [placeholder]="column.filterConfig.placeholder || 'Filter...'"
+                <!-- <ui-text-input type="number" [placeholder]="column.filterConfig.placeholder || 'Filter...'"
                   [formControl]="getFilterControl(column, 'value')"
                   (valueChanged)="onFilterChanged($event, null, null, column)" [fullWidth]="true"
                   [hasPrefixSelect]="true" (prefixChange)="onFilterOperationChanged($event, column)"
                   [defaultPrefixValue]="'equals'" [prefixOptions]="getFilterOperations(column.filterConfig.type)"
                   class="flex-1 min-w-[120px]">
-                </ui-text-input>
+                </ui-text-input> -->
               </div>
               }
               @case ('date') {

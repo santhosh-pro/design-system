@@ -1,0 +1,40 @@
+<ui-base-input 
+  #inputElement 
+  [title]="label()" 
+  [width]="width()" 
+  [isRequiredField]="hasRequiredValidator()">
+
+  <!-- Input Slot -->
+  <div input class="flex gap-2">
+    @for (index of digitIndices(); track index) {
+      <input
+        #otpInput
+        class="otp-input w-12 h-12 text-center text-lg border bg-white border-neutral-200 rounded-md outline-none transition-all 
+               focus:border-blue-500 focus:ring-2 focus:ring-blue-500 
+               disabled:bg-gray-100 disabled:text-gray-500"
+        type="text"
+        inputmode="text"
+        maxlength="1"
+        autocomplete="one-time-code"
+        [value]="digits()[index] || ''"
+        (input)="onDigitInput($event, index)"
+        (keydown)="onKeyDown($event, index)"
+        (paste)="onPaste($event, index)"
+        (focus)="onFocus()"
+        (blur)="onBlur()"
+        [disabled]="formControl.disabled"
+      />
+    }
+  </div>
+
+  <!-- Error Slot -->
+  @if (formControl.errors && hasErrors()) {
+    <div error class="mt-1">
+      <span class="text-sm text-red-500">{{ formControl.errors | humanizeFormMessages: errorMessages() }}</span>
+    </div>
+  } @else if (showErrorSpace()) {
+    <div error class="mt-1">
+      <span class="text-sm text-transparent">.</span>
+    </div>
+  }
+</ui-base-input>

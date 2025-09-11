@@ -11,6 +11,7 @@ import { SingleAutoCompleteDemo } from './single-auto-complete-demo/single-auto-
 import { DataTablePickerDemo } from './data-table-picker-demo/data-table-picker-demo';
 import { MultiSelectDropdown } from './multi-select-dropdown/multi-select-dropdown';
 import { SingleSelectDropdownDemo } from './single-select-dropdown-demo/single-select-dropdown-demo';
+import { NumberFieldDemo } from './number-field-demo/number-field-demo';
 
 export const routes: Routes = [
     {
@@ -65,5 +66,9 @@ export const routes: Routes = [
     {
         path: 'single-select-dropdown',
         component: SingleSelectDropdownDemo
+    },
+    {
+        path:'number-field-demo',
+        component: NumberFieldDemo
     }
 ];

@@ -1,5 +1,5 @@
 import { Component, computed, input, inject, signal, AfterContentInit, output } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { BaseInputComponent } from '../../../../core/base-input/base-input';
 import { HumanizeFormMessagesPipe } from '../../../../components/misc/humanize-form-messages';

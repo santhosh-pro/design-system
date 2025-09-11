@@ -79,3 +79,16 @@ export * from './lib/components/overlay/context-menu-icon/context-menu-icon';
 export * from './lib/components/overlay/overlay-wizard-utils';
 export * from './lib/components/overlay/overlay';
 
+
+
+// ========== CORE ==========
+export * from './lib/components/forms/text/text-field/text-field';
+export * from './lib/components/forms/text/textarea-field/textarea-field';
+export  * from './lib/components/forms/text/search-field/search-field';
+export * from './lib/components/forms/text/otp-field/otp-field';
+export * from './lib/components/forms/text/password-field/password-field';
+export * from './lib/components/forms/text/text-prefix-select-field/text-prefix-select-field';
+
+
+export * from './lib/components/forms/number/number-field/number-field';
+export * from './lib/components/forms/number/number-prefix-select-field/number-prefix-select-field';

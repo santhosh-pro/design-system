@@ -37,8 +37,7 @@ interface SelectOption {
 })
 export class TextInputComponent extends BaseControlValueAccessor<string | null> implements OnInit, OnDestroy {
   // Inputs (unchanged)
-  appearance = input<'fill' | 'outline'>('outline');
-  type = input<'text' | 'email' | 'password' | 'number' | 'search' | 'tel' | 'url' | 'time'>('text');
+  type = input<'text' | 'email' | 'tel' | 'url' | 'time'>('text');
   viewType = input<'text' | 'textarea'>('text');
   iconSrc = input<string | null>(null);
   actionIcon = input<string | null>(null);
