@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
-import { MultiSelectionFieldComponent } from 'projects/ui-lib/src/public-api';
+import { MultiSelectChipField } from 'projects/ui-lib/src/public-api';
 
 @Component({
   selector: 'app-multi-select-field-demo',
-  imports: [MultiSelectionFieldComponent, ReactiveFormsModule],
+  imports: [MultiSelectChipField, ReactiveFormsModule],
   templateUrl: './multi-select-field-demo.html',
 })
 export class MultiSelectFieldDemo {

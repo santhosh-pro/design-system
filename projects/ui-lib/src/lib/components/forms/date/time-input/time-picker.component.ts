@@ -6,8 +6,8 @@ import { PortalModule } from '@angular/cdk/portal';
 import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
 import { BaseInputComponent } from '../../../../core/base-input/base-input';
 import { HumanizeFormMessagesPipe } from '../../../../components/misc/humanize-form-messages';
-import { NgxMaskDirective } from '../../input-mask/ngx-mask.directive';
-import { CheckboxComponent } from '../../checkbox/checkbox';
+import { NgxMaskDirective } from '../../../../core/input-mask/ngx-mask.directive';
+import { CheckboxField } from '../../select/checkbox-field/checkbox-field';
 import { AppSvgIconComponent } from '../../../../components/misc/app-svg-icon/app-svg-icon';
 
 @Component({
@@ -20,7 +20,7 @@ import { AppSvgIconComponent } from '../../../../components/misc/app-svg-icon/ap
     BaseInputComponent,
     HumanizeFormMessagesPipe,
     NgxMaskDirective,
-    CheckboxComponent,
+    CheckboxField,
     PortalModule,
     OverlayModule,
     AppSvgIconComponent,

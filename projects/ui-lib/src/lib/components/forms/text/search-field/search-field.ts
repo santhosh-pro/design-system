@@ -26,9 +26,7 @@ export class SearchField extends BaseControlValueAccessor<string | null> impleme
   placeholder = input<string>('Search...');
   showErrorSpace = input<boolean>(false);
   debounceTimeMs = input<number>(500);
-
-  // Outputs
-  searchChange = output<string | null>();
+  width = input<'sm' | 'md' | 'lg' | 'xl' | 'xxl' | '3xl' | 'full' | string>('md');
 
   // Signals
   isFocused = signal(false);
@@ -81,7 +79,7 @@ export class SearchField extends BaseControlValueAccessor<string | null> impleme
     this.timeoutId = window.setTimeout(() => {
       // Double-check the value hasn't changed during the timeout
       if (this.inputValue() === value && value !== this.lastEmittedValue) {
-        this.searchChange.emit(value);
+        this.valueChange.emit(value);
         this.lastEmittedValue = value;
       }
       this.timeoutId = null;
@@ -102,7 +100,7 @@ export class SearchField extends BaseControlValueAccessor<string | null> impleme
         window.clearTimeout(this.timeoutId);
         this.timeoutId = null;
       }
-      this.searchChange.emit(this.inputValue());
+      this.valueChange.emit(this.inputValue());
       this.lastEmittedValue = this.inputValue();
     }
   }

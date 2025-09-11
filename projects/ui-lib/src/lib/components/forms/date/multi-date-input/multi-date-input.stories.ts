@@ -6,7 +6,7 @@ import { NgClass } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { HumanizeFormMessagesPipe } from '../../../misc/humanize-form-messages';
 import { BaseInputComponent } from '../../../../core/base-input/base-input';
-import { NgxMaskDirective } from '../../input-mask/ngx-mask';
+import { NgxMaskDirective } from '../../../../core/input-mask/ngx-mask';
 import { AppSvgIconComponent } from '../../../misc/app-svg-icon/app-svg-icon';
 
 // Define the Meta configuration

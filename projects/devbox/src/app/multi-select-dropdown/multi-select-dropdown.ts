@@ -1,12 +1,12 @@
 import { JsonPipe } from '@angular/common';
 import { Component, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MultiSelectDropdownAppearance, MultiSelectDropdownComponent } from 'projects/ui-lib/src/public-api';
+import { MultiSelectDropdownAppearance, MultiSelectDropdownField } from 'projects/ui-lib/src/public-api';
 import { BehaviorSubject, Observable, debounceTime, switchMap, of } from 'rxjs';
 
 @Component({
   selector: 'app-multi-select-dropdown',
-  imports: [MultiSelectDropdownComponent, ReactiveFormsModule, JsonPipe],
+  imports: [MultiSelectDropdownField, ReactiveFormsModule, JsonPipe],
   templateUrl: './multi-select-dropdown.html',
   styleUrl: './multi-select-dropdown.css'
 })

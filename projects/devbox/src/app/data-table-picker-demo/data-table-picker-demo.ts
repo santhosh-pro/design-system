@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ColumnDef, ColumnNode, DataTableMultiSelectComponent } from 'projects/ui-lib/src/public-api';
+import { ColumnDef, MultiSelectDataTableField } from 'projects/ui-lib/src/public-api';
 
 // Sample data interfaces
 interface User {
@@ -26,8 +26,8 @@ interface Department {
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    DataTableMultiSelectComponent,
-  ],
+    MultiSelectDataTableField
+],
   templateUrl: './data-table-picker-demo.html',
 })
 export class DataTablePickerDemo {

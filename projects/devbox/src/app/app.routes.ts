@@ -7,7 +7,6 @@ import { TimeInputDemo } from './time-input-demo/time-input-demo';
 import { FileUploadDemo } from './file-upload-demo/file-upload-demo';
 import { MultiSelectFieldDemo } from './multi-select-field-demo/multi-select-field-demo';
 import { TooltipDemo } from './tooltip-demo/tooltip-demo';
-import { SingleAutoCompleteDemo } from './single-auto-complete-demo/single-auto-complete-demo';
 import { DataTablePickerDemo } from './data-table-picker-demo/data-table-picker-demo';
 import { MultiSelectDropdown } from './multi-select-dropdown/multi-select-dropdown';
 import { SingleSelectDropdownDemo } from './single-select-dropdown-demo/single-select-dropdown-demo';
@@ -50,10 +49,6 @@ export const routes: Routes = [
     {
         path: 'tooltip',
         component: TooltipDemo
-    },
-    {
-        path: 'single-auto-complete',
-        component: SingleAutoCompleteDemo
     },
     {
         path: 'data-table-picker',

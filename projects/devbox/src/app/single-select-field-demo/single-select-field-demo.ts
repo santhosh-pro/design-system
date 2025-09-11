@@ -1,13 +1,13 @@
 import { Component, signal } from "@angular/core";
 import { DemoCard, DemoFile } from "../core/demo-card/demo-card";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
-import { SingleSelectionFieldComponent } from "projects/ui-lib/src/public-api";
 import { DocIoList } from "../core/doc-io-list/doc-io-list";
+import { SelectChipField } from "projects/ui-lib/src/public-api";
 
 @Component({
   selector: 'app-single-selection-demo',
   standalone: true,
-  imports: [ReactiveFormsModule, DemoCard, SingleSelectionFieldComponent, DocIoList],
+  imports: [ReactiveFormsModule, DemoCard, SelectChipField, DocIoList],
   templateUrl: './single-select-field-demo.html'
 })
 export class SingleSelectionDemoComponent {

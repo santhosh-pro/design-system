@@ -3,7 +3,7 @@
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <!-- MultiSelectionFieldComponent usage -->
-    <ui-multi-selection-field
+    <ui-multi-select-chip-field
       formControlName="selectedItems"
       [title]="'Select Fruits'"
       [items]="items"
@@ -20,7 +20,7 @@
       [customActionText]="'Add New Fruit'"
       (valueChange)="onValueChange($event)"
       (onCustomActionClicked)="onCustomActionClicked()"
-    ></ui-multi-selection-field>
+    ></ui-multi-select-chip-field>
 
     <!-- Submit button -->
     <button

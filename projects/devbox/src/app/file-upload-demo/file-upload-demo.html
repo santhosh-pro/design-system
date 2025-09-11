@@ -3,7 +3,7 @@
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <div class="mb-4">
-      <ui-file-uploader
+      <ui-upload-field
         formControlName="document"
         [value]="initialFileUrl"
         [fullWidth]="true"
@@ -12,7 +12,7 @@
         (fileSelect)="onFileSelected($event)"
         (fileRemoved)="onFileRemoved()"
         (uploadLaterClicked)="onUploadLaterClicked()"
-      ></ui-file-uploader>
+      ></ui-upload-field>
     </div>
 
     <div class="flex gap-4">

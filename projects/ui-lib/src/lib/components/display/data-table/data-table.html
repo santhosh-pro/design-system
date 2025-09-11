@@ -6,9 +6,9 @@
   <div class="flex px-6 py-5 border-b border-gray-300 justify-between items-center bg-white flex-shrink-0">
     @if (enableSearch()) {
     <div class="flex-1 max-w-md">
-      <!-- <ui-text-input placeholder="Search..." type="search" [fullWidth]="false"
+      <ui-search-field placeholder="Search..." type="search" [width]="'xl'"
         (valueChange)="onSearchTextChanged($event)" iconSrc="edit.svg" class="w-full">
-      </ui-text-input> -->
+      </ui-search-field>
     </div>
     }
     <div class="flex items-center gap-4">
@@ -40,8 +40,8 @@
        @if (enableRowSelection() && level === 0) {
   <th [attr.rowspan]="getHeaderRowSpan()"
     class="sticky left-0 z-[120] bg-gray-100 w-12 px-4 py-4 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.1)]">
-    <ui-checkbox [ngModel]="isAllSelected()" (valueChange)="onSelectAllRows($event)">
-    </ui-checkbox>
+    <ui-checkbox-field [ngModel]="isAllSelected()" (valueChange)="onSelectAllRows($event)">
+    </ui-checkbox-field>
   </th>
 }
 
@@ -79,12 +79,12 @@
               @switch (column.filterConfig.type) {
               @case ('text') {
               <div class="flex items-center w-full min-w-[140px]">
-                <ui-text-input [placeholder]="column.filterConfig.placeholder || 'Filter...'"
-                  [formControl]="getFilterControl(column, 'value')" [fullWidth]="true" [hasPrefixSelect]="true"
+                <ui-text-prefix-select-field [placeholder]="column.filterConfig.placeholder || 'Filter...'"
+                  [formControl]="getFilterControl(column, 'value')" [width]="'md'" [hasPrefixSelect]="true"
                   (prefixChange)="onFilterOperationChanged($event, column)"
                   [prefixOptions]="getFilterOperations(column.filterConfig.type)" [defaultPrefixValue]="'contains'"
                   class="flex-1 min-w-[140px]">
-                </ui-text-input>
+                </ui-text-prefix-select-field>
               </div>
               }
               @case ('number') {
@@ -163,9 +163,9 @@
   <td
     class="sticky left-0 z-[50] bg-white w-12 px-4 py-4 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.05)] group-hover:bg-blue-50 transition-colors duration-200"
     [class.bg-blue-100]="isRowSelected(item)" [class.group-hover:bg-blue-200]="isRowSelected(item)">
-    <ui-checkbox [ngModel]="isRowSelected(item)" (valueChange)="onRowSelectionChange($event, item)"
+    <ui-checkbox-field [ngModel]="isRowSelected(item)" (valueChange)="onRowSelectionChange($event, item)"
       [disabled]="!enableRowSelection()">
-    </ui-checkbox>
+    </ui-checkbox-field>
   </td>
 }
 

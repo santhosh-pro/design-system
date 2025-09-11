@@ -1,13 +1,13 @@
 import { NgClass } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { SingleSelectDropdown } from 'projects/ui-lib/src/public-api';
 import { Subject, debounceTime, switchMap } from 'rxjs';
 import { MockApiService } from './ssdd-mock-api';
+import { SelectDropdownField } from 'projects/ui-lib/src/public-api';
 
 @Component({
   selector: 'app-single-select-dropdown-demo',
-  imports: [SingleSelectDropdown, ReactiveFormsModule],
+  imports: [SelectDropdownField, ReactiveFormsModule],
   templateUrl: './single-select-dropdown-demo.html',
   styleUrl: './single-select-dropdown-demo.css'
 })

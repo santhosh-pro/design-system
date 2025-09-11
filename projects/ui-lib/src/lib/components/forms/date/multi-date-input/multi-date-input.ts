@@ -14,7 +14,7 @@ import { onlyPastDateValidator } from '../../../../core/validators/only-past-dat
 import { AppSvgIconComponent } from '../../../misc/app-svg-icon/app-svg-icon';
 import { OverlayService } from '../../../overlay/overlay';
 import { InputDateFormat } from '../date-format';
-import { NgxMaskDirective } from '../../input-mask/ngx-mask.directive';
+import { NgxMaskDirective } from '../../../../core/input-mask/ngx-mask.directive';
 
 
 @Component({

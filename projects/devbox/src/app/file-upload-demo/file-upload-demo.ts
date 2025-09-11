@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { FileUploaderComponent } from 'projects/ui-lib/src/public-api';
+import { UploadField } from 'projects/ui-lib/src/public-api';
 
 @Component({
   selector: 'app-file-upload-demo',
-  imports: [CommonModule, ReactiveFormsModule, FileUploaderComponent],
+  imports: [CommonModule, ReactiveFormsModule, UploadField],
   templateUrl: './file-upload-demo.html',
   styleUrl: './file-upload-demo.css'
 })

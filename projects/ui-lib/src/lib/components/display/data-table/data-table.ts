@@ -19,19 +19,20 @@ import { DatePipe } from '@angular/common';
 import { StatusBadgeComponent } from '../../feedback/status-badge/status-badge';
 import { FormsModule, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { BaseControlValueAccessor } from '../../../core/base-control-value-accessor';
-import { MultiSelectDropdownComponent } from '../../forms/select/multi-select-dropdown/multi-select-dropdown';
+import { MultiSelectDropdownField } from '../../forms/select/multi-select-dropdown-field/multi-select-dropdown-field';
 import { debounceTime } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { resolveTemplateWithObject } from '../../../core/template-resolver';
-import { provideNgxMask } from '../../forms/input-mask/ngx-mask.providers';
+import { provideNgxMask } from '../../../core/input-mask/ngx-mask.providers';
 import { DynamicRendererComponent } from './dynamic-renderer';
 import { ContextMenuButtonAction, ContextMenuButtonComponent } from '../../overlay/context-menu-button/context-menu-button';
-import { CheckboxComponent } from '../../forms/checkbox/checkbox';
-import { TextInputComponent } from '../../forms/text-input/text-input';
+import { CheckboxField } from '../../forms/select/checkbox-field/checkbox-field';
 import { DateInputComponent } from '../../forms/date/date-input/date-input';
 import { AppSvgIconComponent } from "../../misc/app-svg-icon/app-svg-icon";
 import { InputDateFormat } from '../../forms/date/date-format';
 import { SortableTableDirective, TableSortEvent } from './sortable-table';
+import { SearchField } from '../../forms/text/search-field/search-field';
+import { TextPrefixSelectField } from '../../_experimental/text-prefix-select-field/text-prefix-select-field';
 
 @Component({
   selector: 'ui-data-table',
@@ -41,16 +42,17 @@ import { SortableTableDirective, TableSortEvent } from './sortable-table';
     DatePipe,
     StatusBadgeComponent,
     SortableTableDirective,
-    CheckboxComponent,
+    CheckboxField,
     FormsModule,
-    TextInputComponent,
     DynamicRendererComponent,
-    MultiSelectDropdownComponent,
+    MultiSelectDropdownField,
     ReactiveFormsModule,
     DateInputComponent,
     ContextMenuButtonComponent,
-    AppSvgIconComponent
-  ],
+    AppSvgIconComponent,
+    TextPrefixSelectField,
+    SearchField
+],
   providers: [provideNgxMask()],
   templateUrl: './data-table.html',
 })

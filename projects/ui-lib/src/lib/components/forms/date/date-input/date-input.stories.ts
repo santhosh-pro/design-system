@@ -6,7 +6,7 @@ import { moduleMetadata } from '@storybook/angular';
 import { BaseInputComponent } from '../../../../core/base-input/base-input';
 import { HumanizeFormMessagesPipe } from '../../../misc/humanize-form-messages';
 import { AppSvgIconComponent } from '../../../misc/app-svg-icon/app-svg-icon';
-import { NgxMaskDirective } from '../../../forms/input-mask/ngx-mask';
+import { NgxMaskDirective } from '../../../../core/input-mask/ngx-mask';
 
 export default {
   title: 'Components/Forms/Date/DateInput',
