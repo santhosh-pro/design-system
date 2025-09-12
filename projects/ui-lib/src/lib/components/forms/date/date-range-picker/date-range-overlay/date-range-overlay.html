@@ -1,0 +1,10 @@
+ <ui-date-range-selection
+      [minDate]="data.minDate"
+      [maxDate]="data.maxDate"
+      [allowOnlyPast]="data.allowOnlyPast"
+      [allowOnlyFuture]="data.allowOnlyFuture"
+      [allowToday]="data.allowToday"
+      [minDaysRange]="data.minDaysRange"
+      [maxDaysRange]="data.maxDaysRange"
+      (dateRangeSelected)="onDateRangeSelected($event)"
+    ></ui-date-range-selection>

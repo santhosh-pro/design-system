@@ -6,11 +6,11 @@
       title="1. Basic Date Range Input"
       description="A simple date range input with default settings."
       [files]="basicFiles()">
-      <ui-date-range-input
+      <ui-date-range-picker
         [label]="'Select Date Range'"
         [formControl]="basicControl"
         (valueChange)="onValueChange($event)">
-      </ui-date-range-input>
+      </ui-date-range-picker>
       <p class="text-sm text-gray-600 mt-2">
         Selected Range: {{ basicControl.value | json }}
       </p>
@@ -21,14 +21,14 @@
       title="2. Date Range with Icon and Full Width"
       description="A date range input with an icon, full-width display, and mm/dd/yyyy format."
       [files]="iconFullWidthFiles()">
-      <ui-date-range-input
+      <ui-date-range-picker
         [label]="'Trip Duration'"
         [iconSrc]="'calendar'"
         [fullWidth]="true"
         [inputDateFormat]="inputDateFormat"
         [formControl]="iconFullWidthControl"
         (valueChange)="onValueChange($event)">
-      </ui-date-range-input>
+      </ui-date-range-picker>
       <p class="text-sm text-gray-600 mt-2">
         Selected Range: {{ iconFullWidthControl.value | json }}
       </p>
@@ -39,14 +39,14 @@
       title="3. Past-Only Date Range with Error Space"
       description="A date range input restricted to past dates, with error space and today allowed."
       [files]="pastOnlyFiles()">
-      <ui-date-range-input
+      <ui-date-range-picker
         [label]="'Historical Data Range'"
         [showErrorSpace]="true"
         [allowOnlyPast]="true"
         [allowToday]="true"
         [formControl]="pastOnlyControl"
         (valueChange)="onValueChange($event)">
-      </ui-date-range-input>
+      </ui-date-range-picker>
       <p class="text-sm text-gray-600 mt-2">
         Selected Range: {{ pastOnlyControl.value | json }}
       </p>
@@ -57,14 +57,14 @@
       title="4. Future-Only Date Range with Range Limits"
       description="A date range input restricted to future dates with minimum and maximum range limits."
       [files]="futureOnlyFiles()">
-      <ui-date-range-input
+      <ui-date-range-picker
         [label]="'Future Event Range'"
         [allowOnlyFuture]="true"
         [minDaysRange]="3"
         [maxDaysRange]="30"
         [formControl]="futureOnlyControl"
         (valueChange)="onValueChange($event)">
-      </ui-date-range-input>
+      </ui-date-range-picker>
       <p class="text-sm text-gray-600 mt-2">
         Selected Range: {{ futureOnlyControl.value | json }}
       </p>
@@ -75,14 +75,14 @@
       title="5. Bounded Date Range with No Picker Icon"
       description="A date range input with specific date boundaries and no date picker icon."
       [files]="boundedFiles()">
-      <ui-date-range-input
+      <ui-date-range-picker
         [label]="'Bounded Date Range'"
         [showDatePickerIcon]="false"
         [minDate]="minDate"
         [maxDate]="maxDate"
         [formControl]="boundedControl"
         (valueChange)="onValueChange($event)">
-      </ui-date-range-input>
+      </ui-date-range-picker>
       <p class="text-sm text-gray-600 mt-2">
         Selected Range: {{ boundedControl.value | json }}
       </p>

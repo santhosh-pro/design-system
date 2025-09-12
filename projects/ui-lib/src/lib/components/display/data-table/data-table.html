@@ -100,12 +100,12 @@
               }
               @case ('date') {
               <div class="flex items-center w-full min-w-[140px]">
-                <ui-date-input [formControl]="getFilterControl(column, 'value')"
+                <ui-date-picker [formControl]="getFilterControl(column, 'value')"
                   (valueChanged)="onFilterChanged($event, null, null, column)" [fullWidth]="true"
                   [showDatePickerIcon]="true"
                   [inputDateFormat]="column.filterConfig.dateFormat === 'dd/MM/yyyy' ? InputDateFormat.ddmmyyyy : InputDateFormat.mmddyyyy"
                   class="flex-1 min-w-[140px]">
-                </ui-date-input>
+                </ui-date-picker>
               </div>
               }
               @case ('select') {

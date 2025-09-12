@@ -19,7 +19,7 @@
     (searchChange)="onSearch($event)"
   ></ui-search-field>  -->
 
-  <ui-number-prefix-select-field
+  <!-- <ui-number-prefix-select-field
           [label]="'Number Input'"
           [width]="'xxl'"
           [placeholder]="'Enter number'"
@@ -40,7 +40,7 @@
     [defaultPrefixValue]="defaultPrefix"
     [prefixOptions]="prefixOptions"
     (prefixChange)="onPrefixChange($event)"
-  ></ui-text-prefix-select-field>
+  ></ui-text-prefix-select-field> -->
 
   <!-- <ui-password-field
     label="Password Field"
@@ -66,3 +66,53 @@
     placeholder="Enter OTP"
     (complete)="onOtpComplete($event)"
   ></ui-otp-field> -->
+
+
+
+
+
+  <div class="flex flex-col gap-6 p-6 max-w-2xl mx-auto">
+  <h1 class="text-2xl font-semibold text-neutral-900">Date Selection Demo</h1>
+
+  <div class="flex flex-col gap-4">
+    <!-- DateFieldComponent: Manual Date Input -->
+    <div class="flex flex-col gap-2">
+      <h2 class="text-lg font-medium text-neutral-700">Manual Date Input</h2>
+      <ui-date-field
+        [label]="'Enter Date'"
+        [formControl]="dateControl"
+        [inputDateFormat]="inputDateFormat"
+        [fullWidth]="true"
+        [showErrorSpace]="true"
+        (ngModelChange)="onManualDateChange($event)">
+      </ui-date-field>
+      <div class="text-sm text-neutral-600">
+        Selected Date: {{ selectedManualDate ? (selectedManualDate | date:'MM/dd/yyyy') : 'None' }}
+
+      </div>
+    </div>
+        {{dateControl.value }}
+
+    <!-- DatePickerFieldComponent: Picker-Only Input -->
+    <div class="flex flex-col gap-2">
+      <h2 class="text-lg font-medium text-neutral-700">Date Picker (Read-Only)</h2>
+      <ui-date-picker
+        [label]="'Select Date'"
+        [minDate]="minDate"
+        [maxDate]="maxDate"
+        [allowOnlyPast]="allowOnlyPast"
+        [allowOnlyFuture]="allowOnlyFuture"
+        [disabledDays]="disabledDays"
+        [disabledDates]="disabledDates"
+        [inputDateFormat]="inputDateFormat"
+        [fullWidth]="true"
+        [showDatePickerIcon]="true"
+        [showErrorSpace]="true"
+        (ngModelChange)="onPickerDateChange($event)">
+      </ui-date-picker>
+      <div class="text-sm text-neutral-600">
+        Selected Date: {{ selectedPickerDate ? (selectedPickerDate | date:'MM/dd/yyyy') : 'None' }}
+      </div>
+    </div>
+  </div>
+</div>

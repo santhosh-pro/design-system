@@ -3,13 +3,13 @@ import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { DemoCard, DemoFile } from '../core/demo-card/demo-card';
 import { DocIoList } from '../core/doc-io-list/doc-io-list';
 import { CommonModule } from '@angular/common';
-import { DateRangeEvent, DateRangeInputComponent } from 'projects/ui-lib/src/public-api';
+import { DateRangeEvent, DateRangePicker } from 'projects/ui-lib/src/public-api';
 import { InputDateFormat } from 'projects/ui-lib/src/lib/components/forms/date/date-format';
 
 @Component({
   selector: 'app-date-range-input-demo',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, DateRangeInputComponent, DemoCard, DocIoList],
+  imports: [CommonModule, ReactiveFormsModule, DateRangePicker, DemoCard, DocIoList],
   templateUrl: './date-range-picker-demo.html',
 })
 export class DateRangePickerDemo {

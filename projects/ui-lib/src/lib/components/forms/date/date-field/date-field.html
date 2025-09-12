@@ -1,0 +1,33 @@
+<ui-base-input #inputElement [title]="label()" [isRequiredField]="hasRequiredValidator()">
+  <div input class="relative flex items-center w-full text-neutral-400 bg-white shadow-1 rounded-md">
+    @if (iconSrc()) {
+      <ui-svg-icon [size]="18" [src]="iconSrc()!" class="absolute pointer-events-none ml-3 text-neutral-400"></ui-svg-icon>
+    }
+
+    <input
+      [mask]="placeHolder"
+      [placeholder]="displayPlaceholder"
+      class="w-full h-[46px] placeholder-neutral-400 text-black rounded-md border-none outline-none focus:border-none ring-1 ring-neutral-300 focus:ring-primary-500 focus:ring-2 transition-all duration-300"
+      [class.text-neutral-400]="formControl.disabled"
+      [class.disabled-placeholder]="formControl.disabled"
+      [ngModel]="textInputValue()"
+      (ngModelChange)="onTextInputChange($event)"
+      (focus)="onFocus()"
+      [ngClass]="getClass()"
+      (blur)="onBlur()"
+      (input)="onInputChanged($event)"
+>
+  </div>
+</ui-base-input>
+
+@if (formControl.errors && hasErrors()) {
+  <div class="mt-1">
+    <span class="text-caption text-red-500">{{ formControl.errors | humanizeFormMessages: errorMessages() }}</span>
+  </div>
+} @else {
+  @if (showErrorSpace()) {
+    <div class="flex mt-1">
+      <span class="text-caption text-transparent">.</span>
+    </div>
+  }
+}

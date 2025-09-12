@@ -27,12 +27,12 @@ import { provideNgxMask } from '../../../core/input-mask/ngx-mask.providers';
 import { DynamicRendererComponent } from './dynamic-renderer';
 import { ContextMenuButtonAction, ContextMenuButtonComponent } from '../../overlay/context-menu-button/context-menu-button';
 import { CheckboxField } from '../../forms/select/checkbox-field/checkbox-field';
-import { DateInputComponent } from '../../forms/date/date-input/date-input';
 import { AppSvgIconComponent } from "../../misc/app-svg-icon/app-svg-icon";
 import { InputDateFormat } from '../../forms/date/date-format';
 import { SortableTableDirective, TableSortEvent } from './sortable-table';
 import { SearchField } from '../../forms/text/search-field/search-field';
 import { TextPrefixSelectField } from '../../_experimental/text-prefix-select-field/text-prefix-select-field';
+import { DatePicker } from '../../forms/date/date-picker/date-picker';
 
 @Component({
   selector: 'ui-data-table',
@@ -47,7 +47,7 @@ import { TextPrefixSelectField } from '../../_experimental/text-prefix-select-fi
     DynamicRendererComponent,
     MultiSelectDropdownField,
     ReactiveFormsModule,
-    DateInputComponent,
+    DatePicker,
     ContextMenuButtonComponent,
     AppSvgIconComponent,
     TextPrefixSelectField,
