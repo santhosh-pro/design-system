@@ -2,20 +2,20 @@ import { AfterContentInit, Component, computed, input, output, signal } from '@a
 import { NgClass, NgStyle } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
-import { BaseInputComponent } from '../../../../core/base-input/base-input';
+import { BaseInput } from '../../../../core/base-input/base-input';
 import { HumanizeFormMessagesPipe } from '../../../misc/humanize-form-messages';
 import { resolveTemplateWithObject } from '../../../../core/template-resolver';
-import { AppSvgIconComponent } from '../../../misc/app-svg-icon/app-svg-icon';
+import { AppSvgIcon } from '../../../misc/app-svg-icon/app-svg-icon';
 
 @Component({
   selector: 'ui-select-chip-field',
   standalone: true,
   imports: [
-    BaseInputComponent,
+    BaseInput,
     NgClass,
     ReactiveFormsModule,
     HumanizeFormMessagesPipe,
-    AppSvgIconComponent,
+    AppSvgIcon,
     NgStyle,
   ],
   templateUrl: './select-chip-field.html',

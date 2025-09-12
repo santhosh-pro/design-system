@@ -7,7 +7,7 @@ import { NgClass } from '@angular/common';
   imports: [NgClass],
   templateUrl: './base-input.html',
 })
-export class BaseInputComponent {
+export class BaseInput {
   title = input<string | null | undefined>(null);
   isRequiredField = input<boolean>(false);
   width = input<'sm' | 'md' | 'lg' | 'xl' | 'xxl' | '3xl' | 'full' | string>('md');

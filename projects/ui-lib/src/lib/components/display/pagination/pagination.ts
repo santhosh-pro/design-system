@@ -11,7 +11,7 @@ import {NgClass} from "@angular/common";
   ],
   templateUrl: './pagination.html',
 })
-export class PaginationComponent {
+export class Pagination {
   totalItems = input<number>(0);
   pageSizeOptions = input<number[]>([5,10, 25, 50, 100]);
   @Input() pageSize: number = 25; // Default page size

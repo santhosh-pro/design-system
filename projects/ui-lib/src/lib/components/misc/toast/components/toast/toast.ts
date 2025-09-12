@@ -11,20 +11,20 @@ import {
   ViewChild
 } from '@angular/core';
 import {ToastType} from "../../models/toast-type";
-import {ToastCloseButtonComponent} from "./toast-close-button/toast-close-button";
-import {ToastService} from "../../toast-store";
+import {ToastCloseButton} from "./toast-close-button/toast-close-button";
+import {ToastStore} from "../../toast-store";
 import {NgClass} from "@angular/common";
 
 @Component({
   selector: 'ui-toast',
   standalone: true,
   imports: [
-    ToastCloseButtonComponent,
+    ToastCloseButton,
     NgClass
   ],
   templateUrl: './toast.html',
 })
-export class ToastComponent implements OnInit, OnDestroy {
+export class Toast implements OnInit, OnDestroy {
 
   @Output() disposeEvent = new EventEmitter();
 
@@ -64,7 +64,7 @@ export class ToastComponent implements OnInit, OnDestroy {
   show() {
     setTimeout(() => {
       this.hide();
-    }, this.duration ?? ToastService.defaultDuration);
+    }, this.duration ?? ToastStore.defaultDuration);
   }
 
   hide() {

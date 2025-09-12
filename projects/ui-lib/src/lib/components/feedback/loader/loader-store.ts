@@ -1,10 +1,9 @@
 import {Injectable, signal} from '@angular/core';
-import {Observable} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
 })
-export class LoaderService {
+export class LoaderStore {
 
   loadingCount = signal(0);
 

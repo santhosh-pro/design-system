@@ -6,7 +6,7 @@ import {Component, EventEmitter, Output} from '@angular/core';
   imports: [],
   templateUrl: './toast-close-button.html',
 })
-export class ToastCloseButtonComponent {
+export class ToastCloseButton {
 
   @Output() closeEvent = new EventEmitter();
   onCloseClick() {

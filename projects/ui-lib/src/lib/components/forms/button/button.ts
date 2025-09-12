@@ -1,20 +1,20 @@
 import { Component, computed, inject, input, output, Signal } from '@angular/core';
 import { FormGroup, FormGroupDirective } from "@angular/forms";
 import { NgClass } from "@angular/common";
-import { SpinnerComponent } from '../../feedback/spinner/spinner';
-import { AppSvgIconComponent } from '../../misc/app-svg-icon/app-svg-icon';
+import { Spinner } from '../../feedback/spinner/spinner';
+import { AppSvgIcon } from '../../misc/app-svg-icon/app-svg-icon';
 
 @Component({
   selector: 'ui-button',
   standalone: true,
   imports: [
     NgClass,
-    SpinnerComponent,
-    AppSvgIconComponent
+    Spinner,
+    AppSvgIcon
   ],
   templateUrl: './button.html',
 })
-export class ButtonComponent {
+export class Button {
   formGroupDirective = inject(FormGroupDirective, { optional: true });
 
   type = input<'button' | 'submit' | 'reset'>('button');

@@ -6,7 +6,7 @@ import {Component, computed, input} from '@angular/core';
   imports: [],
   templateUrl: './shimmer.html',
 })
-export class ShimmerComponent {
+export class Shimmer {
   type = input<'grid' | 'list' | 'single-line' | 'multiline'>('grid');
   count = input(1);
   loop = computed(() => {

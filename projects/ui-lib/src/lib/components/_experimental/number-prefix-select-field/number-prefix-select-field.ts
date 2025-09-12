@@ -2,8 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, input, OnInit, output, signal } from '@angular/core';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { HumanizeFormMessagesPipe } from '../../misc/humanize-form-messages';
-import { AppSvgIconComponent } from '../../misc/app-svg-icon/app-svg-icon';
-import { BaseInputComponent } from '../../../core/base-input/base-input';
+import { AppSvgIcon } from '../../misc/app-svg-icon/app-svg-icon';
+import { BaseInput } from '../../../core/base-input/base-input';
 import { BaseControlValueAccessor } from '../../../core/base-control-value-accessor';
 
 interface SelectOption {
@@ -21,9 +21,9 @@ interface NumberRangeValue {
   imports: [
     ReactiveFormsModule,
     HumanizeFormMessagesPipe,
-    AppSvgIconComponent,
+    AppSvgIcon,
     CommonModule,
-    BaseInputComponent
+    BaseInput
 ],
   templateUrl: './number-prefix-select-field.html',
 })

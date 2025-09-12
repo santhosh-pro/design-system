@@ -1,21 +1,21 @@
 import { Component, inject, signal } from '@angular/core';
 import { DemoCard, DemoFile } from '../core/demo-card/demo-card';
 import { DocIoList } from '../core/doc-io-list/doc-io-list';
-import { BaseOverlayComponent, ButtonComponent, ContextMenuButtonAction, ContextMenuButtonComponent, OverlayService } from 'projects/ui-lib/src/public-api';
+import { BaseOverlay, Button, ContextMenuButtonAction, ContextMenuButton, OverlayStore } from 'projects/ui-lib/src/public-api';
 
 @Component({
   selector: 'app-overlay-demo',
   standalone: true,
   imports: [
     DemoCard,
-    ButtonComponent,
-    ContextMenuButtonComponent,
+    Button,
+    ContextMenuButton,
     DocIoList
   ],
   templateUrl: './overlay-demo.html'
 })
 export class OverlayDemo {
-  private overlayService = inject(OverlayService);
+  private overlayService = inject(OverlayStore);
 
   // Signals for results
   alertResult = signal<boolean | null>(null);
@@ -151,21 +151,21 @@ onContextActionClick(action: string) {
   }
 
   openBaseOverlay() {
-    this.overlayService.openModal(BaseOverlayComponent, {
+    this.overlayService.openModal(BaseOverlay, {
       data: { title: 'Sample Overlay' },
       disableClose: false
     }).then(() => this.backClickResult.set('Back clicked'));
   }
 
   openSidePanel() {
-    this.overlayService.openSidePanelRight(BaseOverlayComponent, {
+    this.overlayService.openSidePanelRight(BaseOverlay, {
       widthInPx: 400,
       data: { title: 'Right Side Panel Example' }
     }).then(result => this.sidePanelResult.set(result));
   }
 
   openFullScreen() {
-    this.overlayService.openFullScreen(BaseOverlayComponent, {
+    this.overlayService.openFullScreen(BaseOverlay, {
       data: { title: 'Full Screen Overlay' }
     }).then(result => this.fullScreenResult.set(result));
   }

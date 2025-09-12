@@ -11,7 +11,7 @@ import {
   selector: '[sortableTable]',
   standalone: true
 })
-export class SortableTableDirective implements OnInit, AfterViewInit {
+export class SortableTable implements OnInit, AfterViewInit {
 
   sortChange = output<TableSortEvent>();
 

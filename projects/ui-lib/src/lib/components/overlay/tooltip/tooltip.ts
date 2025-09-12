@@ -15,9 +15,9 @@ import { TooltipPosition, TooltipTheme } from './tooltip.enums';
       {{tooltip()}}
     </div>
   `,
-  styleUrl: './tooltip.component.css',
+  styleUrl: './tooltip.css',
 })
-export class TooltipComponent {
+export class Tooltip {
   tooltipPosition = input<TooltipPosition>(TooltipPosition.DEFAULT);
   tooltipTheme = input<TooltipTheme>(TooltipTheme.DEFAULT);
   tooltip = input<string>('');

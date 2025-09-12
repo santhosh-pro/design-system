@@ -1,11 +1,11 @@
 import { Component, input } from '@angular/core';
-import { NoDataComponent } from "../../feedback/no-data/no-data";
+import { NoData } from '../../feedback/no-data/no-data';
 
 @Component({
   selector: 'ui-no-data-table',
   standalone: true,
   imports: [
-    NoDataComponent
+    NoData
   ],
   template: `
           <tbody class="bg-white text-center py-14">
@@ -19,6 +19,6 @@ import { NoDataComponent } from "../../feedback/no-data/no-data";
         </tbody>
 `,
 })
-export class NoDataTableComponent {
+export class NoDataTable {
   message = input<string>();
 }

@@ -4,9 +4,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Overlay, OverlayModule } from '@angular/cdk/overlay';
 import { PortalModule } from '@angular/cdk/portal';
 import { BaseControlValueAccessor } from '../../../core/base-control-value-accessor';
-import { BaseInputComponent } from '../../../core/base-input/base-input';
+import { BaseInput } from '../../../core/base-input/base-input';
 import { NgxMaskDirective } from '../../../core/input-mask/ngx-mask.directive';
-import { AppSvgIconComponent } from '../../misc/app-svg-icon/app-svg-icon';
+import { AppSvgIcon } from '../../misc/app-svg-icon/app-svg-icon';
 import { HumanizeFormMessagesPipe } from '../../misc/humanize-form-messages';
 import { CheckboxField } from '../../forms/select/checkbox-field/checkbox-field';
 
@@ -17,13 +17,13 @@ import { CheckboxField } from '../../forms/select/checkbox-field/checkbox-field'
     NgClass,
     FormsModule,
     ReactiveFormsModule,
-    BaseInputComponent,
+    BaseInput,
     HumanizeFormMessagesPipe,
     NgxMaskDirective,
     CheckboxField,
     PortalModule,
     OverlayModule,
-    AppSvgIconComponent,
+    AppSvgIcon,
   ],
   templateUrl: './time-picker.component.html',
   styleUrl: './time-picker.component.scss',

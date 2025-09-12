@@ -16,17 +16,17 @@ import { CdkConnectedOverlay, Overlay } from '@angular/cdk/overlay';
 import { NgClass } from '@angular/common';
 import { resolveTemplateWithObject } from '../../../../core/template-resolver';
 import { deepEqual } from '../../../../core/core-utils';
-import { BaseInputComponent } from '../../../../core/base-input/base-input';
+import { BaseInput } from '../../../../core/base-input/base-input';
 import { HumanizeFormMessagesPipe } from '../../../misc/humanize-form-messages';
 import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
 
 @Component({
   selector: 'ui-select-dropdown-field',
-  imports: [BaseInputComponent, NgClass, HumanizeFormMessagesPipe, CdkConnectedOverlay, FormsModule],
+  imports: [BaseInput, NgClass, HumanizeFormMessagesPipe, CdkConnectedOverlay, FormsModule],
   templateUrl: './select-dropdown-field.html',
 })
 export class SelectDropdownField<T> extends BaseControlValueAccessor<T | null> implements AfterContentInit {
-private cdr = inject(ChangeDetectorRef);
+  private cdr = inject(ChangeDetectorRef);
   private renderer = inject(Renderer2);
   private overlay = inject(Overlay);
 

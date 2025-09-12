@@ -1,16 +1,16 @@
 import {Component, inject, output} from '@angular/core';
 import {DIALOG_DATA, DialogRef} from "@angular/cdk/dialog";
 import {ContextMenuButtonAction} from '../context-menu-button';
-import { AppSvgIconComponent } from '../../../misc/app-svg-icon/app-svg-icon';
+import { AppSvgIcon } from '../../../misc/app-svg-icon/app-svg-icon';
 
 @Component({
   selector: 'ui-overlay-context-menu',
   imports: [
-    AppSvgIconComponent,
+    AppSvgIcon,
   ],
   templateUrl: './overlay-context-menu.html',
 })
-export class OverlayContextMenuComponent {
+export class OverlayContextMenu {
 
   dialogRef = inject(DialogRef);
   actions: ContextMenuButtonAction[] = inject(DIALOG_DATA);

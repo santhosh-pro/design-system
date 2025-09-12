@@ -7,7 +7,7 @@ import { viewChild } from '@angular/core';
   templateUrl: './base-overlay.html',
   standalone: true,
 })
-export class BaseOverlayComponent implements AfterViewInit {
+export class BaseOverlay implements AfterViewInit {
   title = input<string>();
   showTitle = input<boolean>(true);
   showBackButton = input<boolean>(false);

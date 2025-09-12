@@ -71,7 +71,7 @@ export * from './lib/components/misc/unsaved-aware';
 // ========== OVERLAY ==========
 export * from './lib/components/overlay/alert-dialog/alert-dialog';
 export * from './lib/components/overlay/base-overlay/base-overlay';
-export * from './lib/components/overlay/tooltip/tooltip.component';
+export * from './lib/components/overlay/tooltip/tooltip';
 export * from './lib/components/overlay/tooltip/tooltip.enums';
 export * from './lib/components/overlay/tooltip/tooltip.directive';
 

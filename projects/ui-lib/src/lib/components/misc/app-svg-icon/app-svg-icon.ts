@@ -9,7 +9,7 @@ import { SvgIconComponent } from './lib/svg-icon';
   ],
   templateUrl: './app-svg-icon.html',
 })
-export class AppSvgIconComponent {
+export class AppSvgIcon {
 
   src = input.required<string>();
   stretch = input(false);

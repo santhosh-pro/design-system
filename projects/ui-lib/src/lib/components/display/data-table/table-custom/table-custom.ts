@@ -1,17 +1,15 @@
-import {Component, input, Input, output} from '@angular/core';
+import {Component, input, Input, output} from '@angular/core'; 
 import {TableActionEvent} from '../data-table';
 
 @Component({
-  selector: 'lib-table-custom-component',
   standalone: true,
   imports: [],
-  templateUrl: './table-custom.html',
+  template: ``
 })
-export class TableCustomComponent<T> {
+export class TableCustom<T> {
   @Input() rowData!: T;
   @Input() data: any;
   @Input() rowPosition: number | undefined;
   @Input() isLastRow: boolean = false;
-
   actionPerformed = output<TableActionEvent>();
 }

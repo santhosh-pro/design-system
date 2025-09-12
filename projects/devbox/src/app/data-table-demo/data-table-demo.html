@@ -6,7 +6,7 @@
       description="A simple data table with sorting, pagination, and badge columns." [files]="basicFiles()">
       <ui-data-table [columnGroups]="nestedColumns()" [data]="nestedData()" [enableRowSelection]="true"
         [rowSelectionKey]="'id'" [footerComponent]="ExpandRowDemo" [enablePagination]="false" [pageSize]="10"
-        [totalCount]="nestedData().length" [enableSearch]="true" [formControl]="basicControl"
+        [totalCount]="nestedData().length" [enableSearch]="true" [formControl]="basicControl" [expandableComponent]="ExpandRowDemo"
         (rowSelectionChange)="onRowSelectionChange($event)"
         (stateChange)="onTableStateChanged($event)">
       </ui-data-table>

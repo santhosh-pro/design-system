@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, input, OnDestroy, OnInit, output, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
-import { BaseInputComponent } from '../../../../core/base-input/base-input';
+import { BaseInput } from '../../../../core/base-input/base-input';
 import { HumanizeFormMessagesPipe } from '../../../../components/misc/humanize-form-messages';
 
 @Component({
@@ -11,7 +11,7 @@ import { HumanizeFormMessagesPipe } from '../../../../components/misc/humanize-f
     ReactiveFormsModule,
     HumanizeFormMessagesPipe,
     CommonModule,
-    BaseInputComponent,
+    BaseInput,
   ],
   templateUrl: './search-field.html',
    styles: `

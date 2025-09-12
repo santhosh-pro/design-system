@@ -7,6 +7,6 @@ import { Component } from '@angular/core';
     ],
   templateUrl: './context-menu-icon.html',
 })
-export class ContextMenuIconComponent {
+export class ContextMenuIcon {
 
 }

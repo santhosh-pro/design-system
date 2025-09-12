@@ -17,13 +17,13 @@ import { Subscription } from "rxjs";
 import { isValidDate } from "rxjs/internal/util/isDate";
 import { DateRangeOverlay } from "./date-range-overlay/date-range-overlay";
 import { BaseControlValueAccessor } from "../../../../core/base-control-value-accessor";
-import { BaseInputComponent } from "../../../../core/base-input/base-input";
+import { BaseInput } from "../../../../core/base-input/base-input";
 import { FormValidationUtils } from "../../../../core/form-validation-utils";
 import { HumanizeFormMessagesPipe } from "../../../misc/humanize-form-messages";
 import { onlyFutureDateValidator } from "../../../../core/validators/only-future-date-validator";
 import { onlyPastDateValidator } from "../../../../core/validators/only-past-date-validator";
-import { AppSvgIconComponent } from "../../../misc/app-svg-icon/app-svg-icon";
-import { OverlayService } from "../../../overlay/overlay";
+import { AppSvgIcon } from "../../../misc/app-svg-icon/app-svg-icon";
+import { OverlayStore } from "../../../overlay/overlay";
 import { DateRangeEvent } from "./date-range-overlay/date-range-selection/date-range-selection";
 import { InputDateFormat } from "../date-format";
 
@@ -35,8 +35,8 @@ import { InputDateFormat } from "../date-format";
     HumanizeFormMessagesPipe,
     ReactiveFormsModule,
     NgClass,
-    BaseInputComponent,
-    AppSvgIconComponent,
+    BaseInput,
+    AppSvgIcon,
     FormsModule,
   ],
   templateUrl: "./date-range-picker.html",
@@ -61,7 +61,7 @@ export class DateRangePicker
   maxDaysRange = input<number | null>(null);
   inputDateFormat = input<InputDateFormat>(InputDateFormat.ddmmyyyy);
 
-  overlayService = inject(OverlayService);
+  overlayService = inject(OverlayStore);
   private cdr = inject(ChangeDetectorRef);
 
   isFocused = signal(false);

@@ -16,7 +16,7 @@ import { CdkConnectedOverlay, Overlay } from '@angular/cdk/overlay';
 import { NgClass } from '@angular/common';
 import { resolveTemplateWithObject } from '../../../../core/template-resolver';
 import { deepEqual } from '../../../../core/core-utils';
-import { BaseInputComponent } from '../../../../core/base-input/base-input';
+import { BaseInput } from '../../../../core/base-input/base-input';
 import { HumanizeFormMessagesPipe } from '../../../misc/humanize-form-messages';
 import { CheckboxField } from '../checkbox-field/checkbox-field';
 import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
@@ -30,7 +30,7 @@ export enum MultiSelectDropdownAppearance {
 @Component({
   selector: 'ui-multi-select-dropdown',
   standalone: true,
-  imports: [BaseInputComponent, NgClass, HumanizeFormMessagesPipe, CdkConnectedOverlay, CheckboxField, FormsModule],
+  imports: [BaseInput, NgClass, HumanizeFormMessagesPipe, CdkConnectedOverlay, CheckboxField, FormsModule],
   templateUrl: './multi-select-dropdown-field.html',
 })
 export class MultiSelectDropdownField<T> extends BaseControlValueAccessor<T[]> implements AfterContentInit {

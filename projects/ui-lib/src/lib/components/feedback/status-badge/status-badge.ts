@@ -9,7 +9,7 @@ import {NgClass} from "@angular/common";
   templateUrl: './status-badge.html',
   standalone: true,
 })
-export class StatusBadgeComponent {
+export class StatusBadge {
   status = input.required<string | null | undefined>();
   backgroundColorClass = input.required<string | null>();
   indicatorColor = input<string | null>();

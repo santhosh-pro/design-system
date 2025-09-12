@@ -7,12 +7,12 @@ import {
 } from '@angular/cdk/overlay';
 import { ComponentType } from '@angular/cdk/portal';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { AlertDialogComponent } from './alert-dialog/alert-dialog';
+import { AlertDialog } from './alert-dialog/alert-dialog';
 
 @Injectable({
   providedIn: 'root'
 })
-export class OverlayService {
+export class OverlayStore {
   private dialog = inject(Dialog);
   private overlay = inject(Overlay);
   private breakpointObserver = inject(BreakpointObserver);
@@ -178,7 +178,7 @@ export class OverlayService {
     const dialogId = Math.random().toString(36).substring(2);
     console.log('Opening alert dialog with ID:', dialogId);
 
-    const dialogRef = this.dialog.open(AlertDialogComponent, {
+    const dialogRef = this.dialog.open(AlertDialog, {
       width: '300px',
       data: { title, message },
       panelClass: [...this.basePanelClass, 'rounded-3xl'],

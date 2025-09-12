@@ -3,14 +3,14 @@ import { FlexibleConnectedPositionStrategy, GlobalPositionStrategy, Overlay } fr
 import { Dialog, DialogRef } from '@angular/cdk/dialog';
 import { Subscription } from 'rxjs';
 import { viewChild } from '@angular/core';
-import { OverlayContextMenuComponent } from './overlay-context-menu/overlay-context-menu';
+import { OverlayContextMenu } from './overlay-context-menu/overlay-context-menu';
 
 @Component({
   selector: 'ui-context-menu-button',
   templateUrl: './context-menu-button.html',
   standalone: true,
 })
-export class ContextMenuButtonComponent implements OnDestroy {
+export class ContextMenuButton implements OnDestroy {
   // Inputs
   contextActions = input<ContextMenuButtonAction[]>();
   positionPreference = input<
@@ -40,7 +40,7 @@ export class ContextMenuButtonComponent implements OnDestroy {
   private dialog = inject(Dialog);
 
   // Signals
-  private dialogRef = signal<DialogRef<any, OverlayContextMenuComponent> | undefined>(undefined);
+  private dialogRef = signal<DialogRef<any, OverlayContextMenu> | undefined>(undefined);
   private subscription = signal<Subscription | undefined>(undefined);
 
   // Base panel classes
@@ -106,7 +106,7 @@ export class ContextMenuButtonComponent implements OnDestroy {
     const disableClose = false;
 
     this.dialogRef.set(
-      this.dialog.open(OverlayContextMenuComponent, {
+      this.dialog.open(OverlayContextMenu, {
         positionStrategy,
         scrollStrategy: appliedScrollStrategy,
         disableClose,

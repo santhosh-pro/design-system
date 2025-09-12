@@ -1,15 +1,15 @@
 import {Component, inject} from '@angular/core';
-import { LoaderService } from './loader-store';
-import { SpinnerComponent } from '../spinner/spinner';
+import { LoaderStore } from './loader-store';
+import { Spinner as Spinner } from '../spinner/spinner';
 @Component({
   selector: 'app-loader',
   standalone: true,
   imports: [
-    SpinnerComponent
+    Spinner
   ],
   templateUrl: './loader.html',
 })
-export class LoaderComponent {
+export class Loader {
 
-  loaderService = inject(LoaderService);
+  loaderService = inject(LoaderStore);
 }

@@ -9,6 +9,6 @@ import {NgClass} from "@angular/common";
   ],
   templateUrl: './spinner.html',
 })
-export class SpinnerComponent {
+export class Spinner {
   borderColor = input('border-primary-500');
 }

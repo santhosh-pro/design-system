@@ -6,7 +6,7 @@ import {ToastType} from "./models/toast-type";
 @Injectable({
   providedIn: 'root'
 })
-export class ToastService {
+export class ToastStore {
   static defaultDuration = 3500;
   toastEvents: Observable<ToastEvent>;
   private _toastEvents = new Subject<ToastEvent>();

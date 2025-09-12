@@ -14,16 +14,16 @@ import {
   ViewChild,
   OnDestroy
 } from '@angular/core';
-import { PaginationComponent, PaginationEvent } from '../../display/pagination/pagination';
+import { Pagination, PaginationEvent } from '../../display/pagination/pagination';
 import { DatePipe } from '@angular/common';
-import { StatusBadgeComponent } from '../../feedback/status-badge/status-badge';
+import { StatusBadge } from '../../feedback/status-badge/status-badge';
 import { FormsModule } from '@angular/forms';
 import { BaseControlValueAccessor } from '../../../core/base-control-value-accessor';
-import { DynamicRendererComponent } from './dynamic-renderer';
-import { ContextMenuButtonAction, ContextMenuButtonComponent } from '../../overlay/context-menu-button/context-menu-button';
+import { DynamicRenderer } from './dynamic-renderer';
+import { ContextMenuButtonAction, ContextMenuButton } from '../../overlay/context-menu-button/context-menu-button';
 import { CheckboxField } from '../../forms/select/checkbox-field/checkbox-field';
-import { AppSvgIconComponent } from "../../misc/app-svg-icon/app-svg-icon";
-import { SortableTableDirective, TableSortEvent } from './sortable-table';
+import { AppSvgIcon } from "../../misc/app-svg-icon/app-svg-icon";
+import { SortableTable, TableSortEvent } from './sortable-table';
 import { SearchField } from '../../forms/text/search-field/search-field';
 import { resolveTemplateWithObject } from '../../../core/template-resolver';
 
@@ -31,20 +31,20 @@ import { resolveTemplateWithObject } from '../../../core/template-resolver';
   selector: 'ui-data-table',
   standalone: true,
   imports: [
-    PaginationComponent,
+    Pagination,
     DatePipe,
-    StatusBadgeComponent,
-    SortableTableDirective,
+    StatusBadge,
+    SortableTable,
     CheckboxField,
     FormsModule,
-    DynamicRendererComponent,
-    ContextMenuButtonComponent,
-    AppSvgIconComponent,
+    DynamicRenderer,
+    ContextMenuButton,
+    AppSvgIcon,
     SearchField
   ],
   templateUrl: './data-table.html',
 })
-export class DataTableComponent<T> extends BaseControlValueAccessor<TableStateEvent> implements OnInit, AfterViewInit, OnDestroy {
+export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> implements OnInit, AfterViewInit, OnDestroy {
   @ContentChildren('filter') headerComponents!: QueryList<any>;
   @ViewChild('table', { static: false }) tableRef!: ElementRef;
 

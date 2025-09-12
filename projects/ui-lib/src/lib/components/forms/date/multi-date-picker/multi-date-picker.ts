@@ -5,13 +5,13 @@ import { Subscription } from 'rxjs';
 import { isValidDate } from 'rxjs/internal/util/isDate';
 import { MultiDateOverlay } from './multi-date-overlay/multi-date-overlay';
 import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
-import { BaseInputComponent } from '../../../../core/base-input/base-input';
+import { BaseInput } from '../../../../core/base-input/base-input';
 import { FormValidationUtils } from '../../../../core/form-validation-utils';
 import { HumanizeFormMessagesPipe } from '../../../misc/humanize-form-messages';
 import { onlyFutureDateValidator } from '../../../../core/validators/only-future-date-validator';
 import { onlyPastDateValidator } from '../../../../core/validators/only-past-date-validator';
-import { AppSvgIconComponent } from '../../../misc/app-svg-icon/app-svg-icon';
-import { OverlayService } from '../../../overlay/overlay';
+import { AppSvgIcon } from '../../../misc/app-svg-icon/app-svg-icon';
+import { OverlayStore } from '../../../overlay/overlay';
 import { InputDateFormat, Weekday } from '../date-format';
 import { NgxMaskDirective } from '../../../../core/input-mask/ngx-mask.directive';
 
@@ -24,8 +24,8 @@ import { NgxMaskDirective } from '../../../../core/input-mask/ngx-mask.directive
     NgxMaskDirective,
     ReactiveFormsModule,
     NgClass,
-    BaseInputComponent,
-    AppSvgIconComponent,
+    BaseInput,
+    AppSvgIcon,
     FormsModule,
 ],
   templateUrl: './multi-date-picker.html',
@@ -47,7 +47,7 @@ export class MultiDatePicker extends BaseControlValueAccessor<Date[]> implements
   disabledDates = input<Date[]>([]);
   inputDateFormat = input<InputDateFormat>(InputDateFormat.mmddyyyy);
 
-  overlayService = inject(OverlayService);
+  overlayService = inject(OverlayStore);
 
   isFocused = signal(false);
   textInputValue = signal<string>('');

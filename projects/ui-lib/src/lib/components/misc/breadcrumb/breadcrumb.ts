@@ -10,10 +10,10 @@ import { NgClass } from '@angular/common';
   imports: [NgClass],
   templateUrl: './breadcrumb.html',
 })
-export class BreadcrumbComponent implements OnInit, OnDestroy {
+export class Breadcrumb implements OnInit, OnDestroy {
   router = inject(Router);
   baseRoute = input<string>('/main');
-  breadcrumbs: Breadcrumb[] = [];
+  breadcrumbs: BreadcrumbItem[] = [];
   private subscription: Subscription | undefined;
 
   ngOnInit(): void {
@@ -73,7 +73,7 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
   }
 }
 
-export interface Breadcrumb {
+export interface BreadcrumbItem {
   title: string;
   route?: string;
   icon?: string;

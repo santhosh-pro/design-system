@@ -1,11 +1,11 @@
 import { Component, computed, input, inject, signal, AfterContentInit, output } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { BaseInputComponent } from '../../../../core/base-input/base-input';
+import { BaseInput } from '../../../../core/base-input/base-input';
 import { HumanizeFormMessagesPipe } from '../../../misc/humanize-form-messages';
 import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
 import { ColumnNode, TableStateEvent } from '../../../display/data-table/data-table';
-import { OverlayService } from '../../../overlay/overlay';
+import { OverlayStore } from '../../../overlay/overlay';
 import { MultiSelectDataTableDialog } from './multi-select-data-table-dialog/multi-select-data-table-dialog';
 
 @Component({
@@ -14,7 +14,7 @@ import { MultiSelectDataTableDialog } from './multi-select-data-table-dialog/mul
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    BaseInputComponent,
+    BaseInput,
     HumanizeFormMessagesPipe,
   ],
   templateUrl: './multi-select-data-table-field.html',
@@ -45,7 +45,7 @@ export class MultiSelectDataTableField<T> extends BaseControlValueAccessor<any[]
     return items.map((item) => this.getDisplayString(item)).join(', ');
   });
 
-  private overlayService = inject(OverlayService); // Inject OverlayService
+  private overlayService = inject(OverlayStore); // Inject OverlayService
 
   override ngAfterContentInit(): void {
     super.ngAfterContentInit();

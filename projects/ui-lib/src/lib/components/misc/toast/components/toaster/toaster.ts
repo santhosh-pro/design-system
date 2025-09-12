@@ -1,24 +1,24 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, input, OnInit} from '@angular/core';
-import {ToastComponent} from "../toast/toast";
+import {Toast} from "../toast/toast";
 import {ToastEvent} from "../../models/toast-event";
-import {ToastService} from "../../toast-store";
+import {ToastStore} from "../../toast-store";
 
 @Component({
   selector: 'ui-toaster',
   standalone: true,
   imports: [
-    ToastComponent
+    Toast
   ],
   templateUrl: './toaster.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ToasterComponent implements OnInit {
+export class Toaster implements OnInit {
   themeType = input<'light' | 'dark'>('light');
 
   currentToasts: ToastEvent[] = [];
 
   constructor(
-    private toastService: ToastService,
+    private toastService: ToastStore,
     private cdr: ChangeDetectorRef
   ) {}
 

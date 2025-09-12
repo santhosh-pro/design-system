@@ -3,12 +3,12 @@ import { FormsModule, ReactiveFormsModule, ValidatorFn } from '@angular/forms';
 import { NgClass } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
-import { BaseInputComponent } from '../../../../core/base-input/base-input';
+import { BaseInput } from '../../../../core/base-input/base-input';
 import { FormValidationUtils } from '../../../../core/form-validation-utils';
 import { HumanizeFormMessagesPipe } from '../../../misc/humanize-form-messages';
 import { onlyFutureDateValidator } from '../../../../core/validators/only-future-date-validator';
 import { onlyPastDateValidator } from '../../../../core/validators/only-past-date-validator';
-import { AppSvgIconComponent } from '../../../misc/app-svg-icon/app-svg-icon';
+import { AppSvgIcon } from '../../../misc/app-svg-icon/app-svg-icon';
 import { NgxMaskDirective } from '../../../../core/input-mask/ngx-mask.directive';
 import { InputDateFormat, Weekday } from '../date-format';
 import { DateUtils } from '../date-utils';
@@ -21,13 +21,13 @@ import { DateUtils } from '../date-utils';
     NgxMaskDirective,
     ReactiveFormsModule,
     NgClass,
-    BaseInputComponent,
-    AppSvgIconComponent,
+    BaseInput,
+    AppSvgIcon,
     FormsModule
   ],
   templateUrl: './date-field.html',
 })
-export class DateFieldComponent extends BaseControlValueAccessor<Date | null> implements OnDestroy {
+export class DateField extends BaseControlValueAccessor<Date | null> implements OnDestroy {
   @ViewChild('inputElement', { static: false }) inputElement?: ElementRef;
 
   label = input<string | null>();

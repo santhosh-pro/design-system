@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, input, output, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { BaseInputComponent } from '../../../../core/base-input/base-input';
-import { AppSvgIconComponent } from '../../../misc/app-svg-icon/app-svg-icon';
+import { BaseInput } from '../../../../core/base-input/base-input';
+import { AppSvgIcon } from '../../../misc/app-svg-icon/app-svg-icon';
 import { HumanizeFormMessagesPipe } from '../../../misc/humanize-form-messages';
 import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
 
@@ -12,9 +12,9 @@ import { BaseControlValueAccessor } from '../../../../core/base-control-value-ac
   imports: [
     ReactiveFormsModule,
     HumanizeFormMessagesPipe,
-    AppSvgIconComponent,
+    AppSvgIcon,
     CommonModule,
-    BaseInputComponent,
+    BaseInput,
   ],
   templateUrl: './number-field.html',
   styles: `

@@ -1,11 +1,11 @@
 import { AfterContentInit, Component, computed, input, output, signal, SimpleChanges } from '@angular/core';
 import { NgClass, NgStyle } from '@angular/common';
-import { AppSvgIconComponent } from '../../../misc/app-svg-icon/app-svg-icon';
+import { AppSvgIcon } from '../../../misc/app-svg-icon/app-svg-icon';
 import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
-import { BaseInputComponent } from '../../../../core/base-input/base-input';
+import { BaseInput } from '../../../../core/base-input/base-input';
 import { resolveTemplateWithObject } from '../../../../core/template-resolver';
 import { HumanizeFormMessagesPipe } from '../../../misc/humanize-form-messages';
-import { ShimmerComponent } from '../../../feedback/shimmer/shimmer';
+import { Shimmer } from '../../../feedback/shimmer/shimmer';
 
 interface State<T> {
   loading: () => boolean;
@@ -18,11 +18,11 @@ interface State<T> {
   selector: 'ui-multi-select-chip-field',
   standalone: true,
   imports: [
-    BaseInputComponent,
+    BaseInput,
     HumanizeFormMessagesPipe,
-    ShimmerComponent,
+    Shimmer,
     NgClass,
-    AppSvgIconComponent,
+    AppSvgIcon,
     NgStyle,
   ],
   templateUrl: './multi-select-chip-field.html',

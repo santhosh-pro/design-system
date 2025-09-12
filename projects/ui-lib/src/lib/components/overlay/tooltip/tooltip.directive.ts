@@ -12,7 +12,7 @@ import {
   input,
 } from '@angular/core';
 import { TooltipPosition, TooltipTheme } from './tooltip.enums';
-import { TooltipComponent } from './tooltip.component';
+import { Tooltip } from './tooltip';
 
 @Directive({
   selector: '[tooltip]',
@@ -25,7 +25,7 @@ export class TooltipDirective implements OnDestroy {
   showDelay = input<number>(0);
   hideDelay = input<number>(0);
 
-  private componentRef: ComponentRef<TooltipComponent> | null = null;
+  private componentRef: ComponentRef<Tooltip> | null = null;
   private showTimeout?: number;
   private hideTimeout?: number;
   private touchTimeout?: number;
@@ -79,7 +79,7 @@ export class TooltipDirective implements OnDestroy {
     window.clearTimeout(this.hideTimeout);
     
     // Create component using the new createComponent API
-    this.componentRef = createComponent(TooltipComponent, {
+    this.componentRef = createComponent(Tooltip, {
       environmentInjector: this.appRef.injector,
       elementInjector: this.injector,
     });

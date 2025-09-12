@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, effect, input, output, signal } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
-import { BaseInputComponent } from '../../../../core/base-input/base-input';
+import { BaseInput } from '../../../../core/base-input/base-input';
 import { HumanizeFormMessagesPipe } from '../../../../components/misc/humanize-form-messages';
 
 @Component({
@@ -10,7 +10,7 @@ import { HumanizeFormMessagesPipe } from '../../../../components/misc/humanize-f
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    BaseInputComponent,
+    BaseInput,
     HumanizeFormMessagesPipe,
   ],
   templateUrl: './otp-field.html',

@@ -1,12 +1,12 @@
 import { DatePipe } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TextareaField, TextField, SearchField, OtpField, PasswordField, NumberField, TextPrefixSelectField, NumberPrefixSelectField, DateFieldComponent, DatePicker, InputDateFormat, Weekday } from 'projects/ui-lib/src/public-api';
+import { TextareaField, TextField, SearchField, OtpField, PasswordField, NumberField, TextPrefixSelectField, NumberPrefixSelectField, DateField, DatePicker, InputDateFormat, Weekday } from 'projects/ui-lib/src/public-api';
 
 @Component({
   selector: 'app-number-field-demo',
   imports: [ReactiveFormsModule, 
-    TextField, TextareaField, SearchField, OtpField, PasswordField, NumberField, TextPrefixSelectField, NumberPrefixSelectField, DateFieldComponent, DatePicker, DatePipe],
+    TextField, TextareaField, SearchField, OtpField, PasswordField, NumberField, TextPrefixSelectField, NumberPrefixSelectField, DateField, DatePicker, DatePipe],
   templateUrl: './number-field-demo.html',
   styleUrl: './number-field-demo.css'
 })

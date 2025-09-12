@@ -7,7 +7,7 @@ import {Component, input} from '@angular/core';
   ],
   templateUrl: './no-data.html',
 })
-export class NoDataComponent {
+export class NoData {
   size = input(250);
   message = input.required<string>();
 }

@@ -1,7 +1,7 @@
 import { Component, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
-import { ColumnNode, DataTableComponent, TableStateEvent } from '../../../../display/data-table/data-table';
+import { ColumnNode, DataTable, TableStateEvent } from '../../../../display/data-table/data-table';
 
 export interface SelectDialogData<T> {
   title?: string;
@@ -20,7 +20,7 @@ export interface SelectDialogData<T> {
 @Component({
   selector: 'ui-multi-select-data-table-dialog',
   standalone: true,
-  imports: [CommonModule, DataTableComponent],
+  imports: [CommonModule, DataTable],
   templateUrl: './multi-select-data-table-dialog.html',
 })
 export class MultiSelectDataTableDialog<T> {

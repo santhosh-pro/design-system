@@ -1,13 +1,13 @@
 import { Component, OnInit, input, output, signal } from '@angular/core';
 import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
-import { SpinnerComponent } from '../../../feedback/spinner/spinner';
+import { Spinner } from '../../../feedback/spinner/spinner';
 import { HumanizeFormMessagesPipe } from '../../../misc/humanize-form-messages';
-import { AppSvgIconComponent } from '../../../misc/app-svg-icon/app-svg-icon';
+import { AppSvgIcon } from '../../../misc/app-svg-icon/app-svg-icon';
 
 @Component({
   selector: 'ui-upload-field',
   standalone: true,
-  imports: [SpinnerComponent, HumanizeFormMessagesPipe, AppSvgIconComponent],
+  imports: [Spinner, HumanizeFormMessagesPipe, AppSvgIcon],
   templateUrl: './upload-field.html',
 })
 export class UploadField

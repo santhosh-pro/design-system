@@ -7,7 +7,7 @@ import {
 import {FormGroupDirective} from '@angular/forms';
 import {Router, NavigationStart, Event} from '@angular/router';
 import {Subscription} from 'rxjs';
-import { OverlayService } from '../overlay/overlay';
+import { OverlayStore } from '../overlay/overlay';
 
 @Directive({
   standalone: true,
@@ -18,7 +18,7 @@ export class UnsavedAwareDirective implements OnDestroy {
 
   formGroupDirective = inject(FormGroupDirective);
   router = inject(Router);
-  overlayService = inject(OverlayService);
+  overlayService = inject(OverlayStore);
 
   private routerSubscription?: Subscription;
   private isConfirming = false;

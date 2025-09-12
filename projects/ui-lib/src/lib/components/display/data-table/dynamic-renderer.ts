@@ -18,7 +18,7 @@ import { TableActionEvent } from './data-table';
   selector: 'ui-dynamic-renderer',
   template: '<ng-container #container></ng-container>',
 })
-export class DynamicRendererComponent<T> implements OnChanges, OnDestroy {
+export class DynamicRenderer<T> implements OnChanges, OnDestroy {
   @Input() component!: Type<any>;
   @Input() rowData!: T;
   data = input<any>();

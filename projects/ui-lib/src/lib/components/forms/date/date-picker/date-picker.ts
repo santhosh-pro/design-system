@@ -1,16 +1,16 @@
 import { NgClass } from '@angular/common';
 import { Component, ElementRef, inject, input, OnDestroy, signal, ViewChild } from '@angular/core';
 import { ReactiveFormsModule, ValidatorFn } from '@angular/forms';
-import { AppSvgIconComponent } from '../../../../components/misc/app-svg-icon/app-svg-icon';
+import { AppSvgIcon } from '../../../../components/misc/app-svg-icon/app-svg-icon';
 import { HumanizeFormMessagesPipe } from '../../../../components/misc/humanize-form-messages';
-import { BaseInputComponent } from '../../../../core/base-input/base-input';
+import { BaseInput } from '../../../../core/base-input/base-input';
 import { Subscription } from 'rxjs';
 import { FormValidationUtils } from '../../../../core/form-validation-utils';
 import { onlyFutureDateValidator } from '../../../../core/validators/only-future-date-validator';
 import { onlyPastDateValidator } from '../../../../core/validators/only-past-date-validator';
 import { Weekday, InputDateFormat } from '../date-format';
 import { DateUtils } from '../date-utils';
-import { OverlayService } from '../../../../components/overlay/overlay';
+import { OverlayStore } from '../../../../components/overlay/overlay';
 import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
 import { DateOverlay } from './date-overlay/date-overlay';
 
@@ -20,8 +20,8 @@ import { DateOverlay } from './date-overlay/date-overlay';
     HumanizeFormMessagesPipe,
     ReactiveFormsModule,
     NgClass,
-    BaseInputComponent,
-    AppSvgIconComponent
+    BaseInput,
+    AppSvgIcon
   ],
   templateUrl: './date-picker.html',
 })
@@ -41,7 +41,7 @@ export class DatePicker extends BaseControlValueAccessor<Date | null> implements
   disabledDates = input<Date[]>([]);
   inputDateFormat = input<InputDateFormat>(InputDateFormat.mmddyyyy);
 
-  overlayService = inject(OverlayService);
+  overlayService = inject(OverlayStore);
   isFocused = signal(false);
   textInputValue = signal<string | null>(null);
   private subscription?: Subscription;

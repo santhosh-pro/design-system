@@ -20,17 +20,17 @@ import { debounceTime } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { DynamicRendererNext } from './dynamic-renderer';
 import { SortableTableDirectiveNext, TableSortEvent } from './sortable-table';
-import { AppSvgIconComponent } from 'src/lib/components/misc/app-svg-icon/app-svg-icon';
+import { AppSvgIcon } from 'src/lib/components/misc/app-svg-icon/app-svg-icon';
 import { BaseControlValueAccessor } from 'src/lib/core/base-control-value-accessor';
 import { resolveTemplateWithObject } from 'src/lib/core/template-resolver';
-import { PaginationComponent, StatusBadgeComponent, CheckboxField, MultiSelectDropdownField, DatePicker, ContextMenuButtonComponent, TextPrefixSelectField, SearchField, provideNgxMask, InputDateFormat, PaginationEvent, ContextMenuButtonAction } from 'src/public-api';
+import { Pagination, StatusBadge, CheckboxField, MultiSelectDropdownField, DatePicker, ContextMenuButton, TextPrefixSelectField, SearchField, provideNgxMask, InputDateFormat, PaginationEvent, ContextMenuButtonAction } from 'src/public-api';
 @Component({
   selector: 'ui-data-table-next',
   standalone: true,
   imports: [
-    PaginationComponent,
+    Pagination,
     DatePipe,
-    StatusBadgeComponent,
+    StatusBadge,
     SortableTableDirectiveNext,
     CheckboxField,
     FormsModule,
@@ -38,8 +38,8 @@ import { PaginationComponent, StatusBadgeComponent, CheckboxField, MultiSelectDr
     MultiSelectDropdownField,
     ReactiveFormsModule,
     DatePicker,
-    ContextMenuButtonComponent,
-    AppSvgIconComponent,
+    ContextMenuButton,
+    AppSvgIcon,
     TextPrefixSelectField,
     SearchField
 ],

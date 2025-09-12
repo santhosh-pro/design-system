@@ -1,11 +1,11 @@
 import { Component, input } from '@angular/core';
-import { NoDataComponent } from 'src/public-api';
+import { NoData } from 'src/public-api';
 
 @Component({
   selector: 'ui-no-data-table',
   standalone: true,
   imports: [
-    NoDataComponent
+    NoData
   ],
   template: `
           <tbody class="bg-white text-center py-14">
