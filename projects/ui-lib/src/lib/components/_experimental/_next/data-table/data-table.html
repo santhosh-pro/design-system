@@ -37,13 +37,13 @@
           }
 
           <!-- Checkbox Column Header -->
-          @if (enableRowSelection() && level === 0) {
-          <th [attr.rowspan]="getHeaderRowSpan()"
-            class="sticky left-0 z-[120] bg-gray-100 w-12 px-4 py-4 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.1)]">
-            <ui-checkbox-field [ngModel]="isAllSelected()" (valueChange)="onSelectAllRows($event)">
-            </ui-checkbox-field>
-          </th>
-          }
+       @if (enableRowSelection() && level === 0) {
+  <th [attr.rowspan]="getHeaderRowSpan()"
+    class="sticky left-0 z-[120] bg-gray-100 w-12 px-4 py-4 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.1)]">
+    <ui-checkbox-field [ngModel]="isAllSelected()" (valueChange)="onSelectAllRows($event)">
+    </ui-checkbox-field>
+  </th>
+}
 
           @for (cell of getHeaderCellsAtLevel(level); track $index; let colIndex = $index) {
           <th [attr.colspan]="cell.colspan" [attr.rowspan]="cell.rowspan" [attr.data-sortable-key]="cell.sortKey"
@@ -55,6 +55,76 @@
           </th>
           }
 
+        </tr>
+        }
+
+        <!-- Filter Row -->
+        @if (hasFilterConfig()) {
+        <tr class="bg-gray-50 sticky z-[90] border-b-2 border-gray-300" [style.top]="getHeaderHeight() + 'px'">
+          @if (expandableComponent()) {
+          <th
+            class="sticky left-0 z-[120] bg-gray-50 w-12 px-4 py-3 border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.1)]">
+          </th>
+          }
+          @if (enableRowSelection()) {
+          <th
+            class="sticky left-0 z-[120] bg-gray-50 w-12 px-4 py-3 border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.1)]">
+          </th>
+          }
+
+          @for (column of allLeafColumns(); track column; let colIndex = $index) {
+          <th class="px-4 py-3 border-r-2 border-gray-300 bg-gray-50" [class]="getCellClass(column)">
+            @if (column.filterConfig) {
+            <div class="flex flex-col sm:flex-row sm:items-center gap-2 min-w-0">
+              @switch (column.filterConfig.type) {
+              @case ('text') {
+              <div class="flex items-center w-full min-w-[140px]">
+                <ui-text-prefix-select-field [placeholder]="column.filterConfig.placeholder || 'Filter...'"
+                  [formControl]="getFilterControl(column, 'value')" [width]="'md'" [hasPrefixSelect]="true"
+                  (prefixChange)="onFilterOperationChanged($event, column)"
+                  [prefixOptions]="getFilterOperations(column.filterConfig.type)" [defaultPrefixValue]="'contains'"
+                  class="flex-1 min-w-[140px]">
+                </ui-text-prefix-select-field>
+              </div>
+              }
+              @case ('number') {
+              <div class="flex items-center w-full min-w-[120px]">
+                <!-- <ui-text-input type="number" [placeholder]="column.filterConfig.placeholder || 'Filter...'"
+                  [formControl]="getFilterControl(column, 'value')"
+                  (valueChanged)="onFilterChanged($event, null, null, column)" [fullWidth]="true"
+                  [hasPrefixSelect]="true" (prefixChange)="onFilterOperationChanged($event, column)"
+                  [defaultPrefixValue]="'equals'" [prefixOptions]="getFilterOperations(column.filterConfig.type)"
+                  class="flex-1 min-w-[120px]">
+                </ui-text-input> -->
+              </div>
+              }
+              @case ('date') {
+              <div class="flex items-center w-full min-w-[140px]">
+                <ui-date-picker [formControl]="getFilterControl(column, 'value')"
+                  (valueChanged)="onFilterChanged($event, null, null, column)" [fullWidth]="true"
+                  [showDatePickerIcon]="true"
+                  [inputDateFormat]="column.filterConfig.dateFormat === 'dd/MM/yyyy' ? InputDateFormat.ddmmyyyy : InputDateFormat.mmddyyyy"
+                  class="flex-1 min-w-[140px]">
+                </ui-date-picker>
+              </div>
+              }
+              @case ('select') {
+              <div class="flex items-center w-full min-w-[100px]">
+                <ui-multi-select-dropdown [options]="column.filterConfig.options || []" [isFullWidth]="true"
+                  [enableSearch]="true" [placeholder]="column.filterConfig.placeholder || 'Select...'"
+                  [displayProperty]="'label'" [valueProperty]="'value'" identifier="value"
+                  [formControl]="getFilterControl(column, 'value')" class="flex-1 min-w-[100px]">
+                </ui-multi-select-dropdown>
+              </div>
+              }
+              }
+            </div>
+            } @else if (column.type === 'actions') {
+            <!-- Empty space for actions column in filter row -->
+            <div class="h-10"></div>
+            }
+          </th>
+          }
         </tr>
         }
       </thead>
@@ -89,15 +159,15 @@
           }
 
           <!-- Checkbox Column -->
-          @if (enableRowSelection()) {
-          <td
-            class="sticky left-0 z-[50] bg-white w-12 px-4 py-4 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.05)] group-hover:bg-blue-50 transition-colors duration-200"
-            [class.bg-blue-100]="isRowSelected(item)" [class.group-hover:bg-blue-200]="isRowSelected(item)">
-            <ui-checkbox-field [ngModel]="isRowSelected(item)" (valueChange)="onRowSelectionChange($event, item)"
-              [disabled]="!enableRowSelection()">
-            </ui-checkbox-field>
-          </td>
-          }
+         @if (enableRowSelection()) {
+  <td
+    class="sticky left-0 z-[50] bg-white w-12 px-4 py-4 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.05)] group-hover:bg-blue-50 transition-colors duration-200"
+    [class.bg-blue-100]="isRowSelected(item)" [class.group-hover:bg-blue-200]="isRowSelected(item)">
+    <ui-checkbox-field [ngModel]="isRowSelected(item)" (valueChange)="onRowSelectionChange($event, item)"
+      [disabled]="!enableRowSelection()">
+    </ui-checkbox-field>
+  </td>
+}
 
           @for (column of allLeafColumns(); track column; let colIndex = $index) {
           <td
@@ -257,6 +327,7 @@
     <ui-pagination [pageSize]="pageSize()" [totalItems]="totalCount()" (pageChange)="onPageChange($event)">
     </ui-pagination>
     }
+
 
     @if (footerComponent()) {
     <ui-dynamic-renderer [component]="footerComponent()" [data]="data()"

@@ -32,7 +32,7 @@ nestedColumns = signal<ColumnNode[]>([
             type: 'text',
             alignment: 'left',
             sortKey: 'name',
-            filterConfig: { type: 'date' }
+           
           },
           {
             title: 'Email',
@@ -40,13 +40,6 @@ nestedColumns = signal<ColumnNode[]>([
             type: 'text',
             alignment: 'left',
             sortKey: 'email',
-            filterConfig: { type: 'select', options: [{
-              label: 'User 1',
-              value: '1'
-            }, {
-              label: 'User 2',
-              value: '2'
-            }] }
           },
           {
             title: 'Phone',

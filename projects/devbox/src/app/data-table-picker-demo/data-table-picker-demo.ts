@@ -69,11 +69,6 @@ export class DataTablePickerDemo {
       alignment: 'left',
       sortKey: 'email',
       visible: true,
-      filterConfig: {
-        type: 'text',
-        placeholder: 'Search email...',
-        operation: 'contains'
-      }
     },
     {
       key: 'department',
@@ -82,11 +77,6 @@ export class DataTablePickerDemo {
       alignment: 'left',
       sortKey: 'department',
       visible: true,
-      filterConfig: {
-        type: 'text',
-        placeholder: 'Search department...',
-        operation: 'contains'
-      }
     },
     {
       key: 'role',
@@ -95,11 +85,6 @@ export class DataTablePickerDemo {
       alignment: 'left',
       sortKey: 'role',
       visible: true,
-      filterConfig: {
-        type: 'text',
-        placeholder: 'Search role...',
-        operation: 'contains'
-      }
     },
     {
       key: 'status',
@@ -108,10 +93,6 @@ export class DataTablePickerDemo {
       alignment: 'center',
       sortKey: 'status',
       visible: true,
-      filterConfig: {
-        type: 'text',
-        placeholder: 'Search status...',
-      },
     },
   ]);
 
@@ -123,12 +104,6 @@ export class DataTablePickerDemo {
       alignment: 'left',
       sortKey: 'name',
       visible: true,
-      filterConfig: {
-        type: 'text',
-        placeholder: 'Search department name...',
-        operation: 'contains'
-      },
-      width: 200
     },
     {
       title: 'Code',
@@ -137,12 +112,6 @@ export class DataTablePickerDemo {
       alignment: 'center',
       sortKey: 'code',
       visible: true,
-      filterConfig: {
-        type: 'text',
-        placeholder: 'Search by code...',
-        operation: 'contains'
-      },
-      width: 100,
       textConfig: {
         textColorClass: 'text-blue-600 font-mono'
       }
@@ -154,12 +123,6 @@ export class DataTablePickerDemo {
       alignment: 'left',
       sortKey: 'manager',
       visible: true,
-      filterConfig: {
-        type: 'text',
-        placeholder: 'Search by manager...',
-        operation: 'contains'
-      },
-      width: 180
     },
   ]);
 
