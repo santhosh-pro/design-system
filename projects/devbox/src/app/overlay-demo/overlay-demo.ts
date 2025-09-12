@@ -160,7 +160,10 @@ onContextActionClick(action: string) {
   openSidePanel() {
     this.overlayService.openSidePanelRight(BaseOverlay, {
       widthInPx: 400,
-      data: { title: 'Right Side Panel Example' }
+      data: { title: 'Right Side Panel Example' },
+      onClose() {
+        console.log('Side panel closed');
+      },
     }).then(result => this.sidePanelResult.set(result));
   }
 

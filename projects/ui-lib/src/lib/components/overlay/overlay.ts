@@ -51,6 +51,7 @@ export class OverlayStore {
       data?: any;
       scrollStrategy?: 'noop' | 'block' | 'reposition' | 'close';
       isMobileResponsive?: boolean;
+      onClose?: (result: any) => void; // Added callback
     }
   ): Promise<any> {
     const {
@@ -59,6 +60,7 @@ export class OverlayStore {
       data,
       scrollStrategy = 'block',
       isMobileResponsive = false,
+      onClose,
     } = options ?? {};
 
     const isMobile = this.breakpointObserver.isMatched([Breakpoints.XSmall, Breakpoints.Small]);
@@ -156,11 +158,13 @@ export class OverlayStore {
       dialogRef.closed.subscribe(
         (result) => {
           console.log('Dialog closed with ID:', dialogId, 'Result:', result);
+          onClose?.(result); // Call callback if provided
           this.activeDialogRef = null;
           resolve(result);
         },
         (error) => {
           console.error('Dialog close error for ID:', dialogId, error);
+          onClose?.(null); // Optional: Call on error
           this.activeDialogRef = null;
           resolve(null);
         }
@@ -168,13 +172,14 @@ export class OverlayStore {
     });
   }
 
-  openAlert(title: string, message: string): Promise<boolean> {
+  openAlert(title: string, message: string, options?: { onClose?: (result: boolean) => void }): Promise<boolean> {
     // Close existing dialog if open
     if (this.activeDialogRef) {
       console.log('Closing existing dialog:', this.activeDialogRef.id);
       this.activeDialogRef.close();
     }
 
+    const { onClose } = options ?? {};
     const dialogId = Math.random().toString(36).substring(2);
     console.log('Opening alert dialog with ID:', dialogId);
 
@@ -191,11 +196,13 @@ export class OverlayStore {
       dialogRef.closed.subscribe(
         (result) => {
           console.log('Alert dialog closed with ID:', dialogId, 'Result:', result);
+          onClose?.(!!result); // Call callback with boolean result
           this.activeDialogRef = null;
           resolve(!!result);
         },
         (error) => {
           console.error('Alert dialog close error for ID:', dialogId, error);
+          onClose?.(false); // Optional: Call on error
           this.activeDialogRef = null;
           resolve(false);
         }
@@ -209,6 +216,7 @@ export class OverlayStore {
       disableClose?: boolean;
       maxHeightClass?: string;
       data?: any;
+      onClose?: (result: any) => void; // Added callback
     }
   ): Promise<any> {
     // Close existing dialog if open
@@ -220,7 +228,7 @@ export class OverlayStore {
     const dialogId = Math.random().toString(36).substring(2);
     console.log('Opening modal with ID:', dialogId);
 
-    const { disableClose = false, maxHeightClass, data } = options ?? {};
+    const { disableClose = false, maxHeightClass, data, onClose } = options ?? {};
 
     const positionStrategy = this.overlay
       .position()
@@ -245,11 +253,13 @@ export class OverlayStore {
       dialogRef.closed.subscribe(
         (result) => {
           console.log('Modal closed with ID:', dialogId, 'Result:', result);
+          onClose?.(result); // Call callback if provided
           this.activeDialogRef = null;
           resolve(result);
         },
         (error) => {
           console.error('Modal close error for ID:', dialogId, error);
+          onClose?.(null); // Optional: Call on error
           this.activeDialogRef = null;
           resolve(null);
         }
@@ -269,6 +279,7 @@ export class OverlayStore {
     options?: {
       disableClose?: boolean;
       data?: any;
+      onClose?: (result: any) => void; // Added callback
     }
   ): Promise<any> {
     // Close existing dialog if open
@@ -280,7 +291,7 @@ export class OverlayStore {
     const dialogId = Math.random().toString(36).substring(2);
     console.log('Opening backdrop with ID:', dialogId);
 
-    const { disableClose = false, data } = options ?? {};
+    const { disableClose = false, data, onClose } = options ?? {};
 
     const positionStrategy = this.overlay
       .position()
@@ -302,11 +313,13 @@ export class OverlayStore {
       dialogRef.closed.subscribe(
         (result) => {
           console.log('Backdrop closed with ID:', dialogId, 'Result:', result);
+          onClose?.(result); // Call callback if provided
           this.activeDialogRef = null;
           resolve(result);
         },
         (error) => {
           console.error('Backdrop close error for ID:', dialogId, error);
+          onClose?.(null); // Optional: Call on error
           this.activeDialogRef = null;
           resolve(null);
         }
@@ -319,6 +332,7 @@ export class OverlayStore {
     options?: {
       disableClose?: boolean;
       data?: any;
+      onClose?: (result: any) => void; // Added callback
     }
   ): Promise<any> {
     // Close existing dialog if open
@@ -330,7 +344,7 @@ export class OverlayStore {
     const dialogId = Math.random().toString(36).substring(2);
     console.log('Opening bottom sheet with ID:', dialogId);
 
-    const { disableClose = false, data } = options ?? {};
+    const { disableClose = false, data, onClose } = options ?? {};
 
     const positionStrategy = this.overlay
       .position()
@@ -352,11 +366,13 @@ export class OverlayStore {
       dialogRef.closed.subscribe(
         (result) => {
           console.log('Bottom sheet closed with ID:', dialogId, 'Result:', result);
+          onClose?.(result); // Call callback if provided
           this.activeDialogRef = null;
           resolve(result);
         },
         (error) => {
           console.error('Bottom sheet close error for ID:', dialogId, error);
+          onClose?.(null); // Optional: Call on error
           this.activeDialogRef = null;
           resolve(null);
         }
@@ -369,6 +385,7 @@ export class OverlayStore {
     options?: {
       disableClose?: boolean;
       data?: any;
+      onClose?: (result: any) => void; // Added callback
     }
   ): Promise<any> {
     // Close existing dialog if open
@@ -380,7 +397,7 @@ export class OverlayStore {
     const dialogId = Math.random().toString(36).substring(2);
     console.log('Opening full screen with ID:', dialogId);
 
-    const { disableClose = false, data } = options ?? {};
+    const { disableClose = false, data, onClose } = options ?? {};
 
     const positionStrategy = this.overlay
       .position()
@@ -402,11 +419,13 @@ export class OverlayStore {
       dialogRef.closed.subscribe(
         (result) => {
           console.log('Full screen closed with ID:', dialogId, 'Result:', result);
+          onClose?.(result); // Call callback if provided
           this.activeDialogRef = null;
           resolve(result);
         },
         (error) => {
           console.error('Full screen close error for ID:', dialogId, error);
+          onClose?.(null); // Optional: Call on error
           this.activeDialogRef = null;
           resolve(null);
         }
@@ -420,6 +439,7 @@ export class OverlayStore {
       widthInPx?: number;
       disableClose?: boolean;
       data?: any;
+      onClose?: (result: any) => void; // Added callback
     }
   ): Promise<any> {
     // Close existing dialog if open
@@ -435,6 +455,7 @@ export class OverlayStore {
       widthInPx = 350,
       disableClose = true,
       data,
+      onClose,
     } = options ?? {};
 
     const positionStrategy = this.overlay
@@ -445,7 +466,7 @@ export class OverlayStore {
 
     const dialogRef = this.dialog.open(component, {
       positionStrategy: positionStrategy,
-      disableClose: true,
+      disableClose: disableClose,
       width: `${widthInPx}px`,
       panelClass: [...this.basePanelClass, 'h-dvh', 'overflow-clip', 'overflow-y-scroll'],
       data: data,
@@ -467,11 +488,13 @@ export class OverlayStore {
       dialogRef.closed.subscribe(
         (result) => {
           console.log('Side panel closed with ID:', dialogId, 'Result:', result);
+          onClose?.(result); // Call callback if provided
           this.activeDialogRef = null;
           resolve(result);
         },
         (error) => {
           console.error('Side panel close error for ID:', dialogId, error);
+          onClose?.(null); // Optional: Call on error
           this.activeDialogRef = null;
           resolve(null);
         }
@@ -485,6 +508,7 @@ export class OverlayStore {
       widthInPx?: number;
       disableClose?: boolean;
       data?: any;
+      onClose?: (result: any) => void; // Added callback
     }
   ): Promise<any> {
     // Close existing dialog if open
@@ -500,6 +524,7 @@ export class OverlayStore {
       widthInPx = 350,
       disableClose = false,
       data,
+      onClose,
     } = options ?? {};
 
     const positionStrategy = this.overlay
@@ -523,11 +548,13 @@ export class OverlayStore {
       dialogRef.closed.subscribe(
         (result) => {
           console.log('Side panel left closed with ID:', dialogId, 'Result:', result);
+          onClose?.(result); // Call callback if provided
           this.activeDialogRef = null;
           resolve(result);
         },
         (error) => {
           console.error('Side panel left close error for ID:', dialogId, error);
+          onClose?.(null); // Optional: Call on error
           this.activeDialogRef = null;
           resolve(null);
         }
