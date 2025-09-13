@@ -4,22 +4,22 @@ import {
   Component,
   ElementRef,
   HostListener,
+  Renderer2,
   inject,
   input,
   output,
-  Renderer2,
   signal,
   viewChild,
 } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { CdkConnectedOverlay, Overlay } from '@angular/cdk/overlay';
-import { NgClass } from '@angular/common';
 import { resolveTemplateWithObject } from '../../../../core/template-resolver';
 import { deepEqual } from '../../../../core/core-utils';
 import { BaseInput } from '../../../../core/base-input/base-input';
 import { HumanizeFormMessagesPipe } from '../../../misc/humanize-form-messages';
 import { CheckboxField } from '../checkbox-field/checkbox-field';
 import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
+import { CommonModule } from '@angular/common';
 
 export enum MultiSelectDropdownAppearance {
   standard,
@@ -30,7 +30,7 @@ export enum MultiSelectDropdownAppearance {
 @Component({
   selector: 'ui-multi-select-dropdown',
   standalone: true,
-  imports: [BaseInput, NgClass, HumanizeFormMessagesPipe, CdkConnectedOverlay, CheckboxField, FormsModule],
+  imports: [BaseInput, CommonModule, HumanizeFormMessagesPipe, CdkConnectedOverlay, CheckboxField, ReactiveFormsModule],
   templateUrl: './multi-select-dropdown-field.html',
 })
 export class MultiSelectDropdownField<T> extends BaseControlValueAccessor<T[]> implements AfterContentInit {
@@ -48,8 +48,8 @@ export class MultiSelectDropdownField<T> extends BaseControlValueAccessor<T[]> i
   identifierProperty = input<string>('id');
   searchKey = input<string | null>(null);
   noDataMessage = input<string>('No options available');
-  isFullWidth = input<boolean>(false);
-  showErrorSpace = input<boolean>(false);
+  width = input<'sm' | 'md' | 'lg' | 'xl' | 'xxl' | '3xl' | 'full' | string>('md');
+  showErrorSpace = input<boolean>(true);
   enableSearch = input<boolean>(false);
   enableClientSearch = input<boolean>(true);
   addActionLabel = input<string | null>(null);
@@ -68,6 +68,10 @@ export class MultiSelectDropdownField<T> extends BaseControlValueAccessor<T[]> i
   selectedOptions = signal<T[]>([]);
   filteredOptions = signal<T[]>([]);
 
+  // Reactive Forms
+  selectAllControl = new FormControl<boolean>(false, { nonNullable: true });
+  itemControls = new Map<T, FormControl<boolean>>();
+
   // ViewChild References
   private dropdownButton = viewChild.required<ElementRef<HTMLDivElement>>('dropdownButton');
   private dropdownListContainer = viewChild<ElementRef<HTMLDivElement>>('dropdownListContainer');
@@ -80,6 +84,45 @@ export class MultiSelectDropdownField<T> extends BaseControlValueAccessor<T[]> i
 
   override ngAfterContentInit(): void {
     this.onValueReady(this.formControl.value);
+    this.initializeItemControls();
+    this.formControl.valueChanges.subscribe((value) => {
+      this.updateSelectedOptions(value || []);
+      this.updateItemControls();
+      this.updateSelectAllControl();
+      this.cdr.detectChanges();
+    });
+    this.selectAllControl.valueChanges.subscribe((checked) => {
+      if (checked) {
+        this.onSelectAll();
+      } else {
+        this.onClearSelection();
+      }
+    });
+  }
+
+  private initializeItemControls(): void {
+    this.options().forEach((item) => {
+      const control = new FormControl<boolean>(this.isOptionSelected(item), { nonNullable: true });
+      control.valueChanges.subscribe((checked) => {
+        if (checked !== this.isOptionSelected(item)) {
+          this.onItemSelect(item);
+        }
+      });
+      this.itemControls.set(item, control);
+    });
+  }
+
+  private updateItemControls(): void {
+    this.options().forEach((item) => {
+      const control = this.itemControls.get(item);
+      if (control) {
+        control.setValue(this.isOptionSelected(item), { emitEvent: false });
+      }
+    });
+  }
+
+  private updateSelectAllControl(): void {
+    this.selectAllControl.setValue(this.isAllSelected(), { emitEvent: false });
   }
 
   protected override onValueReady(value: any[] | null): void {
@@ -90,6 +133,12 @@ export class MultiSelectDropdownField<T> extends BaseControlValueAccessor<T[]> i
       this.updateSelectedOptions(value);
       this.filteredOptions.set(this.options());
     }
+    this.initializeItemControls();
+    this.updateSelectAllControl();
+  }
+
+  protected getItemControl(item: T): FormControl<boolean> {
+    return this.itemControls.get(item) || new FormControl<boolean>(false, { nonNullable: true });
   }
 
   // Event Handlers
@@ -138,6 +187,8 @@ export class MultiSelectDropdownField<T> extends BaseControlValueAccessor<T[]> i
 
     this.formControl.setValue(updatedValue);
     this.updateSelectedOptions(updatedValue);
+    this.updateItemControls();
+    this.updateSelectAllControl();
     this.onValueChange(updatedValue);
     this.cdr.detectChanges();
   }
@@ -182,6 +233,8 @@ export class MultiSelectDropdownField<T> extends BaseControlValueAccessor<T[]> i
     }
     this.formControl.setValue(updatedValue);
     this.updateSelectedOptions(updatedValue);
+    this.updateItemControls();
+    this.updateSelectAllControl();
     this.onValueChange(updatedValue);
     this.cdr.detectChanges();
   }
@@ -190,6 +243,8 @@ export class MultiSelectDropdownField<T> extends BaseControlValueAccessor<T[]> i
     const updatedValue: any[] = [];
     this.formControl.setValue(updatedValue);
     this.updateSelectedOptions(updatedValue);
+    this.updateItemControls();
+    this.updateSelectAllControl();
     this.onValueChange(updatedValue);
     this.cdr.detectChanges();
   }
@@ -307,10 +362,6 @@ export class MultiSelectDropdownField<T> extends BaseControlValueAccessor<T[]> i
   private getValue(item: T): unknown {
     if (!this.valueProperty()) return item;
     return this.valueProperty().split('.').reduce((acc: any, part: string) => acc && acc[part], item);
-  }
-
-  private getAllValues(): unknown[] {
-    return this.selectedOptions().map((item) => this.getValue(item));
   }
 
   private getObjectFromValue(v: unknown): T | undefined {

@@ -26,11 +26,11 @@ export class MultiSelectDataTableField<T> extends BaseControlValueAccessor<any[]
   data = input<T[]>([]);
   valueProperty = input<string>('id');
   displayProperty = input<string>('name');
-  fullWidth = input<boolean>(false);
+  width = input<'sm' | 'md' | 'lg' | 'xl' | 'xxl' | '3xl' | 'full' | string>('md');
   enablePagination = input<boolean>(false);
   pageSize = input<number>(10);
   enableSearch = input<boolean>(true);
-  showErrorSpace = input<boolean>(false);
+  showErrorSpace = input<boolean>(true);
   totalCount = input<number>(0);
   overlayType = input<'modal' | 'fullscreen' | 'bottomsheet' | 'backdrop'>('modal'); // New input for overlay type
 

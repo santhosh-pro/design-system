@@ -1,7 +1,7 @@
-import { DatePipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TextareaField, TextField, SearchField, OtpField, PasswordField, NumberField, TextPrefixSelectField, NumberPrefixSelectField, DateField, DatePicker, InputDateFormat, Weekday, Button, SelectChipField, MultiSelectDropdownField, DateRangePicker, MultiDatePicker } from 'projects/ui-lib/src/public-api';
+import { CommonModule, DatePipe } from '@angular/common';
+import { Component, inject, signal } from '@angular/core';
+import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { TextareaField, TextField, SearchField, OtpField, PasswordField, NumberField, TextPrefixSelectField, NumberPrefixSelectField, DateField, DatePicker, InputDateFormat, Weekday, Button, SelectChipField, MultiSelectDropdownField, DateRangePicker, MultiDatePicker, MultiSelectDataTableField, ColumnDef, SelectDropdownField } from 'projects/ui-lib/src/public-api';
 
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
@@ -21,8 +21,8 @@ export class ArrayValidators {
 
 @Component({
   selector: 'app-number-field-demo',
-  imports: [ReactiveFormsModule, DateRangePicker,
-    TextField, TextareaField, MultiSelectDropdownField, SearchField, OtpField, PasswordField, NumberField, TextPrefixSelectField, NumberPrefixSelectField, DateField, DatePicker, DatePipe, Button, SelectChipField, MultiSelectDropdownField, MultiDatePicker],
+  imports: [ReactiveFormsModule, DateRangePicker, SelectDropdownField,
+    TextField, TextareaField, MultiSelectDropdownField, CommonModule, SearchField, OtpField, PasswordField, NumberField, TextPrefixSelectField, NumberPrefixSelectField, DateField, DatePicker, DatePipe, Button, SelectChipField, MultiSelectDropdownField, MultiDatePicker, MultiSelectDataTableField, SelectDropdownField],
   templateUrl: './number-field-demo.html',
   styleUrl: './number-field-demo.css'
 })
@@ -67,8 +67,8 @@ export class NumberFieldDemo {
     this.form = this.formBuilder.group({
       name: ['', [Validators.required]],
       email: ['', [Validators.required,Validators.email]],
-      phoneNumber: [null,[Validators.required]],
-      notes: ['',[Validators.maxLength(5)]],
+      phoneNumber: ['', [Validators.required]],
+      notes: ['', [Validators.maxLength(5)]],
     });
   }
 
@@ -109,4 +109,66 @@ export class NumberFieldDemo {
     this.selectedPickerDate = date;
     console.log('Picker Date Selected:', date);
   }
+
+
+
+
+
+
+
+  //data table 
+
+    userColumns = signal<ColumnDef[]>([
+    {
+      key: 'name',
+      title: 'Name',
+      type: 'text',
+      alignment: 'left',
+      sortKey: 'name',
+      visible: true
+    },
+    {
+      key: 'email',
+      title: 'Email',
+      type: 'text',
+      alignment: 'left',
+      sortKey: 'email',
+      visible: true,
+    },
+    {
+      key: 'department',
+      title: 'Department',
+      type: 'text',
+      alignment: 'left',
+      sortKey: 'department',
+      visible: true,
+    },
+    {
+      key: 'role',
+      title: 'Role',
+      type: 'text',
+      alignment: 'left',
+      sortKey: 'role',
+      visible: true,
+    },
+    {
+      key: 'status',
+      title: 'Status',
+      type: 'text',
+      alignment: 'center',
+      sortKey: 'status',
+      visible: true,
+    },
+  ]);
+
+  users = signal<any[]>([
+    { id: 1, name: 'John Doe', email: 'john.doe@company.com', department: 'Engineering', role: 'Senior Developer', status: 'active' },
+    { id: 2, name: 'Jane Smith', email: 'jane.smith@company.com', department: 'Marketing', role: 'Marketing Manager', status: 'active' },
+    { id: 3, name: 'Bob Johnson', email: 'bob.johnson@company.com', department: 'Engineering', role: 'DevOps Engineer', status: 'active' },
+    { id: 4, name: 'Alice Brown', email: 'alice.brown@company.com', department: 'Design', role: 'UX Designer', status: 'inactive' },
+    { id: 5, name: 'Charlie Wilson', email: 'charlie.wilson@company.com', department: 'Sales', role: 'Sales Representative', status: 'active' },
+    { id: 6, name: 'Diana Davis', email: 'diana.davis@company.com', department: 'HR', role: 'HR Specialist', status: 'active' },
+    { id: 7, name: 'Edward Miller', email: 'edward.miller@company.com', department: 'Engineering', role: 'Frontend Developer', status: 'active' },
+    { id: 8, name: 'Fiona Garcia', email: 'fiona.garcia@company.com', department: 'Marketing', role: 'Content Writer', status: 'inactive' },
+  ]);
 }

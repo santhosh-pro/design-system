@@ -39,8 +39,8 @@ export class SelectDropdownField<T> extends BaseControlValueAccessor<T | null> i
   valueProperty = input<string>('');
   identifierProperty = input<string>('id');
   noDataMessage = input<string>('No options available');
-  isFullWidth = input<boolean>(false);
-  showErrorSpace = input<boolean>(false);
+  width = input<'sm' | 'md' | 'lg' | 'xl' | 'xxl' | '3xl' | 'full' | string>('md');
+  showErrorSpace = input<boolean>(true);
   enableSearch = input<boolean>(true);
   enableClientSearch = input<boolean>(true);
   minimumPopupWidth = input<number>(250);

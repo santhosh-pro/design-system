@@ -123,11 +123,11 @@
 
       <form   [formGroup]="form" (submit)="onSubmit()">
             <div>
-              <ui-text-field [label]="'Name'" width="3xl" [placeholder]="'Name'" formControlName="name"></ui-text-field>
+              <ui-text-field [label]="'Name'"  [placeholder]="'Name'" formControlName="name"></ui-text-field>
 
             </div>
             <div>
-              <ui-text-field [label]="'Email'" width="3xl" [placeholder]="'Email'" formControlName="email"></ui-text-field>
+              <ui-text-field [label]="'Email'"  [placeholder]="'Email'" formControlName="email"></ui-text-field>
             </div>
             <!-- <div>
               <ui-text-field [label]="'Phone Number'" [placeholder]="'Phone Number'" formControlName="phoneNumber"></ui-text-field>
@@ -145,13 +145,41 @@
               [options]="prefixOptions"
               formControlName="phoneNumber"
               [displayProperty]="'label'"
-              [width]="'xl'"
               [valueProperty]="'value'"
               [identifierProperty]="'value'"
               placeholder="Select country"
                [enableSearch]="true"
               ></ui-multi-select-dropdown> -->
-              <ui-multi-date-picker
+
+              <ui-select-dropdown-field
+                [label]="'Select Country'"
+                [options]="prefixOptions"
+                formControlName="phoneNumber"
+                [displayProperty]="'label'"
+                [valueProperty]="'value'"
+                [identifierProperty]="'value'"
+                placeholder="Select country"
+                 [enableSearch]="true"
+                ></ui-select-dropdown-field>
+
+
+
+              <!-- <ui-multi-select-data-table-field
+                formControlName="phoneNumber"
+                [label]="'Users'"
+                [placeholder]="'Choose users...'"
+                [columns]="userColumns()"
+                [data]="users()"
+                [totalCount]="50"
+                [valueProperty]="'id'"
+                [displayProperty]="'name'"
+                [width]="'3xl'"
+                [enablePagination]="true"
+                [pageSize]="5"
+                [enableSearch]="true">
+
+              </ui-multi-select-data-table-field> -->
+              <!-- <ui-multi-date-picker
                 [label]="'Select Date'"
                 formControlName="phoneNumber"
                 [minDate]="minDate"
@@ -160,7 +188,7 @@
                 [inputDateFormat]="inputDateFormat"
                 [width]="'3xl'"
                 [showDatePickerIcon]="true">
-              </ui-multi-date-picker>
+              </ui-multi-date-picker> -->
             <div>
               <ui-textarea-field viewType="text-area" [label]="'Notes'" [placeholder]="'Notes'" formControlName="notes"></ui-textarea-field>
             </div>
@@ -168,3 +196,6 @@
                 <ui-button [loading]="false"  type="submit">Submit</ui-button>
               </div>
               </form>
+
+
+              {{ form.value | json }}

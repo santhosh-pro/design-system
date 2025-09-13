@@ -17,7 +17,7 @@ import {
 import { Pagination, PaginationEvent } from '../../display/pagination/pagination';
 import { DatePipe } from '@angular/common';
 import { StatusBadge } from '../../feedback/status-badge/status-badge';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormsModule } from '@angular/forms';
 import { BaseControlValueAccessor } from '../../../core/base-control-value-accessor';
 import { DynamicRenderer } from './dynamic-renderer';
 import { ContextMenuButtonAction, ContextMenuButton } from '../../overlay/context-menu-button/context-menu-button';
@@ -88,6 +88,11 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
   paginationEvent?: PaginationEvent;
   tableSortEvent?: TableSortEvent;
   searchText: string = '';
+
+
+   // Reactive Forms
+  selectAllControl = new FormControl<boolean>(false, { nonNullable: true });
+  itemControls = new Map<T, FormControl<boolean>>();
 
   constructor(private cdr: ChangeDetectorRef) {
     super();
@@ -597,6 +602,10 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
 
   getHeaderRowSpan(): number {
     return this.getMaxDepth();
+  }
+
+   protected getItemControl(item: T): FormControl<boolean> {
+    return this.itemControls.get(item) || new FormControl<boolean>(false, { nonNullable: true });
   }
 }
 

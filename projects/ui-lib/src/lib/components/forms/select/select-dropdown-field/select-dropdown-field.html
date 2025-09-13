@@ -1,41 +1,50 @@
 <ui-base-input
   [title]="label()"
-  (keydown)="handleKeydown($event)"
+  [width]="width()"
   [isRequiredField]="hasRequiredValidator()"
-  class="w-full"
 >
-  <!-- Dropdown Button -->
-  <div #dropdownButton input class="relative w-full min-w-[13rem]">
-    <button
-      (click)="onToggleDropdown()"
-      type="button"
-      tabindex="0"
-      [attr.aria-expanded]="isDropdownOpen()"
-      class="dropdown-button w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-neutral-200 rounded-md shadow-sm focus:ring-2 focus:ring-primary-500 focus:outline-none transition-all duration-200 h-12"
-    >
-      <span
-        class="text-sm truncate flex-1 text-left"
+  <!-- Input Slot -->
+  <div input
+    class="relative flex items-center w-full bg-white border border-[var(--color-primary-400)] rounded-md shadow-sm ring-1 ring-[var(--color-primary-400)] focus-within:ring-2 transition-all"
+    [ngClass]="{
+         'border-error-600 ring-error-600 focus-within:ring-2': formControl.touched && formControl.errors,
+        '!border-gray-500 !ring-0 focus-within:!ring-2 focus-within:!ring-[var(--color-primary-500)] focus-within:!border-[var(--color-primary-500)]': !(formControl.touched && formControl.errors),
+         'bg-neutral-100 cursor-not-allowed': formControl.disabled,
+       }">
+    <!-- Dropdown Button -->
+    <div #dropdownButton class="relative w-full min-w-[13rem]">
+      <button
+        (click)="onToggleDropdown()"
+        (keydown)="handleKeydown($event)"
+        type="button"
+        tabindex="0"
+        [attr.aria-expanded]="isDropdownOpen()"
+        [attr.disabled]="formControl.disabled ? true : null"
+        class="dropdown-button w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-gray-700 bg-transparent border-none outline-none focus:ring-0 h-[46px] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         [ngClass]="{
           'text-black': formControl.value || selectedOption(),
           'text-gray-400': !formControl.value && !selectedOption()
         }"
       >
-        {{ formControl.value || selectedOption() ? getDisplayText(selectedOption()) : placeholder() }}
-      </span>
-      <div class="flex items-center">
-        <svg
-          class="h-5 w-5 text-gray-500"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          aria-hidden="true"
-        >
-          <path
-            d="M7.41 8.58L12 13.17l4.59-4.59L18 10l-6 6-6-6 1.41-1.42z"
+        <span class="text-sm truncate flex-1 text-left">
+          {{ formControl.value || selectedOption() ? getDisplayText(selectedOption()) : placeholder() }}
+        </span>
+        <div class="flex items-center">
+          <svg
+            class="h-5 w-5 text-gray-500 transition-transform duration-200"
+            [ngClass]="{ 'rotate-180': isDropdownOpen() }"
+            viewBox="0 0 20 20"
             fill="currentColor"
-          />
-        </svg>
-      </div>
-    </button>
+            aria-hidden="true"
+          >
+            <path
+              d="M7.41 8.58L12 13.17l4.59-4.59L18 10l-6 6-6-6 1.41-1.42z"
+              fill="currentColor"
+            />
+          </svg>
+        </div>
+      </button>
+    </div>
   </div>
 
   <!-- Dropdown Menu -->
@@ -51,7 +60,7 @@
       { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom' }
     ]"
     [cdkConnectedOverlayScrollStrategy]="scrollStrategy"
-    [cdkConnectedOverlayOffsetY]="0"
+    [cdkConnectedOverlayOffsetY]="4"
   >
     <div
       #dropdownListContainer
@@ -78,12 +87,14 @@
             (keydown)="handleKeydown($event)"
             class="w-full pl-10 pr-10 py-2 text-sm text-black placeholder-neutral-400 border-none focus:ring-0 focus:outline-none"
             placeholder="Search..."
+            type="text"
           />
           @if (searchField?.value) {
             <button
               (click)="onClearSearch()"
               class="absolute right-2 p-1 hover:bg-neutral-100 rounded-full"
               aria-label="Clear search"
+              type="button"
             >
               <svg
                 class="h-4 w-4 text-neutral-400"
@@ -111,7 +122,8 @@
         @for (item of filteredOptions(); track item; let i = $index) {
           <div
             (click)="onItemSelect(item)"
-            class="flex items-center gap-3 px-4 py-2.5 hover:bg-neutral-100 cursor-pointer transition-colors"
+            (keydown)="handleKeydown($event)"
+            class="flex items-center gap-3 px-4 py-2.5 hover:bg-neutral-100 cursor-pointer transition-colors focus:outline-none focus:bg-neutral-100"
             [ngClass]="{
               'bg-neutral-100': highlightedIndex() === i,
               'bg-primary-50 bg-opacity-50': isOptionSelected(item)
@@ -120,26 +132,28 @@
             [attr.aria-selected]="isOptionSelected(item)"
             tabindex="0"
           >
-            <span class="text-sm text-gray-700 truncate">{{ getDisplayText(item) }}</span>
+            <span class="text-sm text-gray-700 truncate flex-1">{{ getDisplayText(item) }}</span>
           </div>
         } @empty {
-          <span
-            class="block px-4 py-3 text-sm text-gray-400 select-none"
+          <div
+            class="block px-4 py-3 text-sm text-gray-400 select-none text-center"
             role="option"
-            >{{ noDataMessage() }}</span>
+          >
+            {{ noDataMessage() }}
+          </div>
         }
       </div>
     </div>
   </ng-template>
-</ui-base-input>
 
-<!-- Error Messages -->
-@if (formControl.errors && hasErrors()) {
-  <div class="mt-1">
-    <span class="text-xs text-red-500">{{ formControl.errors | humanizeFormMessages: errorMessages() }}</span>
-  </div>
-} @else if (showErrorSpace()) {
-  <div class="mt-1">
-    <span class="text-xs text-transparent">.</span>
-  </div>
-}
+  <!-- Error Slot -->
+  @if (formControl.touched && formControl.errors) {
+    <div error class="ml-2 text-left">
+      <span class="text-xs text-[var(--color-error-500)]">{{ formControl.errors | humanizeFormMessages: errorMessages() }}</span>
+    </div>
+  } @else if (showErrorSpace()) {
+    <div error class="text-left">
+      <span class="text-xs text-transparent">.</span>
+    </div>
+  }
+</ui-base-input>
