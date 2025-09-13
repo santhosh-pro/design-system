@@ -117,6 +117,7 @@ export class Button {
 
   private validateForm(formGroup: FormGroup): void {
     formGroup.markAllAsTouched();
-    // Removed markAsPristine() as it contradicts the purpose of showing validation errors
+    formGroup.updateValueAndValidity();
+
   }
 }

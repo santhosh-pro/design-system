@@ -96,3 +96,8 @@ export * from './lib/components/_experimental/text-prefix-select-field/text-pref
 export * from './lib/components/forms/number/number-field/number-field';
 export * from './lib/components/_experimental/number-prefix-select-field/number-prefix-select-field';
 export * from './lib/components/_experimental/time-input/time-picker.component';
+
+
+
+//theme
+export * from './provide-ui-lib-config';

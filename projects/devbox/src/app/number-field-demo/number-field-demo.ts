@@ -1,12 +1,12 @@
 import { DatePipe } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TextareaField, TextField, SearchField, OtpField, PasswordField, NumberField, TextPrefixSelectField, NumberPrefixSelectField, DateField, DatePicker, InputDateFormat, Weekday } from 'projects/ui-lib/src/public-api';
+import { Component, inject } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { TextareaField, TextField, SearchField, OtpField, PasswordField, NumberField, TextPrefixSelectField, NumberPrefixSelectField, DateField, DatePicker, InputDateFormat, Weekday, Button } from 'projects/ui-lib/src/public-api';
 
 @Component({
   selector: 'app-number-field-demo',
-  imports: [ReactiveFormsModule, 
-    TextField, TextareaField, SearchField, OtpField, PasswordField, NumberField, TextPrefixSelectField, NumberPrefixSelectField, DateField, DatePicker, DatePipe],
+  imports: [ReactiveFormsModule,
+    TextField, TextareaField, SearchField, OtpField, PasswordField, NumberField, TextPrefixSelectField, NumberPrefixSelectField, DateField, DatePicker, DatePipe, Button],
   templateUrl: './number-field-demo.html',
   styleUrl: './number-field-demo.css'
 })
@@ -19,27 +19,49 @@ export class NumberFieldDemo {
   }
 
   onOtpComplete(otp: any) {
-  console.log('OTP entered completely:', otp);
-  // trigger API call or submit
-}
-prefixNumOptions = [
-    { value: '+1', label: 'US (+1)' , isRange: false},
-    { value: '+44', label: 'UK (+44)', isRange: false},
-    { value: '+91', label: 'IN (+91)', isRange: true},
+    console.log('OTP entered completely:', otp);
+    // trigger API call or submit
+  }
+  prefixNumOptions = [
+    { value: '+1', label: 'US (+1)', isRange: false },
+    { value: '+44', label: 'UK (+44)', isRange: false },
+    { value: '+91', label: 'IN (+91)', isRange: true },
   ];
 
-prefixOptions = [
+  prefixOptions = [
     { value: '+1', label: 'US (+1)' },
     { value: '+44', label: 'UK (+44)' },
     { value: '+91', label: 'IN (+91)' },
   ];
   defaultPrefix = '+91';
-onPrefixChange(value: string): void {
+  onPrefixChange(value: string): void {
     console.log('Selected prefix changed to:', value);
   }
 
   onValueChange(value: any | null): void {
     console.log('Number value changed to:', value);
+  }
+
+
+  form!: FormGroup;
+  formBuilder = inject(FormBuilder);
+
+  ngOnInit(): void {
+
+    this.form = this.formBuilder.group({
+      name: ['', [Validators.required]],
+      email: ['', [Validators.required,Validators.email]],
+      phoneNumber: [''],
+      notes: ['',[Validators.maxLength(5)]],
+    });
+  }
+
+  onSubmit() {
+    if (this.form.valid) {
+      console.log(this.form.value);
+    } else {
+      console.log('Form is invalid');
+    }
   }
 
 

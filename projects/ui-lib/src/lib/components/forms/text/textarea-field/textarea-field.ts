@@ -25,7 +25,7 @@ export class TextareaField extends BaseControlValueAccessor<string | null> {
   label = input<string | null>(null);
   width = input<'sm' | 'md' | 'lg' | 'xl' | 'xxl' | '3xl' | 'full' | string>('md');
   placeholder = input<string>('');
-  showErrorSpace = input<boolean>(false);
+  showErrorSpace = input<boolean>(true);
   minlength = input<number | null>(null);
   maxlength = input<number | null>(null);
   lines = input<string | null>('4'); // New input for textarea rows

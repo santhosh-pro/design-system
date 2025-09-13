@@ -41,16 +41,16 @@ export class TextField extends BaseControlValueAccessor<string | null> {
   label = input<string | null>(null);
   width = input<'sm' | 'md' | 'lg' | 'xl' | 'xxl' | '3xl' | 'full' | string>('md');
   placeholder = input<string>('');
-  showErrorSpace = input<boolean>(false);
+  showErrorSpace = input<boolean>(true);
   mask = input<string | null>(null);
 
   // Extra inputs for specific types
-  pattern = input<string | null>(null); // tel, url
-  minlength = input<number | null>(null); // tel
-  maxlength = input<number | null>(null); // tel
-  min = input<string | null>(null); // time
-  max = input<string | null>(null); // time
-  step = input<number | null>(null); // time
+  pattern = input<string | null>(null);
+  minlength = input<number | null>(null);
+  maxlength = input<number | null>(null);
+  min = input<string | null>(null);
+  max = input<string | null>(null);
+  step = input<number | null>(null);
 
   // Outputs
   actionClick = output<void>();
@@ -60,11 +60,12 @@ export class TextField extends BaseControlValueAccessor<string | null> {
 
   // Required by BaseControlValueAccessor
   protected override onValueReady(value: string | null): void {
-    this.onValueChange(value);
+    // Don't call onValueChange here to prevent infinite loops
   }
 
   onInput(value: string | null): void {
-    this.formControl.setValue(value, { emitEvent: true });
+    // Fix: Use patchValue instead of setValue to avoid triggering unnecessary events
+    this.formControl.patchValue(value, { emitEvent: false });
     this.onValueChange(value);
   }
 
@@ -77,7 +78,7 @@ export class TextField extends BaseControlValueAccessor<string | null> {
   }
 
   onBlur(): void {
-    this.markTouched();
     this.isFocused.set(false);
+    this.markTouched();
   }
 }

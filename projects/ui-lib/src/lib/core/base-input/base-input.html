@@ -1,12 +1,12 @@
 <div class="app-form-control inline-flex items-center cursor-pointer select-none"
      [ngClass]="widthClass()">
   <div class="flex gap-6 items-center w-full">
-    <div class="flex flex-col justify-center gap-2 w-full">
+    <div class="flex flex-col justify-center  w-full">
       @if (title()) {
         <div class="flex gap-1">
-          <span class="text-body2 text-nowrap text-primary-900">{{ title() }}</span>
-          @if (isRequiredField()) {
-            <span class="text-body2 text-error-600">*</span>
+          <span class="ml-1 mb-1 text-body2 text-nowrap text-primary-900">{{ title() }}</span>
+          @if (!isRequiredField()) {
+            <span class="text-md text-neutral-600">(Optional)</span>
           }
         </div>
       }

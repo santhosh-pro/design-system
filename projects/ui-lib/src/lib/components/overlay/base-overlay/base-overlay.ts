@@ -58,8 +58,10 @@ export class BaseOverlay implements AfterViewInit {
     console.log('Close button clicked');
     this.cdr.detectChanges();
     setTimeout(() => {
+     if (this.dialogRef) {
       console.log('Calling dialogRef.close()');
       this.dialogRef.close();
+    }
     }, 0);
   }
 }

@@ -1,5 +1,5 @@
 import { inject, Injectable, Renderer2, RendererFactory2 } from '@angular/core';
-import { Dialog, DialogRef } from '@angular/cdk/dialog';
+import { Dialog, DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import {
   FlexibleConnectedPositionStrategy,
   GlobalPositionStrategy,
@@ -150,6 +150,9 @@ export class OverlayStore {
       panelClass: [...this.basePanelClass, 'rounded-3xl'],
       data: data,
       autoFocus: false,
+      providers: [
+    { provide: DIALOG_DATA, useValue: data }
+  ]
     });
 
     this.activeDialogRef = dialogRef as DialogRef<any, any>;
@@ -188,6 +191,9 @@ export class OverlayStore {
       data: { title, message },
       panelClass: [...this.basePanelClass, 'rounded-3xl'],
       autoFocus: false,
+      providers: [
+        { provide: DIALOG_DATA, useValue: { title, message } }
+      ]
     });
 
     this.activeDialogRef = dialogRef;
@@ -243,6 +249,9 @@ export class OverlayStore {
       panelClass: [...this.basePanelClass, 'w-max-[300px]', 'h-[70%]', 'rounded-t-3xl', 'overflow-clip', 'overflow-y-scroll'],
       data: data,
       autoFocus: false,
+      providers: [
+    { provide: DIALOG_DATA, useValue: data }
+  ]
     });
 
     this.activeDialogRef = dialogRef;
@@ -305,6 +314,9 @@ export class OverlayStore {
       panelClass: [...this.basePanelClass, 'w-[100%]', 'h-[90%]', 'rounded-t-3xl', 'overflow-clip'],
       data: data,
       autoFocus: false,
+      providers: [
+    { provide: DIALOG_DATA, useValue: data }
+  ]
     });
 
     this.activeDialogRef = dialogRef;
@@ -358,6 +370,9 @@ export class OverlayStore {
       panelClass: [...this.basePanelClass, 'w-max-[300px]', 'h-[70%]', 'rounded-t-3xl', 'overflow-clip', 'overflow-y-scroll'],
       data: data,
       autoFocus: false,
+      providers: [
+    { provide: DIALOG_DATA, useValue: data }
+  ]
     });
 
     this.activeDialogRef = dialogRef;
@@ -411,6 +426,9 @@ export class OverlayStore {
       panelClass: [...this.basePanelClass, 'w-dvw', 'h-dvh', 'overflow-clip', 'overflow-y-scroll'],
       data: data,
       autoFocus: false,
+      providers: [
+    { provide: DIALOG_DATA, useValue: data }
+  ]
     });
 
     this.activeDialogRef = dialogRef;
@@ -472,6 +490,9 @@ export class OverlayStore {
       data: data,
       backdropClass: ['bg-black/20'],
       autoFocus: false,
+      providers: [
+    { provide: DIALOG_DATA, useValue: data }
+  ]
     });
 
     this.activeDialogRef = dialogRef;

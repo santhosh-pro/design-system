@@ -67,15 +67,19 @@
     (complete)="onOtpComplete($event)"
   ></ui-otp-field> -->
 
-
-
+<!-- 
+<ui-text-field
+    label="Small Field"
+    type="text"
+    width="md"
+    placeholder="Enter text (xl)"
+  ></ui-text-field>
 
 
   <div class="flex flex-col gap-6 p-6 max-w-2xl mx-auto">
   <h1 class="text-2xl font-semibold text-neutral-900">Date Selection Demo</h1>
 
   <div class="flex flex-col gap-4">
-    <!-- DateFieldComponent: Manual Date Input -->
     <div class="flex flex-col gap-2">
       <h2 class="text-lg font-medium text-neutral-700">Manual Date Input</h2>
       <ui-date-field
@@ -93,7 +97,6 @@
     </div>
         {{dateControl.value }}
 
-    <!-- DatePickerFieldComponent: Picker-Only Input -->
     <div class="flex flex-col gap-2">
       <h2 class="text-lg font-medium text-neutral-700">Date Picker (Read-Only)</h2>
       <ui-date-picker
@@ -115,4 +118,24 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->
+
+
+      <form   [formGroup]="form" (submit)="onSubmit()">
+            <div>
+              <ui-text-field [label]="'Name'" [placeholder]="'Name'" formControlName="name"></ui-text-field>
+
+            </div>
+            <div>
+              <ui-text-field [label]="'Email'" [placeholder]="'Email'" formControlName="email"></ui-text-field>
+            </div>
+            <div>
+              <ui-text-field [label]="'Phone Number'" [placeholder]="'Phone Number'" formControlName="phoneNumber"></ui-text-field>
+            </div>
+            <div>
+              <ui-textarea-field viewType="text-area" [label]="'Notes'" [placeholder]="'Notes'" formControlName="notes"></ui-textarea-field>
+            </div>
+            <div class="flex justify-center">
+                <ui-button [loading]="false"  type="submit">Submit</ui-button>
+              </div>
+              </form>
