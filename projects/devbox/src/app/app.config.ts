@@ -3,9 +3,9 @@ import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
-import { provideAngularSvgIcon, provideNgxMask } from 'projects/ui-lib/src/public-api';
+import { provideAngularSvgIcon, provideFormErrors, provideNgxMask } from 'projects/ui-lib/src/public-api';
 import { provideHttpClient, withFetch } from '@angular/common/http';
-import { provideUiLibConfig, UiLibService } from 'projects/ui-lib/src/provide-ui-lib-config';
+import { provideUiLibConfig, UiLibService } from 'projects/ui-lib/src/public-api';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -15,6 +15,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withFetch()),
     provideNgxMask(),
     provideAngularSvgIcon(),
+    provideFormErrors(),
     provideUiLibConfig({
       tailwindTheme: {
         fonts: { inter: '"Roboto", "sans-serif"' },

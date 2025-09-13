@@ -1,32 +1,67 @@
-import { Inject, Pipe, PipeTransform } from "@angular/core";
+// lib/pipes/humanize-form-messages.pipe.ts
+import { Inject, Pipe, PipeTransform, Optional } from "@angular/core";
 import { ValidationErrors } from "@angular/forms";
-import { FORM_ERRORS } from "../../core/form-errors";
+import { FORM_ERRORS, FormErrorMessages } from "../../core/form-errors";
 
-@Pipe({ standalone: true, name: 'humanizeFormMessages' })
+@Pipe({
+  standalone: true,
+  name: 'humanizeFormMessages'
+})
 export class HumanizeFormMessagesPipe implements PipeTransform {
-  constructor(@Inject(FORM_ERRORS) private messages: any) {}
+  constructor(
+    @Optional() @Inject(FORM_ERRORS) private messages: FormErrorMessages | null
+  ) {}
 
   transform(
-    validationErrors: ValidationErrors,
-    overriddenMessages: { [key: string]: string },
-    fieldName: string = 'This field' // Default to 'This field' if no name is provided
+    validationErrors: ValidationErrors | null,
+    overriddenMessages: { [key: string]: string | Function } = {},
+    fieldName: string = 'This field'
   ): string {
     if (!validationErrors) {
       return '';
     }
 
-    const messages = {
-      ...this.messages,
-      ...overriddenMessages,
-    };
+    // Get the first error key
+    const errorKeys = Object.keys(validationErrors);
+    if (errorKeys.length === 0) {
+      return '';
+    }
 
-    const messageKey = Object.keys(validationErrors)[0];
-    const getMessage = messages[messageKey];
+    const messageKey = errorKeys[0];
+    const errorValue = validationErrors[messageKey];
 
-    const message = getMessage
-      ? getMessage({ fieldName, ...validationErrors[messageKey] })
-      : `${fieldName} is invalid`;
+    // Try overridden messages first
+    let getMessage = overriddenMessages[messageKey];
+    
+    // Fall back to injected messages
+    if (!getMessage && this.messages) {
+      getMessage = this.messages[messageKey];
+    }
 
-    return message;
+    if (!getMessage) {
+      return `${fieldName} is invalid`;
+    }
+
+    try {
+      if (typeof getMessage === 'function') {
+        return getMessage({ 
+          fieldName, 
+          ...errorValue,
+          actualLength: errorValue?.actualLength,
+          requiredLength: errorValue?.requiredLength,
+          min: errorValue?.min,
+          max: errorValue?.max,
+          actual: errorValue?.actual
+        });
+      }
+      
+      if (typeof getMessage === 'string') {
+        return getMessage;
+      }
+    } catch (error) {
+      console.warn(`Error generating message for ${messageKey}:`, error);
+    }
+
+    return `${fieldName} is invalid`;
   }
 }

@@ -66,6 +66,8 @@ export * from './lib/components/misc/breadcrumb/breadcrumb';
 export * from './lib/components/display/data-table/dynamic-renderer';
 export * from './lib/components/misc/debounce';
 export * from './lib/components/misc/humanize-form-messages';
+export * from './lib/core/form-errors';
+export * from './lib/core/dialog.provider';
 export * from './lib/components/misc/unsaved-aware';
 
 // ========== OVERLAY ==========

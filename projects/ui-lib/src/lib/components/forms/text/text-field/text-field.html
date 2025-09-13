@@ -2,12 +2,10 @@
   <!-- Input Slot -->
   <div input
     class="relative flex items-center w-full bg-white border border-[var(--color-primary-400)] rounded-md shadow-sm ring-1 ring-[var(--color-primary-400)] focus-within:ring-2 transition-all"
-    [ngClass]="{
-         'border-error-600 ring-error-600 focus-within:ring-2': formControl.touched && formControl.errors,
-        '!border-gray-500 !ring-0 focus-within:!ring-2 focus-within:!ring-[var(--color-primary-500)] focus-within:!border-[var(--color-primary-500)]': !(formControl.touched && formControl.errors),
-         'bg-neutral-100 cursor-not-allowed': formControl.disabled,
-       
-       }">
+    [class.border-error-600]="formControl.touched && formControl.errors"
+    [class.ring-error-600]="formControl.touched && formControl.errors"
+    [class.border-[var(--color-primary-400)]]="!(formControl.touched && formControl.errors) && !formControl.disabled"
+    [class.ring-[var(--color-primary-400)]]="!(formControl.touched && formControl.errors) && !formControl.disabled">
     <!-- Input Field -->
     <div class="relative flex items-center flex-1">
       @if (iconSrc()) {
@@ -37,7 +35,8 @@
   <!-- Error Slot - Fixed condition -->
   @if (formControl.touched && formControl.errors) {
   <div error class="ml-2 text-left">
-    <span class="text-xs text-[var(--color-error-500)]">{{ formControl.errors | humanizeFormMessages: errorMessages(): label()??'This field'
+    <span class="text-xs text-[var(--color-error-500)]">{{ formControl.errors | humanizeFormMessages: errorMessages():
+      label()??'This field'
       }}</span>
   </div>
   } @else if (showErrorSpace()) {
