@@ -35,7 +35,7 @@ export class NumberField extends BaseControlValueAccessor<number | null> {
   label = input<string | null>(null);
   width = input<'sm' | 'md' | 'lg' | 'xl' | 'xxl' | '3xl' | 'full' | string>('md');
   placeholder = input<string>('');
-  showErrorSpace = input<boolean>(false);
+  showErrorSpace = input<boolean>(true);
   min = input<number | null>(null);
   max = input<number | null>(null);
   step = input<number | null>(null);

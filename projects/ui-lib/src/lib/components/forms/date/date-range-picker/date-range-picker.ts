@@ -50,8 +50,8 @@ export class DateRangePicker
   label = input<string | null>(null);
   iconSrc = input<string | null>(null);
   showDatePickerIcon = input<boolean>(true);
-  fullWidth = input<boolean>(false);
-  showErrorSpace = input<boolean>(false);
+  width = input<'sm' | 'md' | 'lg' | 'xl' | 'xxl' | '3xl' | 'full' | string>('md');
+  showErrorSpace = input<boolean>(true);
   minDate = input<Date | null>(null);
   maxDate = input<Date | null>(null);
   allowOnlyPast = input<boolean>(false);
@@ -184,9 +184,6 @@ export class DateRangePicker
       cls += "pl-3";
     }
 
-    if (this.fullWidth()) {
-      cls += " w-full";
-    }
 
     return cls;
   }

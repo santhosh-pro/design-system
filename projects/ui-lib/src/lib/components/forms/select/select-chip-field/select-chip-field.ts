@@ -35,12 +35,13 @@ export class SelectChipField<T> extends BaseControlValueAccessor<T | null> imple
   valueProperty = input<string>('');
   emptyMessage = input<string>('');
   customActionText = input<string>('');
-  fullWidth = input<boolean>(false);
   itemWidth = input<number | null>(null);
+  width = input<'sm' | 'md' | 'lg' | 'xl' | 'xxl' | '3xl' | 'full' | string>('md');
   isItemCentered = input<boolean>(false);
   showSelectionTick = input<boolean>(true);
   itemPlacement = input<'start' | 'space-between'>('start');
   maxVisibleItems = input<number | null>(null);
+  showErrorSpace = input<boolean>(true);
 
   // Outputs
   customActionClick = output<void>();
@@ -56,9 +57,16 @@ export class SelectChipField<T> extends BaseControlValueAccessor<T | null> imple
       : this.options().slice(0, this.maxVisibleItems()!)
   );
 
-  showMore = computed(() => !this.showAll() && this.maxVisibleItems() !== null && this.options().length > this.maxVisibleItems()!);
+  showMore = computed(() => 
+    !this.showAll() && 
+    this.maxVisibleItems() !== null && 
+    this.options().length > this.maxVisibleItems()!
+  );
 
-  showLess = computed(() => this.showAll() && this.maxVisibleItems() !== null);
+  showLess = computed(() => 
+    this.showAll() && 
+    this.maxVisibleItems() !== null
+  );
 
   containerClass = computed(() => ({
     'justify-start': this.itemPlacement() === 'start',
@@ -69,12 +77,13 @@ export class SelectChipField<T> extends BaseControlValueAccessor<T | null> imple
     width: this.itemWidth() ? `${this.itemWidth()}px` : null,
   }));
 
-  itemClass = computed(() => (item: T) => ({
-    'border-primary-600': this.isSelected()(item),
-    'justify-center': this.isItemCentered(),
-  }));
+  // Simplified item class logic - removed overlapping classes
+  isSelected = computed(() => (item: T) => 
+    this.getValueId(item) === this.formControl.value || this.selectedItem() === item
+  );
 
-  isSelected = computed(() => (item: T) => this.getValueId(item) === this.formControl.value || this.selectedItem() === item);
+  // Separate computed for different states to avoid conflicts
+  hasError = computed(() => this.formControl.touched && this.formControl.errors);
 
   iconType = computed(() => (item: T): 'svg' | 'url' | null => {
     if (this.iconSrc() || this.dynamicIconPath()) return 'svg';
@@ -90,9 +99,11 @@ export class SelectChipField<T> extends BaseControlValueAccessor<T | null> imple
     return null;
   });
 
-   itemIconColor = computed(() => (item: T): string | null => {
+  itemIconColor = computed(() => (item: T): string | null => {
     if (this.iconColor()) return this.iconColor();
-    if (this.dynamicIconColorPath()) return this.getNestedProperty(item, this.dynamicIconColorPath()) || this.iconColor();
+    if (this.dynamicIconColorPath()) {
+      return this.getNestedProperty(item, this.dynamicIconColorPath()) || this.iconColor();
+    }
     return this.iconColor();
   });
 
@@ -104,13 +115,18 @@ export class SelectChipField<T> extends BaseControlValueAccessor<T | null> imple
   });
 
   protected override onValueReady(value: T | null): void {
-    const matchingItem = value != null ? this.options().find((item) => this.getValueId(item) === value) : null;
+    const matchingItem = value != null 
+      ? this.options().find((item) => this.getValueId(item) === value) 
+      : null;
     this.selectedItem.set(matchingItem ?? null);
   }
 
   protected onItemClick(item: T): void {
+    if (this.formControl.disabled) return;
+    
     this.markTouched();
     const value = this.getValueId(item);
+    
     if (value === this.formControl.value) {
       // Deselect if clicking the same item
       this.selectedItem.set(null);
@@ -123,22 +139,28 @@ export class SelectChipField<T> extends BaseControlValueAccessor<T | null> imple
   }
 
   protected onCustomActionClick(): void {
-    this.customActionClick.emit();
+    if (!this.formControl.disabled) {
+      this.customActionClick.emit();
+    }
   }
 
   protected onItemKeydown(event: KeyboardEvent, item: T): void {
-    if (event.key === 'Enter') {
+    if (event.key === 'Enter' || event.key === ' ') {
       this.onItemClick(item);
       event.preventDefault();
     }
   }
 
   protected showAllItems(): void {
-    this.showAll.set(true);
+    if (!this.formControl.disabled) {
+      this.showAll.set(true);
+    }
   }
 
   protected hideExtraItems(): void {
-    this.showAll.set(false);
+    if (!this.formControl.disabled) {
+      this.showAll.set(false);
+    }
   }
 
   private getValueId(item: T): any {

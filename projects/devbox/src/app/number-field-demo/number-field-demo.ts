@@ -1,12 +1,28 @@
 import { DatePipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TextareaField, TextField, SearchField, OtpField, PasswordField, NumberField, TextPrefixSelectField, NumberPrefixSelectField, DateField, DatePicker, InputDateFormat, Weekday, Button } from 'projects/ui-lib/src/public-api';
+import { FormArray, FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { TextareaField, TextField, SearchField, OtpField, PasswordField, NumberField, TextPrefixSelectField, NumberPrefixSelectField, DateField, DatePicker, InputDateFormat, Weekday, Button, SelectChipField, MultiSelectDropdownField, DateRangePicker, MultiDatePicker } from 'projects/ui-lib/src/public-api';
+
+import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+
+export class ArrayValidators {
+  static required(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (control instanceof FormArray) {
+        return control.length === 0 ? { required: true } : null;
+      }
+      if (Array.isArray(control.value)) {
+        return control.value.length === 0 ? { required: true } : null;
+      }
+      return null;
+    };
+  }
+}
 
 @Component({
   selector: 'app-number-field-demo',
-  imports: [ReactiveFormsModule,
-    TextField, TextareaField, SearchField, OtpField, PasswordField, NumberField, TextPrefixSelectField, NumberPrefixSelectField, DateField, DatePicker, DatePipe, Button],
+  imports: [ReactiveFormsModule, DateRangePicker,
+    TextField, TextareaField, MultiSelectDropdownField, SearchField, OtpField, PasswordField, NumberField, TextPrefixSelectField, NumberPrefixSelectField, DateField, DatePicker, DatePipe, Button, SelectChipField, MultiSelectDropdownField, MultiDatePicker],
   templateUrl: './number-field-demo.html',
   styleUrl: './number-field-demo.css'
 })
@@ -51,7 +67,7 @@ export class NumberFieldDemo {
     this.form = this.formBuilder.group({
       name: ['', [Validators.required]],
       email: ['', [Validators.required,Validators.email]],
-      phoneNumber: [''],
+      phoneNumber: [null,[Validators.required]],
       notes: ['',[Validators.maxLength(5)]],
     });
   }

@@ -9,9 +9,12 @@
     @for (index of digitIndices(); track index) {
       <input
         #otpInput
-        class="otp-input w-12 h-12 text-center text-lg border bg-white border-neutral-200 rounded-md outline-none transition-all 
-               focus:border-blue-500 focus:ring-2 focus:ring-blue-500 
-               disabled:bg-gray-100 disabled:text-gray-500"
+        class="otp-input w-12 h-12 text-center text-lg border bg-white border-[var(--color-primary-400)] rounded-md outline-none transition-all ring-1 ring-[var(--color-primary-400)] focus:ring-2 focus:ring-[var(--color-primary-500)] focus:border-[var(--color-primary-500)] disabled:bg-neutral-100 disabled:text-neutral-400"
+        [ngClass]="{
+          'border-error-600 ring-error-600 focus:ring-2': formControl.touched && formControl.errors,
+          '!border-gray-500 !ring-0 focus:ring-2 focus:ring-[var(--color-primary-500)] focus:border-[var(--color-primary-500)]': !(formControl.touched && formControl.errors),
+          'bg-neutral-100 cursor-not-allowed': formControl.disabled
+        }"
         type="text"
         inputmode="text"
         maxlength="1"
@@ -23,18 +26,19 @@
         (focus)="onFocus()"
         (blur)="onBlur()"
         [disabled]="formControl.disabled"
+        style="outline: none !important; box-shadow: none !important;"
       />
     }
   </div>
 
-  <!-- Error Slot -->
-  @if (formControl.errors && hasErrors()) {
-    <div error class="mt-1">
-      <span class="text-sm text-red-500">{{ formControl.errors | humanizeFormMessages: errorMessages() }}</span>
+  <!-- Error Slot - Fixed condition -->
+  @if (formControl.touched && formControl.errors) {
+    <div error class="ml-2 text-left">
+      <span class="text-xs text-[var(--color-error-500)]">{{ formControl.errors | humanizeFormMessages: errorMessages() }}</span>
     </div>
   } @else if (showErrorSpace()) {
-    <div error class="mt-1">
-      <span class="text-sm text-transparent">.</span>
+    <div error class="text-left">
+      <span class="text-xs text-transparent">.</span>
     </div>
   }
 </ui-base-input>

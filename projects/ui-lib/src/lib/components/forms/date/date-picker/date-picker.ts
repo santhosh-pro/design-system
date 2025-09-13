@@ -31,8 +31,8 @@ export class DatePicker extends BaseControlValueAccessor<Date | null> implements
   label = input<string | null>();
   iconSrc = input<string | null>();
   showDatePickerIcon = input<boolean>(true);
-  fullWidth = input<boolean>(false);
-  showErrorSpace = input<boolean>(false);
+  width = input<'sm' | 'md' | 'lg' | 'xl' | 'xxl' | '3xl' | 'full' | string>('md');
+  showErrorSpace = input<boolean>(true);
   minDate = input<Date | null>();
   maxDate = input<Date | null>();
   allowOnlyPast = input<boolean>(false);
@@ -100,13 +100,6 @@ export class DatePicker extends BaseControlValueAccessor<Date | null> implements
     }, 100);
   }
 
-  getClass() {
-    let cls = this.iconSrc() ? 'pr-3 pl-10' : 'px-3';
-    if (this.fullWidth()) {
-      cls += ' w-full';
-    }
-    return cls;
-  }
 
   onFocus() {
     this.isFocused.set(true);

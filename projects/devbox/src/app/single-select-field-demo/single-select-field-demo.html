@@ -11,7 +11,7 @@
         [formControl]="basicControl"
         title="Select Your Favorite Color"
         [options]="colors()"
-        [fullWidth]="true">
+       [width]="'md'">
       </ui-select-chip-field>
       <p class="text-sm text-gray-600 mt-2">
         Selected: {{ basicControl.value || 'None' }}
@@ -27,7 +27,7 @@
         [formControl]="countryControl"
         title="Select Country"
         [options]="countries()"
-        [fullWidth]="true"
+       [width]="'md'"
         labelKey="name"
         valueKey="code">
       </ui-select-chip-field>
@@ -45,7 +45,7 @@
         [formControl]="categoryControl"
         title="Select a Fruit"
         [options]="categories()"
-        [fullWidth]="true"
+        [width]="'md'"
         labelKey="name"
         categoryKey="category">
       </ui-select-chip-field>

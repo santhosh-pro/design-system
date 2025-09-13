@@ -36,8 +36,8 @@ export class MultiDatePicker extends BaseControlValueAccessor<Date[]> implements
   label = input<string | null>();
   iconSrc = input<string | null>();
   showDatePickerIcon = input<boolean>(true);
-  fullWidth = input<boolean>(false);
-  showErrorSpace = input<boolean>(false);
+  width = input<'sm' | 'md' | 'lg' | 'xl' | 'xxl' | '3xl' | 'full' | string>('md');
+  showErrorSpace = input<boolean>(true);
 
   minDate = input<Date | null>();
   maxDate = input<Date | null>();
@@ -110,10 +110,6 @@ export class MultiDatePicker extends BaseControlValueAccessor<Date[]> implements
       cls += 'pl-10';
     } else {
       cls += 'pl-3';
-    }
-
-    if (this.fullWidth()) {
-      cls += ' w-full';
     }
 
     return cls;

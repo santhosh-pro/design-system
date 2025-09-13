@@ -11,18 +11,16 @@ export abstract class BaseControlValueAccessor<T> implements ControlValueAccesso
   // Outputs
   valueChange = output<T>();
 
-  // Signals (keep for disabled/touched, but not for formControl)
+  // Signals
   isDisabled = signal(false);
   isTouched = signal(false);
   private errors = signal<{ [key: string]: any } | null>(null);
 
-
-  // Plain property like old code (not a signal)
+  // Plain property
   formControl = new FormControl<T | null>(null);
 
-  // Computed (reads from formControl.value/touched/errors directly)
+  // Computed
   hasErrors = computed(() => this.isTouched() && !!this.errors());
-
 
   // Injected NgControl
   private ngControl = inject(NgControl, { optional: true, self: true });
@@ -30,7 +28,7 @@ export abstract class BaseControlValueAccessor<T> implements ControlValueAccesso
   // Flag to prevent recursive calls
   private isWritingValue = false;
 
-  // Abstract method for subclasses to implement
+  // Abstract method
   protected abstract onValueReady(value: T | null): void;
 
   constructor() {
@@ -40,19 +38,19 @@ export abstract class BaseControlValueAccessor<T> implements ControlValueAccesso
   }
 
   ngAfterContentInit(): void {
-   if (this.ngControl?.control) {
-    this.formControl = this.ngControl.control as FormControl<T | null>;
+    if (this.ngControl?.control) {
+      this.formControl = this.ngControl.control as FormControl<T | null>;
 
-    // keep signals updated
-    this.formControl.statusChanges.subscribe(() => {
+      // Keep signals updated
+      this.formControl.statusChanges.subscribe(() => {
+        this.isTouched.set(this.formControl.touched);
+        this.errors.set(this.formControl.errors);
+      });
+
+      // Initial sync
       this.isTouched.set(this.formControl.touched);
       this.errors.set(this.formControl.errors);
-    });
-
-    // initial sync
-    this.isTouched.set(this.formControl.touched);
-    this.errors.set(this.formControl.errors);
-  }
+    }
   }
 
   // ControlValueAccessor methods
@@ -63,7 +61,6 @@ export abstract class BaseControlValueAccessor<T> implements ControlValueAccesso
       if (value !== this.formControl.value) {
         this.formControl.setValue(value, { emitEvent: false });
       }
-      // Defer like old code to allow validation/touched sync
       setTimeout(() => this.onValueReady(value));
     } finally {
       this.isWritingValue = false;
@@ -86,7 +83,7 @@ export abstract class BaseControlValueAccessor<T> implements ControlValueAccesso
   // Public methods
   markTouched(): void {
     if (!this.isTouched()) {
-      this.formControl.markAsTouched({ emitEvent: true });  // Propagate to parent
+      this.formControl.markAsTouched({ emitEvent: true });
       this.onTouched();
       this.isTouched.set(true);
     }

@@ -1,36 +1,42 @@
 <ui-base-input #inputElement [title]="label()" [width]="width()" [isRequiredField]="hasRequiredValidator()">
-      <!-- Input Slot -->
-      <div input class="relative flex items-center w-full bg-white border border-neutral-200 rounded-md shadow-sm focus-within:ring-2 focus-within:ring-primary-400 transition-all">
-        <!-- Search Icon -->
-  <svg class="w-6 h-6 mx-2 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-  <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
-</svg>
+  <!-- Input Slot -->
+  <div input
+    class="relative flex items-center w-full bg-white border border-[var(--color-primary-400)] rounded-md shadow-sm ring-1 ring-[var(--color-primary-400)] focus-within:ring-2 transition-all"
+    [ngClass]="{
+         'border-error-600 ring-error-600 focus-within:ring-2': formControl.touched && formControl.errors,
+        '!border-gray-500 !ring-0 focus-within:!ring-2 focus-within:!ring-[var(--color-primary-500)] focus-within:!border-[var(--color-primary-500)]': !(formControl.touched && formControl.errors),
+         'bg-neutral-100 cursor-not-allowed': formControl.disabled,
+       
+       }">
+    <!-- Search Icon -->
+    <svg class="w-6 h-6 mx-2 text-neutral-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+      <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>
+    </svg>
 
-        
-        <!-- Input Field -->
-        <div class="relative flex items-center flex-1">
-          <input
-            (input)="onInput($any($event.target)?.value)"
-            class="h-[46px] flex-1 bg-transparent border-none outline-none placeholder-neutral-400 text-black pl-10"
-            [class.text-neutral-400]="formControl.disabled"
-            [class.disabled-placeholder]="formControl.disabled"
-            [formControl]="formControl"
-            type="text"
-            [placeholder]="placeholder()"
-            (focus)="onFocus()"
-            (blur)="onBlur()"
-          >
-        </div>
-      </div>
+    <!-- Input Field -->
+    <div class="relative flex items-center flex-1">
+      <input
+        (input)="onInput($any($event.target)?.value)"
+        class="h-[46px] flex-1 bg-transparent border-none outline-none placeholder-neutral-400 text-black focus:ring-0"
+        [class.text-neutral-400]="formControl.disabled"
+        [formControl]="formControl"
+        type="text"
+        [placeholder]="placeholder()"
+        (focus)="onFocus()"
+        (blur)="onBlur()"
+        style="outline: none !important; box-shadow: none !important;">
+    </div>
+  </div>
 
-      <!-- Error Slot -->
-      @if (formControl && formControl.errors && hasErrors()) {
-        <div error class="mt-1">
-          <span class="text-caption text-red-500">{{ formControl.errors | humanizeFormMessages: errorMessages() }}</span>
-        </div>
-      } @else if (showErrorSpace()) {
-        <div error class="mt-1">
-          <span class="text-caption text-transparent">.</span>
-        </div>
-      }
-    </ui-base-input>
+  <!-- Error Slot - Fixed condition -->
+  @if (formControl.touched && formControl.errors) {
+  <div error class="ml-2 text-left">
+    <span class="text-xs text-[var(--color-error-500)]">{{ formControl.errors | humanizeFormMessages: errorMessages()
+      }}</span>
+  </div>
+  } @else if (showErrorSpace()) {
+  <div error class="text-left">
+    <span class="text-xs text-transparent">.</span>
+  </div>
+  }
+</ui-base-input>
