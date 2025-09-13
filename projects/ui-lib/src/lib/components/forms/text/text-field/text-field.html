@@ -37,7 +37,7 @@
   <!-- Error Slot - Fixed condition -->
   @if (formControl.touched && formControl.errors) {
   <div error class="ml-2 text-left">
-    <span class="text-xs text-[var(--color-error-500)]">{{ formControl.errors | humanizeFormMessages: errorMessages()
+    <span class="text-xs text-[var(--color-error-500)]">{{ formControl.errors | humanizeFormMessages: errorMessages(): label()??'This field'
       }}</span>
   </div>
   } @else if (showErrorSpace()) {

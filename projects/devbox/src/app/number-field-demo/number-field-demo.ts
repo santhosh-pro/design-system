@@ -21,7 +21,7 @@ export class ArrayValidators {
 
 @Component({
   selector: 'app-number-field-demo',
-  imports: [ReactiveFormsModule, DateRangePicker, SelectDropdownField,
+  imports: [ReactiveFormsModule, DateRangePicker, SelectDropdownField, DateField,
     TextField, TextareaField, MultiSelectDropdownField, CommonModule, SearchField, OtpField, PasswordField, NumberField, TextPrefixSelectField, NumberPrefixSelectField, DateField, DatePicker, DatePipe, Button, SelectChipField, MultiSelectDropdownField, MultiDatePicker, MultiSelectDataTableField, SelectDropdownField],
   templateUrl: './number-field-demo.html',
   styleUrl: './number-field-demo.css'
