@@ -127,19 +127,22 @@
 
   </div>
   <div>
-    <ui-text-field [label]="'Email'" [placeholder]="'Email'" formControlName="email"></ui-text-field>
+    <ui-text-field [label]="'Email'" [placeholder]="'Email'" [width]="'3xl'" formControlName="email"></ui-text-field>
   </div>
   <!-- <div>
               <ui-text-field [label]="'Phone Number'" [placeholder]="'Phone Number'" formControlName="phoneNumber"></ui-text-field>
             </div> -->
-  <ui-select-chip-field
+  <!-- <ui-select-chip-field
               [label]="'Select Country'"
               [options]="prefixOptions"
               formControlName="phoneNumber"
               [displayProperty]="'label'"
-              [width]="'3xl'"
+              [width]="'xl'"
               [valueProperty]="'value'"
-            ></ui-select-chip-field>
+            ></ui-select-chip-field> -->
+  <ui-multi-select-chip-field [label]="'Select Country'" [options]="prefixOptions" formControlName="phoneNumber"
+    [displayProperty]="'label'" [width]="'xl'" [valueProperty]="'value'"
+    placeholder="Select country"></ui-multi-select-chip-field>
   <!-- <ui-multi-select-dropdown
               label="Select Country"
               [options]="prefixOptions"

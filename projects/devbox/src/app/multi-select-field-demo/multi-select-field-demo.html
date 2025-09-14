@@ -5,22 +5,20 @@
     <!-- MultiSelectionFieldComponent usage -->
     <ui-multi-select-chip-field
       formControlName="selectedItems"
-      [title]="'Select Fruits'"
-      [items]="items"
-      [display]="'name'"
-      [identifier]="'id'"
-      [value]="'id'"
+      [label]="'Select Fruits'"
+      [options]="items"
+      [displayProperty]="'name'"
+      [valueProperty]="'id'"
       [iconSrc]="'iconUrl'"
-      [noDataMessage]="'No fruits available'"
-      [fullWidth]="true"
-      [itemWidth]="150"
-      [isItemCentered]="true"
-      [showSelectionTickMark]="true"
-      [maximumDisplayItems]="3"
       [customActionText]="'Add New Fruit'"
       (valueChange)="onValueChange($event)"
       (onCustomActionClicked)="onCustomActionClicked()"
     ></ui-multi-select-chip-field>
+
+      <!-- [fullWidth]="true"
+      [itemWidth]="150"
+      [isItemCentered]="true"
+      [showSelectionTickMark]="true" -->
 
     <!-- Submit button -->
     <button

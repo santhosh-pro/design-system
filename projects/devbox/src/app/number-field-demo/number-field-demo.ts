@@ -1,7 +1,7 @@
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TextareaField, TextField, SearchField, OtpField, PasswordField, NumberField, TextPrefixSelectField, NumberPrefixSelectField, DateField, DatePicker, InputDateFormat, Weekday, Button, SelectChipField, MultiSelectDropdownField, DateRangePicker, MultiDatePicker, MultiSelectDataTableField, ColumnDef, SelectDropdownField, MonthYearPicker } from 'projects/ui-lib/src/public-api';
+import { TextareaField, TextField, SearchField, OtpField, PasswordField, NumberField, TextPrefixSelectField, NumberPrefixSelectField, DateField, DatePicker, InputDateFormat, Weekday, Button, SelectChipField, MultiSelectDropdownField, DateRangePicker, MultiDatePicker, MultiSelectDataTableField, ColumnDef, SelectDropdownField, MonthYearPicker, MultiSelectChipField } from 'projects/ui-lib/src/public-api';
 
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
@@ -21,7 +21,7 @@ export class ArrayValidators {
 
 @Component({
   selector: 'app-number-field-demo',
-  imports: [ReactiveFormsModule, DateRangePicker, SelectDropdownField, DateField,MonthYearPicker,
+  imports: [ReactiveFormsModule, DateRangePicker, SelectDropdownField, DateField,MonthYearPicker,MultiSelectChipField,
     TextField, TextareaField, MultiSelectDropdownField, CommonModule, SearchField, OtpField, PasswordField, NumberField, TextPrefixSelectField, NumberPrefixSelectField, DateField, DatePicker, DatePipe, Button, SelectChipField, MultiSelectDropdownField, MultiDatePicker, MultiSelectDataTableField, SelectDropdownField],
   templateUrl: './number-field-demo.html',
   styleUrl: './number-field-demo.css'

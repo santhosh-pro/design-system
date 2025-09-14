@@ -1,101 +1,101 @@
-<ui-base-input [title]="label()" [isRequiredField]="hasRequiredValidator()">
-  <div input class="flex flex-wrap gap-3" [ngClass]="containerClass()">
+<ui-base-input [title]="label()" [width]="width()" [isRequiredField]="hasRequiredValidator()">
+  <div input class="flex flex-row flex-wrap gap-3" [ngClass]="containerClass()">
     @for (item of visibleItems(); track item) {
-    <div
-      class="relative flex items-center bg-white rounded-md px-3 py-3 gap-4 cursor-pointer border shadow-sm transition-all"
-      tabindex="0" 
-      (keydown)="onItemKeydown($event, item)" 
-      (click)="onItemClick(item)"
-      [ngStyle]="itemStyle()" 
+    <label
+      class="flex items-center gap-2 p-2 rounded-md border cursor-pointer transition-all"
       [ngClass]="{
-          'border-primary-600': isSelected()(item) && !(formControl.touched && formControl.errors),
-          'border-error-600 ring-error-600': formControl.touched && formControl.errors,
-          'border-gray-500 focus-within:ring-[var(--color-primary-500)] focus-within:border-[var(--color-primary-500)]': !isSelected()(item) && !(formControl.touched && formControl.errors),
-          'bg-neutral-100 cursor-not-allowed': formControl.disabled,
-          'justify-center': isItemCentered()
-        }">
+        'border-primary-500 bg-primary-50': isSelected()(item) && !(formControl.touched && formControl.errors),
+        'border-red-500': formControl.touched && formControl.errors,
+        'border-gray-300 hover:bg-gray-50': !isSelected()(item) && !(formControl.touched && formControl.errors),
+        'bg-gray-100 cursor-not-allowed': formControl.disabled
+      }">
+      <input
+        type="radio"
+        [value]="getValueId(item)"
+        [checked]="isSelected()(item)"
+        [disabled]="formControl.disabled"
+        (change)="onItemChange(item)"
+        class="h-4 w-4 text-primary-500 focus:ring-primary-500 disabled:text-gray-400"
+      />
       
-      @if (isSelected()(item) && showSelectionTick()) {
-      <div class="absolute -top-[8px] -right-[8px] z-10">
-      <svg class="h-[18px] w-[18px] text-primary-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M12 2C10.6868 2 9.38642 2.25866 8.17317 2.7612C6.95991 3.26375 5.85752 4.00035 4.92893 4.92893C3.05357 6.8043 2 9.34784 2 12C2 14.6522 3.05357 17.1957 4.92893 19.0711C5.85752 19.9997 6.95991 20.7362 8.17317 21.2388C9.38642 21.7413 10.6868 22 12 22C14.6522 22 17.1957 20.9464 19.0711 19.0711C20.9464 17.1957 22 14.6522 22 12C22 10.6868 21.7413 9.38642 21.2388 8.17317C20.7362 6.95991 19.9997 5.85752 19.0711 4.92893C18.1425 4.00035 17.0401 3.26375 15.8268 2.7612C14.6136 2.25866 13.3132 2 12 2Z"
-                fill="white"/>
-              <path
-                d="M10 17L5 12L6.41 10.58L10 14.17L17.59 6.58L19 8M12 2C10.6868 2 9.38642 2.25866 8.17317 2.7612C6.95991 3.26375 5.85752 4.00035 4.92893 4.92893C3.05357 6.8043 2 9.34784 2 12C2 14.6522 3.05357 17.1957 4.92893 19.0711C5.85752 19.9997 6.95991 20.7362 8.17317 21.2388C9.38642 21.7413 10.6868 22 12 22C14.6522 22 17.1957 20.9464 19.0711 19.0711C20.9464 17.1957 22 14.6522 22 12C22 10.6868 21.7413 9.38642 21.2388 8.17317C20.7362 6.95991 19.9997 5.85752 19.0711 4.92893C18.1425 4.00035 17.0401 3.26375 15.8268 2.7612C14.6136 2.25866 13.3132 2 12 2Z"
-                fill="currentColor"/>
-            </svg>
-      </div>
-      }
-
       @if (icon()(item)) {
       @switch (iconType()(item)) {
-      @case ('url') {
-      <img class="object-contain flex-shrink-0" height="20" width="20" [src]="icon()(item)!"
-        [alt]="displayText()(item) || 'Item icon'" />
-      }
-      @case ('svg') {
-      <ui-svg-icon [src]="icon()(item)!" [size]="18" [ngStyle]="{'color': itemIconColor()(item)}" 
-        class="flex-shrink-0" />
-      }
+        @case ('url') {
+          <img
+            class="h-5 w-5 object-contain flex-shrink-0"
+            [src]="icon()(item)!"
+            [alt]="displayText()(item) || 'Item icon'"
+          />
+        }
+        @case ('svg') {
+          <ui-svg-icon
+            [src]="icon()(item)!"
+            [size]="18"
+            [ngStyle]="{'color': itemIconColor()(item)}"
+            class="flex-shrink-0"
+          />
+        }
       }
       }
 
-      <p class="flex-1 text-caption text-center text-black overflow-hidden text-ellipsis whitespace-nowrap"
-         [ngClass]="{ 'text-left': !isItemCentered() }">
+      <span
+        class="text-sm text-gray-900 whitespace-nowrap"
+        [ngClass]="{ 'text-gray-400': formControl.disabled }"
+      >
         {{ displayText()(item) }}
-      </p>
-      
-      <ng-content select="[post]" />
-    </div>
+      </span>
+    </label>
     }
 
     @if (showMore()) {
-    <button type="button" (click)="showAllItems()"
-      class="flex items-center justify-center rounded-lg px-4 py-3 cursor-pointer border-2 border-dashed transition-all"
-      style="min-width: 80px;"
+    <button
+      type="button"
+      (click)="showAllItems()"
+      class="flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium border border-dashed transition-all"
       [ngClass]="{
-          'border-4 border-[var(--color-primary-600)] text-[var(--color-primary-600)] hover:bg-[var(--color-primary-50)]': !(formControl.touched && formControl.errors) && !formControl.disabled,
-          'border-4 border-red-500 text-red-600': formControl.touched && formControl.errors,
-          'bg-gray-100 cursor-not-allowed border-4 border-gray-300 text-gray-400': formControl.disabled
-        }">
-      <span class="text-sm font-medium">More</span>
+        'border-primary-500 text-primary-500 hover:bg-primary-50': !(formControl.touched && formControl.errors) && !formControl.disabled,
+        'border-red-500 text-red-500': formControl.touched && formControl.errors,
+        'border-gray-300 text-gray-400 cursor-not-allowed': formControl.disabled
+      }">
+      More
     </button>
     }
 
     @if (showLess()) {
-    <button type="button" (click)="hideExtraItems()"
-      class="flex items-center justify-center rounded-lg px-4 py-3 cursor-pointer border-2 border-dashed transition-all"
-      style="min-width: 80px;"
+    <button
+      type="button"
+      (click)="hideExtraItems()"
+      class="flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium border border-dashed transition-all"
       [ngClass]="{
-          'border-[var(--color-primary-400)] text-[var(--color-primary-600)] hover:bg-[var(--color-primary-50)]': !(formControl.touched && formControl.errors) && !formControl.disabled,
-          'border-red-400 text-red-600': formControl.touched && formControl.errors,
-          'bg-gray-100 cursor-not-allowed border-gray-300 text-gray-400': formControl.disabled
-        }">
-      <span class="text-sm font-medium">Less</span>
+        'border-primary-500 text-primary-500 hover:bg-primary-50': !(formControl.touched && formControl.errors) && !formControl.disabled,
+        'border-red-500 text-red-500': formControl.touched && formControl.errors,
+        'border-gray-300 text-gray-400 cursor-not-allowed': formControl.disabled
+      }">
+      Less
     </button>
     }
 
     @if (customActionText()) {
-    <button type="button" (click)="onCustomActionClick()"
-      class="flex items-center justify-center rounded-lg px-4 py-3 cursor-pointer transition-all"
-      style="min-width: 80px;"
+    <button
+      type="button"
+      (click)="onCustomActionClick()"
+      class="flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium transition-all"
       [ngClass]="{
-          'bg-[var(--color-primary-500)] text-white hover:bg-[var(--color-primary-600)]': !formControl.disabled,
-          'bg-gray-200 text-gray-400 cursor-not-allowed': formControl.disabled
-        }">
-      <span class="text-sm font-medium">{{ customActionText() }}</span>
+        'bg-primary-500 text-white hover:bg-primary-600': !formControl.disabled,
+        'bg-gray-200 text-gray-400 cursor-not-allowed': formControl.disabled
+      }">
+      {{ customActionText() }}
     </button>
     }
   </div>
 
   <!-- Error Slot -->
   @if (formControl.touched && formControl.errors) {
-  <div error class="ml-2 text-left">
-    <span class="text-xs text-[var(--color-error-500)]">{{ formControl.errors | humanizeFormMessages: errorMessages() }}</span>
+  <div error class="mt-1 text-left">
+    <span class="text-xs text-red-500">{{ formControl.errors | humanizeFormMessages: errorMessages() }}</span>
   </div>
   } @else if (showErrorSpace()) {
-  <div error class="text-left">
+  <div error class="mt-1 text-left">
     <span class="text-xs text-transparent">.</span>
   </div>
   }

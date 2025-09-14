@@ -35,11 +35,7 @@ export class SelectChipField<T> extends BaseControlValueAccessor<T | null> imple
   valueProperty = input<string>('');
   emptyMessage = input<string>('');
   customActionText = input<string>('');
-  itemWidth = input<number | null>(null);
   width = input<'sm' | 'md' | 'lg' | 'xl' | 'xxl' | '3xl' | 'full' | string>('md');
-  isItemCentered = input<boolean>(false);
-  showSelectionTick = input<boolean>(true);
-  itemPlacement = input<'start' | 'space-between'>('start');
   maxVisibleItems = input<number | null>(null);
   showErrorSpace = input<boolean>(true);
 
@@ -57,33 +53,31 @@ export class SelectChipField<T> extends BaseControlValueAccessor<T | null> imple
       : this.options().slice(0, this.maxVisibleItems()!)
   );
 
-  showMore = computed(() => 
-    !this.showAll() && 
-    this.maxVisibleItems() !== null && 
+  showMore = computed(() =>
+    !this.showAll() &&
+    this.maxVisibleItems() !== null &&
     this.options().length > this.maxVisibleItems()!
   );
 
-  showLess = computed(() => 
-    this.showAll() && 
+  showLess = computed(() =>
+    this.showAll() &&
     this.maxVisibleItems() !== null
   );
 
   containerClass = computed(() => ({
-    'justify-start': this.itemPlacement() === 'start',
-    'justify-between': this.itemPlacement() === 'space-between',
+    'w-full': this.width() === 'full',
+    'w-11/12': this.width() === '3xl',
+    'w-10/12': this.width() === 'xxl',
+    'w-9/12': this.width() === 'xl',
+    'w-8/12': this.width() === 'lg',
+    'w-6/12': this.width() === 'md',
+    'w-4/12': this.width() === 'sm',
+    [this.width()]: typeof this.width() === 'string' && !['sm', 'md', 'lg', 'xl', 'xxl', '3xl', 'full'].includes(this.width())
   }));
 
-  itemStyle = computed(() => ({
-    width: this.itemWidth() ? `${this.itemWidth()}px` : null,
-  }));
-
-  // Simplified item class logic - removed overlapping classes
-  isSelected = computed(() => (item: T) => 
+  isSelected = computed(() => (item: T) =>
     this.getValueId(item) === this.formControl.value || this.selectedItem() === item
   );
-
-  // Separate computed for different states to avoid conflicts
-  hasError = computed(() => this.formControl.touched && this.formControl.errors);
 
   iconType = computed(() => (item: T): 'svg' | 'url' | null => {
     if (this.iconSrc() || this.dynamicIconPath()) return 'svg';
@@ -115,39 +109,24 @@ export class SelectChipField<T> extends BaseControlValueAccessor<T | null> imple
   });
 
   protected override onValueReady(value: T | null): void {
-    const matchingItem = value != null 
-      ? this.options().find((item) => this.getValueId(item) === value) 
+    const matchingItem = value != null
+      ? this.options().find((item) => this.getValueId(item) === value)
       : null;
     this.selectedItem.set(matchingItem ?? null);
   }
 
-  protected onItemClick(item: T): void {
+  protected onItemChange(item: T): void {
     if (this.formControl.disabled) return;
-    
+
     this.markTouched();
     const value = this.getValueId(item);
-    
-    if (value === this.formControl.value) {
-      // Deselect if clicking the same item
-      this.selectedItem.set(null);
-      this.onValueChange(null);
-    } else {
-      // Select new item
-      this.selectedItem.set(item);
-      this.onValueChange(value);
-    }
+    this.selectedItem.set(item);
+    this.onValueChange(value);
   }
 
   protected onCustomActionClick(): void {
     if (!this.formControl.disabled) {
       this.customActionClick.emit();
-    }
-  }
-
-  protected onItemKeydown(event: KeyboardEvent, item: T): void {
-    if (event.key === 'Enter' || event.key === ' ') {
-      this.onItemClick(item);
-      event.preventDefault();
     }
   }
 
@@ -163,7 +142,7 @@ export class SelectChipField<T> extends BaseControlValueAccessor<T | null> imple
     }
   }
 
-  private getValueId(item: T): any {
+  getValueId(item: T): any {
     return this.valueProperty() ? this.getNestedProperty(item, this.valueProperty()) : item;
   }
 
