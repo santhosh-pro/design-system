@@ -37,4 +37,12 @@ export class DateUtils {
     const yyyy = date.getFullYear();
     return format === InputDateFormat.mmddyyyy ? `${mm}/${dd}/${yyyy}` : `${dd}/${mm}/${yyyy}`;
   }
+
+    static formatMonthYear(date: Date, format: InputDateFormat): string {
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return format === InputDateFormat.mmddyyyy
+      ? `${month}/${year}`
+      : `${month}/${year}`;
+  }
 }

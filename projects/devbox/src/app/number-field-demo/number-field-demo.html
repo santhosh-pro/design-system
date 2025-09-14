@@ -12,14 +12,14 @@
     placeholder="Enter text (xl)"
   ></ui-textarea-field> -->
 
-  <!-- <ui-search-field
+<!-- <ui-search-field
     label="Search Field"
     width="md"
     placeholder="Search here..."
     (searchChange)="onSearch($event)"
   ></ui-search-field>  -->
 
-  <!-- <ui-number-prefix-select-field
+<!-- <ui-number-prefix-select-field
           [label]="'Number Input'"
           [width]="'xxl'"
           [placeholder]="'Enter number'"
@@ -42,7 +42,7 @@
     (prefixChange)="onPrefixChange($event)"
   ></ui-text-prefix-select-field> -->
 
-  <!-- <ui-password-field
+<!-- <ui-password-field
     label="Password Field"
     width="md"
     placeholder="Enter password..."
@@ -59,7 +59,7 @@
     actionIcon="assets/icons/refresh.svg"
   ></ui-number-field> -->
 
-  <!-- <ui-otp-field
+<!-- <ui-otp-field
     label="OTP Field"
     width="xxl"
     [length]="6"
@@ -121,26 +121,26 @@
 </div> -->
 
 
-      <form   [formGroup]="form" (submit)="onSubmit()">
-            <div>
-              <ui-text-field [label]="'Name'"  [placeholder]="'Name'" formControlName="name"></ui-text-field>
+<form [formGroup]="form" (submit)="onSubmit()">
+  <div>
+    <ui-text-field [label]="'Name'" [placeholder]="'Name'" formControlName="name"></ui-text-field>
 
-            </div>
-            <div>
-              <ui-text-field [label]="'Email'"  [placeholder]="'Email'" formControlName="email"></ui-text-field>
-            </div>
-            <!-- <div>
+  </div>
+  <div>
+    <ui-text-field [label]="'Email'" [placeholder]="'Email'" formControlName="email"></ui-text-field>
+  </div>
+  <!-- <div>
               <ui-text-field [label]="'Phone Number'" [placeholder]="'Phone Number'" formControlName="phoneNumber"></ui-text-field>
             </div> -->
-            <!-- <ui-select-chip-field
+  <ui-select-chip-field
               [label]="'Select Country'"
               [options]="prefixOptions"
               formControlName="phoneNumber"
               [displayProperty]="'label'"
               [width]="'3xl'"
               [valueProperty]="'value'"
-            ></ui-select-chip-field> -->
-            <!-- <ui-multi-select-dropdown
+            ></ui-select-chip-field>
+  <!-- <ui-multi-select-dropdown
               label="Select Country"
               [options]="prefixOptions"
               formControlName="phoneNumber"
@@ -151,7 +151,7 @@
                [enableSearch]="true"
               ></ui-multi-select-dropdown> -->
 
-              <!-- <ui-select-dropdown-field
+  <!-- <ui-select-dropdown-field
                 [label]="'Select Country'"
                 [options]="prefixOptions"
                 formControlName="phoneNumber"
@@ -164,22 +164,11 @@
 
 
 
-              <!-- <ui-multi-select-data-table-field
-                formControlName="phoneNumber"
-                [label]="'Users'"
-                [placeholder]="'Choose users...'"
-                [columns]="userColumns()"
-                [data]="users()"
-                [totalCount]="50"
-                [valueProperty]="'id'"
-                [displayProperty]="'name'"
-                [width]="'3xl'"
-                [enablePagination]="true"
-                [pageSize]="5"
-                [enableSearch]="true">
-
-              </ui-multi-select-data-table-field> -->
-              <!-- <ui-multi-date-picker
+  <!-- <ui-multi-select-data-table-field formControlName="phoneNumber" [label]="'Users'" [placeholder]="'Choose users...'"
+    [columns]="userColumns()" [data]="users()" [totalCount]="50" [valueProperty]="'id'" [displayProperty]="'name'"
+    [enablePagination]="true" [pageSize]="5" [enableSearch]="true">
+  </ui-multi-select-data-table-field> -->
+  <!-- <ui-multi-date-picker
                 [label]="'Select Date'"
                 formControlName="phoneNumber"
                 [minDate]="minDate"
@@ -189,7 +178,10 @@
                 >
               </ui-multi-date-picker> -->
 
-              <ui-date-field
+  <!-- <ui-month-year-picker [label]="'Select Month & Year'" formControlName="phoneNumber" 
+    [inputDateFormat]="inputDateFormat">
+  </ui-month-year-picker> -->
+  <!-- <ui-date-field
                 [label]="'Select Date'"
                 formControlName="phoneNumber"
                 [minDate]="minDate"
@@ -198,14 +190,12 @@
                 [inputDateFormat]="inputDateFormat"
                 [showErrorSpace]="true"
                 >
-              </ui-date-field>
-            <div>
-              <ui-textarea-field viewType="text-area" [label]="'Notes'" [placeholder]="'Notes'" formControlName="notes"></ui-textarea-field>
-            </div>
-            <div class="flex justify-center">
-                <ui-button [loading]="false"  type="submit">Submit</ui-button>
-              </div>
-              </form>
-
-
-              {{ form.value | json }}
+              </ui-date-field> -->
+  <div>
+    <ui-textarea-field viewType="text-area" [label]="'Notes'" [placeholder]="'Notes'"
+      formControlName="notes"></ui-textarea-field>
+  </div>
+  <div class="flex justify-center">
+    <ui-button [loading]="false" type="submit">Submit</ui-button>
+  </div>
+</form>

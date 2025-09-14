@@ -44,6 +44,10 @@ export * from './lib/components/forms/date/date-range-picker/date-range-picker';
 export * from './lib/components/forms/date/date-range-picker/date-range-overlay/date-range-selection/date-range-selection';
 export * from './lib/components/forms/date/multi-date-picker/multi-date-picker';
 
+export * from './lib/components/forms/date/month-year-picker/month-year-picker';
+export * from './lib/components/forms/date/month-year-picker/month-year-overlay/month-year-overlay';
+export * from './lib/components/forms/date/month-year-picker/month-year-overlay/month-year-selection/month-year-selection';
+
 // Select Inputs
 export * from './lib/components/forms/select/select-chip-field/select-chip-field';
 export * from './lib/components/forms/select/multi-select-chip-field/multi-select-chip-field';
