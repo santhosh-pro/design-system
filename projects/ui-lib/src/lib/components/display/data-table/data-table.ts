@@ -12,16 +12,16 @@ import {
   ChangeDetectorRef,
   ElementRef,
   ViewChild,
-  OnDestroy
+  OnDestroy,
+  effect
 } from '@angular/core';
 import { Pagination, PaginationEvent } from '../../display/pagination/pagination';
 import { DatePipe } from '@angular/common';
 import { StatusBadge } from '../../feedback/status-badge/status-badge';
-import { FormControl, FormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BaseControlValueAccessor } from '../../../core/base-control-value-accessor';
 import { DynamicRenderer } from './dynamic-renderer';
 import { ContextMenuButtonAction, ContextMenuButton } from '../../overlay/context-menu-button/context-menu-button';
-import { CheckboxField } from '../../forms/select/checkbox-field/checkbox-field';
 import { AppSvgIcon } from "../../misc/app-svg-icon/app-svg-icon";
 import { SortableTable, TableSortEvent } from './sortable-table';
 import { SearchField } from '../../forms/text/search-field/search-field';
@@ -35,8 +35,8 @@ import { resolveTemplateWithObject } from '../../../core/template-resolver';
     DatePipe,
     StatusBadge,
     SortableTable,
-    CheckboxField,
     FormsModule,
+    ReactiveFormsModule,
     DynamicRenderer,
     ContextMenuButton,
     AppSvgIcon,
@@ -89,13 +89,19 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
   tableSortEvent?: TableSortEvent;
   searchText: string = '';
 
-
-   // Reactive Forms
+  // Reactive Forms
   selectAllControl = new FormControl<boolean>(false, { nonNullable: true });
   itemControls = new Map<T, FormControl<boolean>>();
 
   constructor(private cdr: ChangeDetectorRef) {
     super();
+    // Effect to react to data changes
+    effect(() => {
+      this.data(); // Access data to trigger effect
+      this.initializeItemControls();
+      this.updateSelectAllControl();
+      this.cdr.detectChanges();
+    });
   }
 
   // Lifecycle hooks
@@ -107,11 +113,21 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
     // Initialize column visibility and sync with signal
     const updatedGroups = this.columnGroups().map(node => this.cloneNodeWithVisibility(node));
     this.columnGroupsSignal.set(updatedGroups);
+
+    // Subscribe to selectAllControl changes
+    this.subscriptions.push(
+      this.selectAllControl.valueChanges.subscribe((checked) => {
+        this.onSelectAllRows(checked);
+      })
+    );
   }
 
   ngAfterViewInit(): void {
     if (this.enableRowSelection() && this.defaultSelectedKeys().length > 0) {
       this.selectedIds.set([...this.defaultSelectedKeys()]);
+      this.initializeItemControls();
+      this.updateItemControls();
+      this.updateSelectAllControl();
       this.rowSelectionChange.emit(this.selectedIds());
     }
 
@@ -223,7 +239,7 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
     this.onValueChange(tableStateEvent);
   }
 
-  onRowSelectionChange(selected: boolean | any, item: any): void {
+  onRowSelectionChange(selected: boolean, item: T): void {
     const id = this.getItemId(item);
     let updatedIds: any[];
     if (selected) {
@@ -232,10 +248,13 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
       updatedIds = this.selectedIds().filter(selectedId => selectedId !== id);
     }
     this.selectedIds.set(updatedIds);
+    this.updateItemControls();
+    this.updateSelectAllControl();
     this.rowSelectionChange.emit(this.selectedIds());
+    this.cdr.detectChanges();
   }
 
-  onSelectAllRows(selected: boolean | any): void {
+  onSelectAllRows(selected: boolean): void {
     let updatedIds: any[];
     if (selected) {
       const newIds = this.data().map((item: any) => this.getItemId(item)).filter((id: any) => !this.selectedIds().includes(id));
@@ -245,7 +264,47 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
       updatedIds = this.selectedIds().filter(id => !currentPageIds.includes(id));
     }
     this.selectedIds.set(updatedIds);
+    this.initializeItemControls(); // Reinitialize to ensure all controls are created
+    this.updateItemControls();
+    this.updateSelectAllControl();
     this.rowSelectionChange.emit(this.selectedIds());
+    this.cdr.detectChanges();
+  }
+
+  private initializeItemControls(): void {
+    this.itemControls.clear(); // Clear existing controls to avoid duplicates
+    this.data().forEach((item) => {
+      const control = new FormControl<boolean>(this.isRowSelected(item), { nonNullable: true });
+      control.valueChanges.subscribe((checked) => {
+        if (checked !== this.isRowSelected(item)) {
+          this.onRowSelectionChange(checked, item);
+        }
+      });
+      this.itemControls.set(item, control);
+    });
+  }
+
+  private updateItemControls(): void {
+    this.data().forEach((item) => {
+      const control = this.itemControls.get(item);
+      if (control) {
+        control.setValue(this.isRowSelected(item), { emitEvent: false });
+      } else {
+        // Create control if it doesn't exist
+        const newControl = new FormControl<boolean>(this.isRowSelected(item), { nonNullable: true });
+        newControl.valueChanges.subscribe((checked) => {
+          if (checked !== this.isRowSelected(item)) {
+            this.onRowSelectionChange(checked, item);
+          }
+        });
+        this.itemControls.set(item, newControl);
+      }
+    });
+  }
+
+  private updateSelectAllControl(): void {
+    const isAllSelected = this.isAllSelected();
+    this.selectAllControl.setValue(isAllSelected, { emitEvent: false });
   }
 
   onFooterActionPerformed(event: TableActionEvent): void {
@@ -526,6 +585,20 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
     return this.data().every((item: any) => this.isRowSelected(item));
   }
 
+  protected getItemControl(item: T): FormControl<boolean> {
+    let control = this.itemControls.get(item);
+    if (!control) {
+      control = new FormControl<boolean>(this.isRowSelected(item), { nonNullable: true });
+      control.valueChanges.subscribe((checked) => {
+        if (checked !== this.isRowSelected(item)) {
+          this.onRowSelectionChange(checked, item);
+        }
+      });
+      this.itemControls.set(item, control);
+    }
+    return control;
+  }
+
   // Nested header utilities
   getMaxDepth(): number {
     const nodes = this.columnGroupsSignal();
@@ -602,10 +675,6 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
 
   getHeaderRowSpan(): number {
     return this.getMaxDepth();
-  }
-
-   protected getItemControl(item: T): FormControl<boolean> {
-    return this.itemControls.get(item) || new FormControl<boolean>(false, { nonNullable: true });
   }
 }
 

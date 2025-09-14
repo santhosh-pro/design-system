@@ -17,7 +17,6 @@ import { resolveTemplateWithObject } from '../../../../core/template-resolver';
 import { deepEqual } from '../../../../core/core-utils';
 import { BaseInput } from '../../../../core/base-input/base-input';
 import { HumanizeFormMessagesPipe } from '../../../misc/humanize-form-messages';
-import { CheckboxField } from '../checkbox-field/checkbox-field';
 import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
 import { CommonModule } from '@angular/common';
 
@@ -30,11 +29,11 @@ export enum MultiSelectDropdownAppearance {
 @Component({
   selector: 'ui-multi-select-dropdown',
   standalone: true,
-  imports: [BaseInput, CommonModule, HumanizeFormMessagesPipe, CdkConnectedOverlay, CheckboxField, ReactiveFormsModule],
+  imports: [BaseInput, CommonModule, HumanizeFormMessagesPipe, CdkConnectedOverlay, ReactiveFormsModule],
   templateUrl: './multi-select-dropdown-field.html',
 })
 export class MultiSelectDropdownField<T> extends BaseControlValueAccessor<T[]> implements AfterContentInit {
-  private cdr = inject(ChangeDetectorRef);
+ private cdr = inject(ChangeDetectorRef);
   private renderer = inject(Renderer2);
   private overlay = inject(Overlay);
 
