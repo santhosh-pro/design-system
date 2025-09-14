@@ -91,10 +91,10 @@
     }
 
     @if (state()?.success() && options().length <= 0) {
-      <p class="text-sm text-red-700 w-full">{{ emptyMessage() ?? 'No data found' }}</p>
+      <p class="text-sm text-red-700 w-full">{{ emptyMessage() }}</p>
     }
     @if (state()?.failed() && options().length <= 0) {
-      <p class="text-sm text-red-700 w-full">{{ state()?.error() ?? emptyMessage() ?? 'No data found' }}</p>
+      <p class="text-sm text-red-700 w-full">{{ state()?.error() ?? emptyMessage() }}</p>
     }
     @if (state()?.loading()) {
       <ui-shimmer class="w-full" type="multiline"></ui-shimmer>
