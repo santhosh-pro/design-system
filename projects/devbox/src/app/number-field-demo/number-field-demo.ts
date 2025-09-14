@@ -1,7 +1,7 @@
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TextareaField, TextField, SearchField, OtpField, PasswordField, NumberField, TextPrefixSelectField, NumberPrefixSelectField, DateField, DatePicker, InputDateFormat, Weekday, Button, SelectChipField, MultiSelectDropdownField, DateRangePicker, MultiDatePicker, MultiSelectDataTableField, ColumnDef, SelectDropdownField, MonthYearPicker, MultiSelectChipField } from 'projects/ui-lib/src/public-api';
+import { TextareaField, TextField, SearchField, OtpField, PasswordField, NumberField, TextPrefixSelectField, NumberPrefixSelectField, DateField, DatePicker, InputDateFormat, Weekday, Button, SelectChipField, MultiSelectDropdownField, DateRangePicker, MultiDatePicker, MultiSelectDataTableField, ColumnDef, SelectDropdownField, MonthYearPicker, MultiSelectChipField, Tab } from 'projects/ui-lib/src/public-api';
 
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
@@ -21,7 +21,7 @@ export class ArrayValidators {
 
 @Component({
   selector: 'app-number-field-demo',
-  imports: [ReactiveFormsModule, DateRangePicker, SelectDropdownField, DateField,MonthYearPicker,MultiSelectChipField,
+  imports: [ReactiveFormsModule, DateRangePicker, SelectDropdownField, DateField,MonthYearPicker,MultiSelectChipField,Tab,
     TextField, TextareaField, MultiSelectDropdownField, CommonModule, SearchField, OtpField, PasswordField, NumberField, TextPrefixSelectField, NumberPrefixSelectField, DateField, DatePicker, DatePipe, Button, SelectChipField, MultiSelectDropdownField, MultiDatePicker, MultiSelectDataTableField, SelectDropdownField],
   templateUrl: './number-field-demo.html',
   styleUrl: './number-field-demo.css'
@@ -171,4 +171,25 @@ export class NumberFieldDemo {
     { id: 7, name: 'Edward Miller', email: 'edward.miller@company.com', department: 'Engineering', role: 'Frontend Developer', status: 'active' },
     { id: 8, name: 'Fiona Garcia', email: 'fiona.garcia@company.com', department: 'Marketing', role: 'Content Writer', status: 'inactive' },
   ]);
+
+
+
+
+
+
+
+
+  // Tabs
+  tabs = signal([
+    { id: 'tab1', title: 'Tab 1', content: 'Content 1' },
+    { id: 'tab2', title: 'Tab 2', content: 'Content 2', disabled: false },
+    { id: 'tab3', title: 'Tab 3', content: 'Content 3', disabled: true }
+  ]);
+
+  activeTabId = signal('tab1');
+
+  onTabChange(tabId: string): void {
+    this.activeTabId.set(tabId);
+    console.log('Active tab changed to:', tabId);
+  }
 }

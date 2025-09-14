@@ -121,6 +121,26 @@
 </div> -->
 
 
+<ui-tab [tabsConfig]="tabs()" (tabChange)="onTabChange($event)">
+      <div tab-content>
+        @switch (activeTabId()) {
+          @case ('tab1') {
+            <div class="p-4 bg-blue-50 rounded-lg">Content for Tab 1</div>
+          }
+          @case ('tab2') {
+            <div class="p-4 bg-green-50 rounded-lg">Content for Tab 2</div>
+          }
+          @case ('tab3') {
+            <div class="p-4 bg-red-50 rounded-lg">Content for Tab 3</div>
+          }
+          @default {
+            <div class="p-4 text-gray-500">Select a tab to view content</div>
+          }
+        }
+      </div>
+    </ui-tab>
+
+
 <form [formGroup]="form" (submit)="onSubmit()">
   <div>
     <ui-text-field [label]="'Name'" [placeholder]="'Name'" formControlName="name"></ui-text-field>
@@ -194,10 +214,10 @@
                 [showErrorSpace]="true"
                 >
               </ui-date-field> -->
-  <div>
+  <!-- <div>
     <ui-textarea-field viewType="text-area" [label]="'Notes'" [placeholder]="'Notes'"
       formControlName="notes"></ui-textarea-field>
-  </div>
+  </div> -->
   <div class="flex justify-center">
     <ui-button [loading]="false" type="submit">Submit</ui-button>
   </div>

@@ -107,3 +107,8 @@ export * from './lib/components/_experimental/time-input/time-picker.component';
 
 //theme
 export * from './provide-ui-lib-config';
+
+
+// Tabs
+export * from './lib/components/display/tab/tab';
+export * from './lib/components/display/tab/tab-model';
