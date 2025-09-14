@@ -6,6 +6,7 @@ import { AppSvgIcon } from '../../../misc/app-svg-icon/app-svg-icon';
 import { NgxMaskDirective } from '../../../../core/input-mask/ngx-mask.directive';
 import { HumanizeFormMessagesPipe } from '../../../misc/humanize-form-messages';
 import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
+import { Autofocus } from "../../../../core/autofocus";
 
 @Component({
   selector: 'ui-text-field',
@@ -17,7 +18,8 @@ import { BaseControlValueAccessor } from '../../../../core/base-control-value-ac
     CommonModule,
     BaseInput,
     NgxMaskDirective,
-  ],
+    Autofocus
+],
   styles: `
   .hide-time-picker::-webkit-calendar-picker-indicator {
     display: none;
@@ -43,6 +45,7 @@ export class TextField extends BaseControlValueAccessor<string | null> {
   placeholder = input<string>('');
   showErrorSpace = input<boolean>(true);
   mask = input<string | null>(null);
+  isFocus= input<boolean>(false);
 
   // Extra inputs for specific types
   pattern = input<string | null>(null);

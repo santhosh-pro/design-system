@@ -143,7 +143,7 @@
 
 <form [formGroup]="form" (submit)="onSubmit()">
   <div>
-    <ui-text-field [label]="'Name'" [placeholder]="'Name'" formControlName="name"></ui-text-field>
+    <ui-text-field [label]="'Name'" [isFocus]="true" [placeholder]="'Name'" formControlName="name"></ui-text-field>
 
   </div>
   <div>
@@ -152,18 +152,18 @@
   <!-- <div>
               <ui-text-field [label]="'Phone Number'" [placeholder]="'Phone Number'" formControlName="phoneNumber"></ui-text-field>
             </div> -->
-  <!-- <ui-select-chip-field
+  <!-- <ui-radio-group-field
               [label]="'Select Country'"
               [options]="prefixOptions"
               formControlName="phoneNumber"
               [displayProperty]="'label'"
               [width]="'xl'"
               [valueProperty]="'value'"
-            ></ui-select-chip-field> -->
-  <!-- <ui-multi-select-chip-field [label]="'Select Country'" [options]="prefixOptions" formControlName="phoneNumber"
+            ></ui-radio-group-field> -->
+  <ui-checkbox-group-field [label]="'Select Country'" [options]="prefixOptions" formControlName="phoneNumber"
     [displayProperty]="'label'" [width]="'xl'" [valueProperty]="'value'"
-    placeholder="Select country"></ui-multi-select-chip-field> -->
-  <ui-multi-select-dropdown
+    placeholder="Select country"></ui-checkbox-group-field>
+  <!-- <ui-multi-select-dropdown
               label="Select Country"
               [options]="prefixOptions"
               formControlName="phoneNumber"
@@ -172,7 +172,7 @@
               [identifierProperty]="'value'"
               placeholder="Select country"
                [enableSearch]="true"
-              ></ui-multi-select-dropdown>
+              ></ui-multi-select-dropdown> -->
 
   <!-- <ui-select-dropdown-field
                 [label]="'Select Country'"

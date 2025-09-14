@@ -1,0 +1,36 @@
+ <div class="max-w-2xl mx-auto">
+      @for (section of internalSections(); track section.id) {
+        <div class="border-b border-gray-200">
+          <button
+            [class]="activeSectionIds().includes(section.id) ? 'bg-gray-100' : 'bg-white'"
+            [disabled]="section.disabled"
+            (click)="toggleSection(section.id)"
+            class="w-full flex justify-between items-center px-4 py-3 text-sm font-medium text-gray-800 hover:bg-gray-50 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span>{{ section.title }}</span>
+            <svg
+              [class]="activeSectionIds().includes(section.id) ? 'rotate-180' : ''"
+              class="w-5 h-5 transition-transform duration-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div
+            [class]="activeSectionIds().includes(section.id) ? 'max-h-screen' : 'max-h-0'"
+            class="overflow-hidden transition-all duration-300 ease-in-out"
+            #sectionContent
+          >
+            <div class="px-4 py-3 bg-white">
+              @if (activeSectionIds().includes(section.id)) {
+                <ng-content select="[accordion-content]"></ng-content>
+              }
+            </div>
+          </div>
+        </div>
+      } @empty {
+        <p class="text-gray-500 p-4">No sections available</p>
+      }
+    </div>

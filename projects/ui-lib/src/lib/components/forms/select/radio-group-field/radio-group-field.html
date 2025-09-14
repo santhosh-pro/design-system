@@ -1,8 +1,8 @@
 <ui-base-input [title]="label()" [width]="width()" [isRequiredField]="hasRequiredValidator()">
-  <div input class="flex flex-row flex-wrap gap-3" [ngClass]="containerClass()">
+  <div input class="flex flex-row flex-wrap gap-3 " [ngClass]="containerClass()">
     @for (item of visibleItems(); track item) {
     <label
-      class="flex items-center gap-2 p-2 rounded-md border cursor-pointer transition-all"
+      class="flex items-center gap-2 p-2 rounded-md border cursor-pointer transition-all bg-white"
       [ngClass]="{
         'border-primary-500 bg-primary-50': isSelected()(item) && !(formControl.touched && formControl.errors),
         'border-red-500': formControl.touched && formControl.errors,
@@ -39,7 +39,7 @@
       }
 
       <span
-        class="text-sm text-gray-900 whitespace-nowrap"
+        class="text-sm text-gray-900 whitespace-nowrap "
         [ngClass]="{ 'text-gray-400': formControl.disabled }"
       >
         {{ displayText()(item) }}

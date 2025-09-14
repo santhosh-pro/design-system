@@ -25,3 +25,89 @@
     <p>{{ getFormattedTime() }}</p>
   </div>
 </div>
+
+
+
+
+
+<div class="p-4">
+      <h1 class="text-2xl font-bold mb-4">Accordion Component Example</h1>
+      
+      <ui-accordion
+        [sectionsConfig]="sections()"
+        [allowMultiple]="allowMultiple()"
+        [scrollToContent]="scrollToContent()"
+        (sectionToggle)="onSectionToggle($event)"
+        (sectionAdded)="onSectionAdded($event)"
+        (sectionRemoved)="onSectionRemoved($event)"
+      >
+        @for (section of sections(); track section.id) {
+          <div accordion-content [attr.data-section-id]="section.id">
+            @switch (section.id) {
+              @case ('faq1') {
+                <div class="p-4 bg-blue-50 rounded-lg">
+                  <h2 class="text-lg font-semibold">{{ section.title }}</h2>
+                  <p>This section explains how to get started with the application, including setup and configuration steps.</p>
+                  <ul class="list-disc pl-5 mt-2">
+                    <li>Install dependencies</li>
+                    <li>Configure environment</li>
+                    <li>Run the application</li>
+                  </ul>
+                </div>
+              }
+              @case ('faq2') {
+                <div class="p-4 bg-green-50 rounded-lg">
+                  <h2 class="text-lg font-semibold">{{ section.title }}</h2>
+                  <p>Details about advanced features, such as dynamic content loading and animations.</p>
+                  <table class="table-auto w-full mt-2">
+                    <thead>
+                      <tr>
+                        <th class="px-4 py-2">Feature</th>
+                        <th class="px-4 py-2">Description</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="border px-4 py-2">Animations</td>
+                        <td class="border px-4 py-2">Smooth expand/collapse</td>
+                      </tr>
+                      <tr>
+                        <td class="border px-4 py-2">Dynamic Sections</td>
+                        <td class="border px-4 py-2">Add/remove sections</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              }
+              @case ('faq3') {
+                <div class="p-4 bg-red-50 rounded-lg">
+                  <h2 class="text-lg font-semibold">{{ section.title }}</h2>
+                  <p>This section is disabled by default. Enable it to view advanced settings.</p>
+                </div>
+              }
+              @default {
+                <div class="p-4 bg-gray-50 rounded-lg">
+                  <h2 class="text-lg font-semibold">{{ section.title }}</h2>
+                  <p>{{ section.content }}</p>
+                </div>
+              }
+            }
+          </div>
+        }
+      </ui-accordion>
+
+      <div class="mt-4 flex gap-4 flex-wrap">
+        <button (click)="toggleScroll()" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+          {{ scrollToContent() ? 'Disable' : 'Enable' }} Scroll
+        </button>
+        <button (click)="toggleMultiple()" class="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600">
+          {{ allowMultiple() ? 'Disable' : 'Enable' }} Multiple Open
+        </button>
+        <button (click)="addNewSection()" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+          Add New Section
+        </button>
+        <button (click)="removeSection('faq2')" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+          Remove FAQ 2
+        </button>
+      </div>
+    </div>

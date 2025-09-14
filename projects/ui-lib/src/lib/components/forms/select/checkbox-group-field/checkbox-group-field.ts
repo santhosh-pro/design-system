@@ -15,7 +15,7 @@ interface State<T> {
 }
 
 @Component({
-  selector: 'ui-multi-select-chip-field',
+  selector: 'ui-checkbox-group-field',
   standalone: true,
   imports: [
     BaseInput,
@@ -25,10 +25,10 @@ interface State<T> {
     AppSvgIcon,
     NgStyle,
   ],
-  templateUrl: './multi-select-chip-field.html',
+  templateUrl: './checkbox-group-field.html',
 
 })
-export class MultiSelectChipField<T> extends BaseControlValueAccessor<T[]> implements AfterContentInit {
+export class CheckboxGroupField<T> extends BaseControlValueAccessor<T[]> implements AfterContentInit {
    // Inputs
   label = input<string | null>(null);
   options = input<T[]>([]);

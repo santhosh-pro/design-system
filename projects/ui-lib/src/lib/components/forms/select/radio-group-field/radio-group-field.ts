@@ -8,7 +8,7 @@ import { resolveTemplateWithObject } from '../../../../core/template-resolver';
 import { AppSvgIcon } from '../../../misc/app-svg-icon/app-svg-icon';
 
 @Component({
-  selector: 'ui-select-chip-field',
+  selector: 'ui-radio-group-field',
   standalone: true,
   imports: [
     BaseInput,
@@ -18,9 +18,9 @@ import { AppSvgIcon } from '../../../misc/app-svg-icon/app-svg-icon';
     AppSvgIcon,
     NgStyle,
   ],
-  templateUrl: './select-chip-field.html',
+  templateUrl: './radio-group-field.html',
 })
-export class SelectChipField<T> extends BaseControlValueAccessor<T | null> implements AfterContentInit {
+export class RadioGroupField<T> extends BaseControlValueAccessor<T | null> implements AfterContentInit {
   // Inputs
   label = input<string | null>(null);
   options = input<T[]>([]);

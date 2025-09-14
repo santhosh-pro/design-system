@@ -3,7 +3,7 @@
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <!-- MultiSelectionFieldComponent usage -->
-    <ui-multi-select-chip-field
+    <ui-checkbox-group-field
       formControlName="selectedItems"
       [label]="'Select Fruits'"
       [options]="items"
@@ -13,7 +13,7 @@
       [customActionText]="'Add New Fruit'"
       (valueChange)="onValueChange($event)"
       (onCustomActionClicked)="onCustomActionClicked()"
-    ></ui-multi-select-chip-field>
+    ></ui-checkbox-group-field>
 
       <!-- [fullWidth]="true"
       [itemWidth]="150"

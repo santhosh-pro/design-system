@@ -49,8 +49,8 @@ export * from './lib/components/forms/date/month-year-picker/month-year-overlay/
 export * from './lib/components/forms/date/month-year-picker/month-year-overlay/month-year-selection/month-year-selection';
 
 // Select Inputs
-export * from './lib/components/forms/select/select-chip-field/select-chip-field';
-export * from './lib/components/forms/select/multi-select-chip-field/multi-select-chip-field';
+export * from './lib/components/forms/select/radio-group-field/radio-group-field';
+export * from './lib/components/forms/select/checkbox-group-field/checkbox-group-field';
 export * from './lib/components/forms/select/multi-select-dropdown-field/multi-select-dropdown-field';
 export * from './lib/components/forms/select/select-dropdown-field/select-dropdown-field';
 
@@ -112,3 +112,12 @@ export * from './provide-ui-lib-config';
 // Tabs
 export * from './lib/components/display/tab/tab';
 export * from './lib/components/display/tab/tab-model';
+
+// Accordion
+export * from './lib/components/_experimental/accordion/accordion';
+export * from './lib/components/_experimental/accordion/accordion-model';
+
+
+
+// Autofocus Directive
+export * from './lib/core/autofocus';

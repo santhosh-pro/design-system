@@ -7,12 +7,12 @@
       title="1. Basic String Array Selection"
       description="Select your favorite color from a simple string array."
       [files]="basicFiles()">
-      <ui-select-chip-field
+      <ui-radio-group-field
         [formControl]="basicControl"
         title="Select Your Favorite Color"
         [options]="colors()"
        [width]="'md'">
-      </ui-select-chip-field>
+      </ui-radio-group-field>
       <p class="text-sm text-gray-600 mt-2">
         Selected: {{ basicControl.value || 'None' }}
       </p>
@@ -23,14 +23,14 @@
       title="2. Object Array Selection"
       description="Select a country with label/value object pairs."
       [files]="countryFiles()">
-      <ui-select-chip-field
+      <ui-radio-group-field
         [formControl]="countryControl"
         title="Select Country"
         [options]="countries()"
        [width]="'md'"
         labelKey="name"
         valueKey="code">
-      </ui-select-chip-field>
+      </ui-radio-group-field>
       <p class="text-sm text-gray-600 mt-2">
         Selected Country Code: {{ countryControl.value || 'None' }}
       </p>
@@ -41,14 +41,14 @@
       title="3. With Categories"
       description="Items grouped into categories."
       [files]="categoryFiles()">
-      <ui-select-chip-field
+      <ui-radio-group-field
         [formControl]="categoryControl"
         title="Select a Fruit"
         [options]="categories()"
         [width]="'md'"
         labelKey="name"
         categoryKey="category">
-      </ui-select-chip-field>
+      </ui-radio-group-field>
       <p class="text-sm text-gray-600 mt-2">
         Selected Fruit: {{ categoryControl.value || 'None' }}
       </p>

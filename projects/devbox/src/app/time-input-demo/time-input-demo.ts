@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TimePickerComponent, TimePickerValue } from "projects/ui-lib/src/public-api";
+import { Accordion, AccordionSection, TimePickerComponent, TimePickerValue } from "projects/ui-lib/src/public-api";
 
 @Component({
   selector: 'app-time-input-demo',
-  imports: [ReactiveFormsModule, TimePickerComponent],
+  imports: [ReactiveFormsModule, TimePickerComponent, Accordion],
   templateUrl: './time-input-demo.html',
   styleUrl: './time-input-demo.css'
 })
@@ -51,5 +51,62 @@ form: FormGroup;
     const displayHours = hours % 12 === 0 ? 12 : hours % 12;
     const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
     return `${displayHours}:${formattedMinutes} ${period}`;
+  }
+
+
+
+
+
+
+  // accordion demo
+   sections = signal<AccordionSection[]>([
+    { id: 'faq1', title: 'Getting Started', content: 'How to get started' },
+    { id: 'faq2', title: 'Advanced Features', content: 'Advanced features', disabled: false },
+    { id: 'faq3', title: 'Settings', content: 'Settings content', disabled: true }
+  ]);
+
+  activeSectionId = signal('faq1');
+  scrollToContent = signal(true);
+  allowMultiple = signal(false);
+
+  onSectionToggle(sectionId: string): void {
+    this.activeSectionId.set(sectionId);
+    console.log('Section toggled:', sectionId);
+  }
+
+  onSectionAdded(section: AccordionSection): void {
+    const currentSections = this.sections().slice();
+    currentSections.push(section);
+    this.sections.set(currentSections);
+  }
+
+  onSectionRemoved(sectionId: string): void {
+    const currentSections = this.sections().slice();
+    const index = currentSections.findIndex(section => section.id === sectionId);
+    if (index !== -1) {
+      currentSections.splice(index, 1);
+      this.sections.set(currentSections);
+    }
+  }
+
+  addNewSection(): void {
+    const newSection: AccordionSection = {
+      id: `faq${this.sections().length + 1}`,
+      title: `Section ${this.sections().length + 1}`,
+      content: `Content for Section ${this.sections().length + 1}`
+    };
+    this.onSectionAdded(newSection);
+  }
+
+  removeSection(sectionId: string): void {
+    this.onSectionRemoved(sectionId);
+  }
+
+  toggleScroll(): void {
+    this.scrollToContent.set(!this.scrollToContent());
+  }
+
+  toggleMultiple(): void {
+    this.allowMultiple.set(!this.allowMultiple());
   }
 }
