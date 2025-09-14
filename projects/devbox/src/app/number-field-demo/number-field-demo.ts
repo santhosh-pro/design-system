@@ -1,7 +1,7 @@
 import { CommonModule, DatePipe } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TextareaField, TextField, SearchField, OtpField, PasswordField, NumberField, TextPrefixSelectField, NumberPrefixSelectField, DateField, DatePicker, InputDateFormat, Weekday, Button, MultiSelectDropdownField, DateRangePicker, MultiDatePicker, MultiSelectDataTableField, ColumnDef, SelectDropdownField, MonthYearPicker, Tab, CheckboxGroupField, RadioGroupField } from 'projects/ui-lib/src/public-api';
+import { TextareaField, TextField, SearchField, OtpField, PasswordField, NumberField, TextPrefixSelectField, NumberPrefixSelectField, DateField, DatePicker, InputDateFormat, Weekday, Button, MultiSelectDropdownField, DateRangePicker, MultiDatePicker, MultiSelectDataTableField, ColumnDef, SelectDropdownField, MonthYearPicker, Tab, CheckboxGroupField, RadioGroupField, RichTextField } from 'projects/ui-lib/src/public-api';
 
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
@@ -21,7 +21,7 @@ export class ArrayValidators {
 
 @Component({
   selector: 'app-number-field-demo',
-  imports: [ReactiveFormsModule, DateRangePicker, SelectDropdownField, DateField,MonthYearPicker,CheckboxGroupField,Tab, RadioGroupField,
+  imports: [ReactiveFormsModule, DateRangePicker, SelectDropdownField, DateField,MonthYearPicker,CheckboxGroupField,Tab, RadioGroupField,RichTextField,
     TextField, TextareaField, MultiSelectDropdownField, CommonModule, SearchField, OtpField, PasswordField, NumberField, TextPrefixSelectField, NumberPrefixSelectField, DateField, DatePicker, DatePipe, Button, MultiSelectDropdownField, MultiDatePicker, MultiSelectDataTableField, SelectDropdownField],
   templateUrl: './number-field-demo.html',
   styleUrl: './number-field-demo.css'
@@ -68,7 +68,7 @@ export class NumberFieldDemo {
       name: ['', [Validators.required]],
       email: ['', [Validators.required,Validators.email]],
       phoneNumber: ['', [Validators.required]],
-      notes: ['', [Validators.maxLength(5)]],
+      notes: [''],
     });
   }
 
@@ -191,5 +191,40 @@ export class NumberFieldDemo {
   onTabChange(tabId: string): void {
     this.activeTabId.set(tabId);
     console.log('Active tab changed to:', tabId);
+  }
+
+
+  //rich text editor
+   // Handle value changes from the rich text field
+  onValueChangeRich(value: string | null) {
+    console.log('Rich text content changed:', value);
+  }
+
+  // Handle editor focus
+  onEditorFocused() {
+    console.log('Rich text editor focused');
+  }
+
+  // Insert a sample image
+    @ViewChild(RichTextField) richTextField?: RichTextField;
+
+  insertSampleImage() {
+    if (this.richTextField) {
+      this.richTextField.insertImageWithLink('https://example.com/image.jpg', 'Sample Image', 'image');
+    }
+  }
+
+  // Insert a sample link
+  insertSampleLink() {
+    if (this.richTextField) {
+      this.richTextField.insertLink('https://example.com', 'Visit Example');
+    }
+  }
+
+  // Preview content
+  previewContent() {
+    if (this.richTextField) {
+      this.richTextField.preview();
+    }
   }
 }

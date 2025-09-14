@@ -121,3 +121,7 @@ export * from './lib/components/_experimental/accordion/accordion-model';
 
 // Autofocus Directive
 export * from './lib/core/autofocus';
+
+
+// rich text editor
+export * from './lib/components/forms/text/rich-text-field/rich-text-field';
