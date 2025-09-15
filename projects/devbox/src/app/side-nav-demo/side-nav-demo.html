@@ -1,0 +1,10 @@
+
+    <ui-side-nav
+      [menus]="menus()"
+      [settingsMenu]="settingsMenu()"
+      [logoutMenu]="logoutMenu()"
+      (menuClick)="handleMenuClick($event)"
+    >
+          <router-outlet></router-outlet>
+
+    </ui-side-nav>

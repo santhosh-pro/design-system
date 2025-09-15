@@ -124,3 +124,14 @@ export * from './lib/core/autofocus';
 
 
 // rich text editor
+
+
+
+// Side Nav
+export * from './lib/components/display/side-nav/side-nav';
+export * from './lib/components/display/side-nav/side-nav-model';
+export * from './lib/components/display/side-nav/side-nav-menu/side-nav-menu';
+
+// Top Nav
+export * from './lib/components/display/side-nav/top-nav/top-nav';
+export * from './lib/components/display/side-nav/top-nav/top-nav-model';

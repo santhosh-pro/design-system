@@ -11,6 +11,7 @@ import { DataTablePickerDemo } from './data-table-picker-demo/data-table-picker-
 import { MultiSelectDropdown } from './multi-select-dropdown/multi-select-dropdown';
 import { SingleSelectDropdownDemo } from './single-select-dropdown-demo/single-select-dropdown-demo';
 import { NumberFieldDemo } from './number-field-demo/number-field-demo';
+import { SideNavDemo } from './side-nav-demo/side-nav-demo';
 
 export const routes: Routes = [
     {
@@ -65,5 +66,9 @@ export const routes: Routes = [
     {
         path:'number-field-demo',
         component: NumberFieldDemo
+    },
+    {
+        path: 'side-nav',
+        component: SideNavDemo
     }
 ];
