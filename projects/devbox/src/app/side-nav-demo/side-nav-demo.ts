@@ -19,7 +19,8 @@ export class SideNavDemo {
     {
       id: 'dashboard',
       label: 'Dashboard',
-      link: '/dashboard',
+      link: '/side-nav',
+      iconPath:'edit.svg',
       isEnabled: true
     },
     {

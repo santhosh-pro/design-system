@@ -1,49 +1,70 @@
 <ui-base-input #inputElement [title]="label()" [width]="width()" [isRequiredField]="hasRequiredValidator()">
   <!-- Input Slot -->
-  <div input
-    class="relative flex items-center w-full bg-white border border-[var(--color-primary-400)] rounded-md shadow-sm ring-1 ring-[var(--color-primary-400)] focus-within:ring-2 transition-all"
-    [class.border-error-600]="formControl.touched && formControl.errors"
-    [class.ring-error-600]="formControl.touched && formControl.errors"
-    [class.border-[var(--color-primary-400)]]="!(formControl.touched && formControl.errors) && !formControl.disabled"
-    [class.ring-[var(--color-primary-400)]]="!(formControl.touched && formControl.errors) && !formControl.disabled">
+  <div
+    input
+    class="relative flex items-center w-full bg-white border border-gray-300 rounded-md shadow-sm ring-1 ring-gray-300 focus-within:ring-2 focus-within:ring-primary-400 focus-within:border-primary-400 transition-all"
+    [class.border-red-500]="formControl.touched && formControl.errors"
+    [class.ring-red-500]="formControl.touched && formControl.errors"
+    [class.focus-within:ring-red-500]="formControl.touched && formControl.errors"
+    [class.focus-within:border-red-500]="formControl.touched && formControl.errors"
+    [class.opacity-60]="formControl.disabled"
+  >
     <!-- Input Field -->
     <div class="relative flex items-center flex-1">
       @if (iconSrc()) {
-      <ui-svg-icon [size]="18" [src]="iconSrc()!"
-        class="absolute ml-3 text-neutral-400 pointer-events-none"></ui-svg-icon>
+        <ui-svg-icon
+          [size]="18"
+          [src]="iconSrc()!"
+          class="absolute ml-3 text-gray-400 pointer-events-none"
+        ></ui-svg-icon>
       }
 
-
-      <input [mask]="mask()" (input)="onInput($any($event.target)?.value)"
-      [autofocus]="isFocus()"
-uiAutofocus
-        class="h-[46px] flex-1 bg-transparent border-none outline-none placeholder-neutral-400 text-black focus:ring-0"
-        [class.pl-10]="iconSrc()" [class.pl-3]="!iconSrc()" [class.text-neutral-400]="formControl.disabled"
-        [formControl]="formControl" [type]="type()" [placeholder]="placeholder()" [attr.pattern]="pattern()"
-        [attr.minlength]="minlength()" [attr.maxlength]="maxlength()" [attr.min]="min()" [attr.max]="max()"
-        [attr.step]="step()" (focus)="onFocus()" (blur)="onBlur()" [class.hide-time-picker]="type() === 'time'"
-        style="outline: none !important; box-shadow: none !important;">
+      <input
+        [mask]="mask()"
+        (input)="onInput($any($event.target)?.value)"
+        uiAutofocus
+        class="h-[46px] flex-1 bg-transparent border-none outline-none placeholder-gray-400 text-gray-600 focus:ring-0"
+        [class.pl-10]="iconSrc()"
+        [class.pl-3]="!iconSrc()"
+        [class.text-gray-400]="formControl.disabled"
+        [formControl]="formControl"
+        [type]="type()"
+        [placeholder]="placeholder()"
+        [attr.pattern]="pattern()"
+        [attr.minlength]="minlength()"
+        [attr.maxlength]="maxlength()"
+        [attr.min]="min()"
+        [attr.max]="max()"
+        [attr.step]="step()"
+        [class.hide-time-picker]="type() === 'time'"
+        style="outline: none !important; box-shadow: none !important;"
+      />
 
       @if (actionIcon()) {
-      <div (click)="onActionClick()"
-        class="absolute right-2 p-2 flex justify-center items-center hover:bg-neutral-100 rounded-full cursor-pointer transition-colors">
-        <ui-svg-icon [size]="18" [src]="actionIcon()!"
-          class="text-neutral-400 hover:text-[var(--color-primary-500)] transition-colors"></ui-svg-icon>
-      </div>
+        <div
+          (click)="onActionClick()"
+          class="absolute right-2 p-2 flex justify-center items-center hover:bg-gray-100 rounded-full cursor-pointer transition-colors"
+        >
+          <ui-svg-icon
+            [size]="18"
+            [src]="actionIcon()!"
+            class="text-gray-400 hover:text-primary-500 transition-colors"
+          ></ui-svg-icon>
+        </div>
       }
     </div>
   </div>
 
-  <!-- Error Slot - Fixed condition -->
+  <!-- Error Slot -->
   @if (formControl.touched && formControl.errors) {
-  <div error class="ml-2 text-left">
-    <span class="text-xs text-[var(--color-error-500)]">{{ formControl.errors | humanizeFormMessages: errorMessages():
-      label()??'This field'
+    <div error class="ml-2 text-left">
+      <span class="text-xs text-red-500">{{
+        formControl.errors | humanizeFormMessages: errorMessages() : label() ?? 'This field'
       }}</span>
-  </div>
+    </div>
   } @else if (showErrorSpace()) {
-  <div error class="text-left">
-    <span class="text-xs text-transparent">.</span>
-  </div>
+    <div error class="text-left">
+      <span class="text-xs text-transparent">.</span>
+    </div>
   }
 </ui-base-input>

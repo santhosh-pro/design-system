@@ -1,10 +1,10 @@
 <ui-base-input #inputElement [title]="label()" [width]="width()" [isRequiredField]="hasRequiredValidator()">
   <!-- Input Slot -->
   <div input
-    class="relative flex items-center w-full bg-white border border-[var(--color-primary-400)] rounded-md shadow-sm ring-1 ring-[var(--color-primary-400)] focus-within:ring-2 transition-all"
+    class="relative flex items-center w-full bg-white border border-primary-400 rounded-md shadow-sm ring-1 ring-primary-400 focus-within:ring-2 transition-all"
     [ngClass]="{
          'border-error-600 ring-error-600 focus-within:ring-2': formControl.touched && formControl.errors,
-        '!border-gray-500 !ring-0 focus-within:!ring-2 focus-within:!ring-[var(--color-primary-500)] focus-within:!border-[var(--color-primary-500)]': !(formControl.touched && formControl.errors),
+        '!border-gray-500 !ring-0 focus-within:!ring-2 focus-within:!ring-primary-500 focus-within:!border-primary-500': !(formControl.touched && formControl.errors),
          'bg-neutral-100 cursor-not-allowed': formControl.disabled,
        
        }">
@@ -31,7 +31,7 @@
   <!-- Error Slot - Fixed condition -->
   @if (formControl.touched && formControl.errors) {
   <div error class="ml-2 text-left">
-    <span class="text-xs text-[var(--color-error-500)]">{{ formControl.errors | humanizeFormMessages: errorMessages()
+    <span class="text-xs text-error-500">{{ formControl.errors | humanizeFormMessages: errorMessages()
       }}</span>
   </div>
   } @else if (showErrorSpace()) {

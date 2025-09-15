@@ -2,8 +2,7 @@
 @import "tailwindcss";
 
 
-@layer theme {
-  :root {
+@theme {
     --font-inter: "Inter", "sans-serif";
     --color-primary-50: #f3e8ff;
     --color-primary-100: #e9d5ff;
@@ -111,7 +110,6 @@
     --text-overline-line-height: 1rem;
     --text-overline-letter-spacing: 0.094rem;
     --text-overline-font-weight: 500;
-  }
 }
 
 @layer utilities {
