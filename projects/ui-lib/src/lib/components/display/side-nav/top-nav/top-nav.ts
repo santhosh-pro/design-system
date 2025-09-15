@@ -18,9 +18,11 @@ export class TopNav {
 
   // Input signals
   logoutMenu = input<TopMenuItem | null>(null);
+  username = input<string>();
 
   // Output signals
   logoutClick = output<TopMenuItem>();
+
 
   constructor() {
     this.updateInitialState();

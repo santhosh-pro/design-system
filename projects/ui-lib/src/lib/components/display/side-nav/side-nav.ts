@@ -22,7 +22,10 @@ export class SideNav {
   // Input signals
   settingsMenu = input<SideMenuItem | null>(null);
   menus = input<SideMenuItem[]>([]);
-    logoutMenu = input<TopMenuItem | null>(null);
+  logoutMenu = input<TopMenuItem | null>(null);
+  username = input<string>();
+
+
   
 
   // Output signals

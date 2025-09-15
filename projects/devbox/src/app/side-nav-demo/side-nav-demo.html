@@ -1,10 +1,17 @@
+<ui-side-nav [menus]="menus()" [settingsMenu]="settingsMenu()" [logoutMenu]="logoutMenu()" [username]="'Santhosh M'"
+  (menuClick)="handleMenuClick($event)">
+  
+  <router-outlet></router-outlet>
 
-    <ui-side-nav
-      [menus]="menus()"
-      [settingsMenu]="settingsMenu()"
-      [logoutMenu]="logoutMenu()"
-      (menuClick)="handleMenuClick($event)"
-    >
-          <router-outlet></router-outlet>
+  <div logo>
+    <div class="w-7 h-7 bg-gray-900 rounded-lg flex items-center justify-center">
+      <span class="text-white font-bold text-sm sm:text-base">A</span>
+    </div>
+  </div>
 
-    </ui-side-nav>
+  <div footer>
+    <div class="max-w-7xl mx-auto px-1 text-center">
+      <span class="text-sm text-gray-500">© All rights reserved.</span>
+    </div>
+  </div>
+</ui-side-nav>
