@@ -23,7 +23,6 @@ export class TopNav {
   // Output signals
   logoutClick = output<TopMenuItem>();
 
-
   constructor() {
     this.updateInitialState();
   }
@@ -31,9 +30,10 @@ export class TopNav {
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {
     if (isPlatformBrowser(this.platformId)) {
-      this.isMobile.set(window.innerWidth < 768);
+      const newMobile = window.innerWidth < 768;
+      this.isMobile.set(newMobile);
       // Auto-close dropdown on mobile when resizing to desktop
-      if (!this.isMobile()) {
+      if (!newMobile) {
         this.isExpanded.set(false);
       }
     }
@@ -51,7 +51,7 @@ export class TopNav {
 
   // Computed signals for dynamic classes
   navClasses = computed(() => {
-    return 'w-full bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 shadow-sm transition-all duration-300 ease-in-out';
+    return 'bg-white border-b border-gray-200 shadow-sm transition-all duration-300 ease-in-out';
   });
 
   toggleButtonLabel = computed(() =>

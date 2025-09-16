@@ -1,17 +1,17 @@
 <div class="flex flex-col min-h-screen">
   <!-- Top Navigation -->
-  <ui-top-nav class="w-full fixed top-0 left-0 z-50 bg-white shadow-sm h-14" [logoutMenu]=" logoutMenu()" [username]="username()"
+  <ui-top-nav class="w-full fixed top-0 left-0 z-50 bg-white shadow-sm h-14" [logoutMenu]="logoutMenu()" [username]="username()"
     (logoutClick)="onLogoutClick($event)"> 
-      <div logo> 
-        <ng-content select="[logo]"></ng-content>
-        </div>
+    <div logo> 
+      <ng-content select="[logo]"></ng-content>
+    </div>
   </ui-top-nav>
 
   <!-- Main Layout with Sidebar and Content -->
   <div class="flex flex-1 pt-14">
     <!-- Sidebar -->
     <nav
-      class="flex bg-white border-r border-gray-200 shadow-sm fixed top-14 left-0 bottom-0 z-40 transition-all duration-300 ease-in-out"
+      class="flex bg-white border-r border-gray-200 shadow-sm transition-all duration-300 ease-in-out"
       [ngClass]="sidebarClasses()" (click)="onSidebarClick($event)">
       <div class="flex flex-col w-full h-full">
         <!-- Navigation Menu -->
@@ -55,8 +55,8 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="flex-1 p-4 sm:p-6 bg-gray-50 transition-all duration-300"
-      [ngClass]="{'ml-64': isExpanded(), 'ml-16': !isExpanded()}">
+    <main class="flex-1 p-4 sm:p-6 bg-gray-50 transition-all duration-300 overflow-y-auto"
+      [ngClass]="mainContentClasses()">
       <ng-content></ng-content>
     </main>
     

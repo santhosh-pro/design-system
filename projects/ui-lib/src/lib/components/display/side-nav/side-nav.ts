@@ -25,9 +25,6 @@ export class SideNav {
   logoutMenu = input<TopMenuItem | null>(null);
   username = input<string>();
 
-
-  
-
   // Output signals
   menuClick = output<SideMenuItem>();
 
@@ -41,7 +38,22 @@ export class SideNav {
   @HostListener('window:resize', ['$event'])
   onResize(event: Event) {
     if (isPlatformBrowser(this.platformId)) {
-      this.isMobile.set(window.innerWidth < 768);
+      const newMobile = window.innerWidth < 768;
+      const wasMobile = this.isMobile();
+      this.isMobile.set(newMobile);
+      if (newMobile !== wasMobile) {
+        this.isExpanded.set(!newMobile);
+      }
+    }
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (this.isMobile() && this.isExpanded()) {
+      const sidebar = (event.target as HTMLElement).closest('nav');
+      if (!sidebar) {
+        this.toggleSidebar();
+      }
     }
   }
 
@@ -57,8 +69,28 @@ export class SideNav {
 
   // Computed signals for dynamic classes
   sidebarClasses = computed(() => {
-    const width = this.isExpanded() ? 'w-64 sm:w-72 md:w-80' : 'w-20';
-    return `${width} transition-all duration-300 ease-in-out`;
+    let positionClass = 'fixed top-14 left-0 bottom-0 z-40';
+    let widthClass = '';
+    if (this.isMobile() && this.isExpanded()) {
+      // Overlay mode on mobile
+      positionClass = 'fixed top-14 left-0 bottom-0 w-full z-50 shadow-xl';
+      widthClass = 'w-full bg-white';
+    } else {
+      // Standard mode
+      widthClass = this.isExpanded() ? 'w-64 sm:w-72 md:w-80' : 'w-16';
+      positionClass += ` ${widthClass}`;
+    }
+    return `${positionClass} border-r border-gray-200 bg-white transition-all duration-300 ease-in-out`;
+  });
+
+  mainContentClasses = computed(() => {
+    if (this.isMobile() && this.isExpanded()) {
+      return 'ml-0';
+    } else if (this.isExpanded()) {
+      return 'ml-64 sm:ml-72 md:ml-80';
+    } else {
+      return 'ml-16';
+    }
   });
 
   toggleButtonLabel = computed(() =>
@@ -93,6 +125,5 @@ export class SideNav {
 
   onLogoutClick(e: TopMenuItem) {
     console.log('Logout clicked', e);
-
   }
 }
