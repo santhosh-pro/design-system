@@ -2,10 +2,10 @@
   <div class="flex border-b border-gray-200">
     @for (tab of tabs(); track tab.id) {
       <button
-        [class]="activeTabId() === tab.id ? 'border-b-2 border-blue-500 text-blue-600 font-semibold' : 'text-gray-600'"
+        [class]="activeTabId() === tab.id ? 'border-b-2 border-primary-500 text-primary-600 font-semibold' : 'text-gray-600'"
         [disabled]="tab.disabled"
         (click)="selectTab(tab.id)"
-        class="px-4 py-2 text-sm font-medium transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="px-4 py-2 text-sm font-medium transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
       >
         {{ tab.title }}
       </button>

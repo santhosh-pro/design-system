@@ -1,13 +1,14 @@
 <ui-base-input #inputElement [title]="label()" [width]="width()" [isRequiredField]="hasRequiredValidator()">
   <!-- Input Slot -->
-  <div input
-    class="relative flex items-center w-full bg-white border border-primary-400 rounded-md shadow-sm ring-1 ring-primary-400 focus-within:ring-2 transition-all"
-    [ngClass]="{
-         'border-error-600 ring-error-600 focus-within:ring-2': formControl.touched && formControl.errors,
-        '!border-gray-500 !ring-0 focus-within:!ring-2 focus-within:!ring-primary-500 focus-within:!border-primary-500': !(formControl.touched && formControl.errors),
-         'bg-neutral-100 cursor-not-allowed': formControl.disabled,
-       
-       }">
+ <div
+    input
+    class="relative flex items-center w-full bg-white border border-gray-300 rounded-md shadow-sm ring-1 ring-gray-300 focus-within:ring-2 focus-within:ring-primary-400 focus-within:border-primary-400 transition-all"
+    [class.border-red-500]="formControl.touched && formControl.errors"
+    [class.ring-red-500]="formControl.touched && formControl.errors"
+    [class.focus-within:ring-red-500]="formControl.touched && formControl.errors"
+    [class.focus-within:border-red-500]="formControl.touched && formControl.errors"
+    [class.opacity-60]="formControl.disabled"
+  >
     <!-- Search Icon -->
     <svg class="w-6 h-6 mx-2 text-neutral-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
       <path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/>

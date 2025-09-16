@@ -11,14 +11,14 @@
         }"
         [attr.aria-selected]="isSelected()(item)"
         [attr.aria-label]="displayText()(item)">
-        <input
-          type="checkbox"
-          [value]="getValueId(item)"
-          [checked]="isSelected()(item)"
-          [disabled]="formControl.disabled"
-          (change)="onItemClicked(item)"
-          class="h-4 w-4 text-primary-500 focus:ring-primary-500 disabled:text-gray-400"
-        />
+ <input
+  type="checkbox"
+  [value]="getValueId(item)"
+  [checked]="isSelected()(item)"
+  [disabled]="formControl.disabled"
+  (change)="onItemClicked(item)"
+  class="h-4 w-4 accent-primary-600 focus:ring-primary-500 disabled:accent-gray-400 disabled:opacity-60"
+/>
         
         @if (icon()(item)) {
           @switch (iconType()(item)) {

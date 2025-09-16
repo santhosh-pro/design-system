@@ -7,7 +7,6 @@ import {
   OnInit,
   signal,
   ViewChild,
-  ChangeDetectionStrategy,
   computed,
   ChangeDetectorRef,
 } from "@angular/core";

@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common';
 import { Component, ElementRef, inject, input, OnDestroy, signal, ViewChild } from '@angular/core';
 import { ReactiveFormsModule, ValidatorFn } from '@angular/forms';
 import { AppSvgIcon } from '../../../../components/misc/app-svg-icon/app-svg-icon';
@@ -19,7 +18,6 @@ import { DateOverlay } from './date-overlay/date-overlay';
   imports: [
     HumanizeFormMessagesPipe,
     ReactiveFormsModule,
-    NgClass,
     BaseInput,
     AppSvgIcon
   ],

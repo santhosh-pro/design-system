@@ -1,6 +1,5 @@
 import { Component, input, signal, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, ValidatorFn } from '@angular/forms';
-import { NgClass } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
 import { BaseInput } from '../../../../core/base-input/base-input';
@@ -20,7 +19,6 @@ import { DateUtils } from '../date-utils';
     HumanizeFormMessagesPipe,
     NgxMaskDirective,
     ReactiveFormsModule,
-    NgClass,
     BaseInput,
     AppSvgIcon,
     FormsModule

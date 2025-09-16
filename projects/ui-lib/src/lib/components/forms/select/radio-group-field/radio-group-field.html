@@ -1,56 +1,37 @@
 <ui-base-input [title]="label()" [width]="width()" [isRequiredField]="hasRequiredValidator()">
   <div input class="flex flex-row flex-wrap gap-3 " [ngClass]="containerClass()">
     @for (item of visibleItems(); track item) {
-    <label
-      class="flex items-center gap-2 p-2 rounded-md border cursor-pointer transition-all bg-white"
-      [ngClass]="{
+    <label class="flex items-center gap-2 p-2 rounded-md border cursor-pointer transition-all bg-white" [ngClass]="{
         'border-primary-500 bg-primary-50': isSelected()(item) && !(formControl.touched && formControl.errors),
         'border-red-500': formControl.touched && formControl.errors,
         'border-gray-300 hover:bg-gray-50': !isSelected()(item) && !(formControl.touched && formControl.errors),
         'bg-gray-100 cursor-not-allowed': formControl.disabled
       }">
-      <input
-        type="radio"
-        [value]="getValueId(item)"
-        [checked]="isSelected()(item)"
-        [disabled]="formControl.disabled"
+      <input type="radio" [value]="getValueId(item)" [checked]="isSelected()(item)" [disabled]="formControl.disabled"
         (change)="onItemChange(item)"
-        class="h-4 w-4 text-primary-500 focus:ring-primary-500 disabled:text-gray-400"
-      />
-      
+        class="h-4 w-4 accent-primary-300 focus:ring-primary-400 !border-0 outline-none disabled:accent-gray-300 disabled:opacity-50" />
+
       @if (icon()(item)) {
       @switch (iconType()(item)) {
-        @case ('url') {
-          <img
-            class="h-5 w-5 object-contain flex-shrink-0"
-            [src]="icon()(item)!"
-            [alt]="displayText()(item) || 'Item icon'"
-          />
-        }
-        @case ('svg') {
-          <ui-svg-icon
-            [src]="icon()(item)!"
-            [size]="18"
-            [ngStyle]="{'color': itemIconColor()(item)}"
-            class="flex-shrink-0"
-          />
-        }
+      @case ('url') {
+      <img class="h-5 w-5 object-contain flex-shrink-0" [src]="icon()(item)!"
+        [alt]="displayText()(item) || 'Item icon'" />
+      }
+      @case ('svg') {
+      <ui-svg-icon [src]="icon()(item)!" [size]="18" [ngStyle]="{'color': itemIconColor()(item)}"
+        class="flex-shrink-0" />
+      }
       }
       }
 
-      <span
-        class="text-sm text-gray-900 whitespace-nowrap "
-        [ngClass]="{ 'text-gray-400': formControl.disabled }"
-      >
+      <span class="text-sm text-gray-900 whitespace-nowrap " [ngClass]="{ 'text-gray-400': formControl.disabled }">
         {{ displayText()(item) }}
       </span>
     </label>
     }
 
     @if (showMore()) {
-    <button
-      type="button"
-      (click)="showAllItems()"
+    <button type="button" (click)="showAllItems()"
       class="flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium border border-dashed transition-all"
       [ngClass]="{
         'border-primary-500 text-primary-500 hover:bg-primary-50': !(formControl.touched && formControl.errors) && !formControl.disabled,
@@ -62,9 +43,7 @@
     }
 
     @if (showLess()) {
-    <button
-      type="button"
-      (click)="hideExtraItems()"
+    <button type="button" (click)="hideExtraItems()"
       class="flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium border border-dashed transition-all"
       [ngClass]="{
         'border-primary-500 text-primary-500 hover:bg-primary-50': !(formControl.touched && formControl.errors) && !formControl.disabled,
@@ -76,11 +55,8 @@
     }
 
     @if (customActionText()) {
-    <button
-      type="button"
-      (click)="onCustomActionClick()"
-      class="flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium transition-all"
-      [ngClass]="{
+    <button type="button" (click)="onCustomActionClick()"
+      class="flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium transition-all" [ngClass]="{
         'bg-primary-500 text-white hover:bg-primary-600': !formControl.disabled,
         'bg-gray-200 text-gray-400 cursor-not-allowed': formControl.disabled
       }">

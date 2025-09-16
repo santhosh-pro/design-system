@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common';
 import { Component, ElementRef, inject, input, OnDestroy, signal, ViewChild } from '@angular/core';
 import { ReactiveFormsModule, ValidatorFn } from '@angular/forms';
 import { AppSvgIcon } from '../../../../components/misc/app-svg-icon/app-svg-icon';
@@ -21,7 +20,6 @@ import { FormatMonthYearPipe } from './format-month-year-pipe';
     HumanizeFormMessagesPipe,
     FormatMonthYearPipe,
     ReactiveFormsModule,
-    NgClass,
     BaseInput,
     AppSvgIcon
   ],
