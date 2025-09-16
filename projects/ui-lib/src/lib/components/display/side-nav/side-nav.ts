@@ -77,7 +77,7 @@ export class SideNav {
       widthClass = 'w-full bg-white';
     } else {
       // Standard mode
-      widthClass = this.isExpanded() ? 'w-64 sm:w-72 md:w-80' : 'w-16';
+      widthClass = this.isExpanded() ? 'w-64 sm:w-72 md:w-80' : 'w-20';
       positionClass += ` ${widthClass}`;
     }
     return `${positionClass} border-r border-gray-200 bg-white transition-all duration-300 ease-in-out`;
@@ -89,7 +89,7 @@ export class SideNav {
     } else if (this.isExpanded()) {
       return 'ml-64 sm:ml-72 md:ml-80';
     } else {
-      return 'ml-16';
+      return 'ml-20';
     }
   });
 
