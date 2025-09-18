@@ -1,8 +1,8 @@
 <ui-side-nav [menus]="menus()" [settingsMenu]="settingsMenu()" [logoutMenu]="logoutMenu()" [username]="'Santhosh M'"
   (menuClick)="handleMenuClick($event)">
 
-  <main class="p-4 sm:p-6 bg-gray-50 min-h-screen">
-    <p>sdgsdggsdsgdgsd</p>
+  <main class="p-4 sm:p-6 bg-gray-50">
+    <router-outlet></router-outlet>
   </main>
 
   <div logo>

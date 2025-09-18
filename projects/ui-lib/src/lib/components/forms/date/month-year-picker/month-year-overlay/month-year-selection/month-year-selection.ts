@@ -104,14 +104,16 @@ export class MonthYearSelection extends BaseControlValueAccessor<Date> implement
   }
 
   isSelected(month: number): boolean {
-    if (!this.selectedDate()) return false;
+    if (!this.selectedDate() || !DateUtils.isValidDate(this.selectedDate()!)) return false;
+    const selDate = this.selectedDate()!;
     const d = new Date(this.activeYear, month, 1);
-    return this.selectedDate()!.getFullYear() === d.getFullYear() && this.selectedDate()!.getMonth() === d.getMonth();
+    return selDate.getFullYear() === d.getFullYear() && selDate.getMonth() === d.getMonth();
   }
 
   isSelectedYear(year: number): boolean {
-    if (!this.selectedDate()) return false;
-    return this.selectedDate()!.getFullYear() === year;
+    if (!this.selectedDate() || !DateUtils.isValidDate(this.selectedDate()!)) return false;
+    const selDate = this.selectedDate()!;
+    return selDate.getFullYear() === year;
   }
 
   previousYearPressed() {

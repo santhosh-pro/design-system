@@ -6,8 +6,8 @@
   <div class="flex px-6 py-5 border-b border-gray-300 justify-between items-center bg-white flex-shrink-0">
     @if (enableSearch()) {
     <div class="flex-1 max-w-md">
-      <ui-search-field placeholder="Search..." type="search" [width]="'xl'" (valueChange)="onSearchTextChanged($event)"
-        iconSrc="edit.svg" class="w-full">
+      <ui-search-field placeholder="Search..." type="search" [width]="'md'" (valueChange)="onSearchTextChanged($event)"
+        iconSrc="edit.svg">
       </ui-search-field>
     </div>
     }
@@ -23,7 +23,7 @@
     <table #table class="w-full border-collapse min-w-[1400px]" style="border-spacing: 0; table-layout: auto;">
 
       <!-- Table Header -->
-      <thead class="sticky top-0 bg-gray-100 z-[100]">
+      <thead class="sticky top-0 bg-gray-100 z-20">
         @for (level of getHeaderLevels(); track level) {
         <!-- Header Level Row -->
         <tr sortableTable (sortChange)="onSortChanged($event)"
@@ -32,14 +32,14 @@
           <!-- Expandable Column Header -->
           @if (expandableComponent() && level === 0) {
           <th [attr.rowspan]="getHeaderRowSpan()"
-            class="sticky left-0 z-[120] bg-gray-100 w-12 px-4 py-4 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.1)]">
+            class="sticky left-0 z-20 bg-gray-100 w-12 px-4 py-4 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.1)]">
           </th>
           }
 
           <!-- Checkbox Column Header -->
           @if (enableRowSelection() && level === 0) {
           <th [attr.rowspan]="getHeaderRowSpan()"
-            class="sticky left-0 z-[120] bg-gray-100 w-12 px-4 py-4 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.1)]">
+            class="sticky left-0 z-20 bg-gray-100 w-12 px-4 py-4 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.1)]">
             <input type="checkbox" [formControl]="selectAllControl"
               class="h-4 w-4 accent-primary-600 focus:ring-primary-500 disabled:accent-gray-400 disabled:opacity-60 cursor-pointer"
               aria-label="Select all rows" />
@@ -77,7 +77,7 @@
           <!-- Expandable Column -->
           @if (expandableComponent()) {
           <td
-            class="sticky left-0 z-[50] bg-white w-12 px-4 py-4 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.05)] group-hover:bg-blue-50 transition-colors duration-200"
+            class="sticky left-0 z-10 bg-white w-12 px-4 py-4 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.05)] group-hover:bg-blue-50 transition-colors duration-200"
             [class.bg-blue-100]="isRowSelected(item)" [class.group-hover:bg-blue-200]="isRowSelected(item)">
             <div (click)="onRowExpandedClicked(i); $event.stopPropagation()"
               class="mx-auto flex items-center justify-center h-[40px] w-[40px] rounded-full bg-gray-50 hover:bg-gray-100 cursor-pointer transition-all duration-500">
@@ -92,7 +92,7 @@
           <!-- Checkbox Column -->
           @if (enableRowSelection()) {
           <td
-            class="sticky left-0 z-[50] bg-white w-12 px-4 py-4 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.05)] group-hover:bg-blue-50 transition-colors duration-200"
+            class="sticky left-0 z-10 bg-white w-12 px-4 py-4 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.05)] group-hover:bg-blue-50 transition-colors duration-200"
             [class.bg-blue-100]="isRowSelected(item)" [class.group-hover:bg-blue-200]="isRowSelected(item)">
             <input type="checkbox" [formControl]="getItemControl(item)"
               class="h-4 w-4 accent-primary-600 focus:ring-primary-500 disabled:accent-gray-400 disabled:opacity-60 cursor-pointer"

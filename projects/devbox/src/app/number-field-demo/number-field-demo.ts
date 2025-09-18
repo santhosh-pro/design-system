@@ -67,7 +67,7 @@ export class NumberFieldDemo {
     this.form = this.formBuilder.group({
       name: ['', [Validators.required]],
       email: ['', [Validators.required,Validators.email]],
-      phoneNumber: ['', [Validators.required]],
+      phoneNumber: ['+91', [Validators.required]],
       notes: [''],
     });
   }
