@@ -123,6 +123,7 @@ export class MonthYearPicker extends BaseControlValueAccessor<Date | null> imple
 
     const result: Date | undefined = await this.overlayService.openNearElement(MonthYearOverlay, this.trigger.nativeElement, {
       positionPreference: 'bottomLeft',
+      backdropOptions: { showBackdrop: false, }, 
       data: {
         selectedDate: this.formControl.value,
         minDate: this.minDate(),

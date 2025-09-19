@@ -128,10 +128,10 @@ export * from './lib/core/autofocus';
 
 
 // Side Nav
-export * from './lib/components/display/side-nav/side-nav';
-export * from './lib/components/display/side-nav/side-nav-model';
-export * from './lib/components/display/side-nav/side-nav-menu/side-nav-menu';
+export * from './lib/components/display/nav/nav';
+export * from './lib/components/display/nav/nav-model';
+export * from './lib/components/display/nav/side-nav-menu/side-nav-menu';
 
 // Top Nav
-export * from './lib/components/display/side-nav/top-nav/top-nav';
-export * from './lib/components/display/side-nav/top-nav/top-nav-model';
+export * from './lib/components/display/nav/top-nav/top-nav';
+export * from './lib/components/display/nav/top-nav/top-nav-model';

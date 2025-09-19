@@ -14,8 +14,11 @@ import {
   ViewChild,
   OnDestroy,
   effect,
-  computed
+  computed,
+  Inject,
+  PLATFORM_ID
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Pagination, PaginationEvent } from '../../display/pagination/pagination';
 import { DatePipe } from '@angular/common';
 import { StatusBadge } from '../../feedback/status-badge/status-badge';
@@ -102,6 +105,11 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
   // Track if we've ever had data (for initial load detection)
   private hasEverHadData = signal<boolean>(false);
 
+  // Mobile Responsiveness
+  isMobile = signal<boolean>(false);
+  private mediaQueryList?: MediaQueryList;
+  private updateMobile?: () => void;
+
   // FIXED: Computed States - Correct initial loading detection
   isInitialLoading = computed(() => {
     // If showLoadingOnlyInitial is false, always show loading when isLoading=true
@@ -173,7 +181,7 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
   selectAllControl = new FormControl<boolean>(false, { nonNullable: true });
   itemControls = new Map<T, FormControl<boolean>>();
 
-  constructor(private cdr: ChangeDetectorRef) {
+  constructor(private cdr: ChangeDetectorRef, @Inject(PLATFORM_ID) private platformId: Object) {
     super();
 
     // FIXED: Track data changes and initial load state
@@ -212,6 +220,16 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
         this.updateSelectAllControl();
       }
     });
+
+    // FIXED: SSR-safe Mobile detection
+    if (isPlatformBrowser(this.platformId)) {
+      this.mediaQueryList = window.matchMedia('(max-width: 768px)');
+      this.updateMobile = () => this.isMobile.set(this.mediaQueryList!.matches);
+      this.updateMobile();
+      this.mediaQueryList.addEventListener('change', this.updateMobile);
+    } else {
+      this.isMobile.set(false);
+    }
   }
 
   ngOnInit(): void {
@@ -262,6 +280,9 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(sub => sub.unsubscribe());
+    if (this.mediaQueryList && this.updateMobile) {
+      this.mediaQueryList.removeEventListener('change', this.updateMobile);
+    }
   }
 
   // State Management
@@ -700,6 +721,11 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
 
   hasActionColumn(): boolean {
     return this.allLeafColumns().some(col => col.type === 'actions');
+  }
+
+  // Mobile Card Helpers
+  getColumnTitle(column: ColumnDef): string {
+    return column.title;
   }
 
   // Template Getters

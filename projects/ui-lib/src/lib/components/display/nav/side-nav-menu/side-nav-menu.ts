@@ -1,15 +1,17 @@
 import { Component, computed, inject, input, output, PLATFORM_ID, signal } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { SideMenuItem } from '../side-nav-model';
+import { SideMenuItem } from '../nav-model';
 import { CommonModule } from '@angular/common';
 import { isPlatformBrowser } from '@angular/common';
-import { AppSvgIcon } from '../../../../components/misc/app-svg-icon/app-svg-icon';
+import { AppSvgIcon } from '../../../misc/app-svg-icon/app-svg-icon';
 import { filter } from 'rxjs';
+import { TooltipDirective } from '../../../overlay/tooltip/tooltip.directive';
+import { TooltipPosition, TooltipTheme } from '../../../overlay/tooltip/tooltip.enums';
 
 @Component({
   selector: 'ui-side-nav-menu',
   standalone: true,
-  imports: [CommonModule, AppSvgIcon],
+  imports: [CommonModule, AppSvgIcon, TooltipDirective],
   templateUrl: './side-nav-menu.html',
 })
 export class SideNavMenu {
@@ -25,6 +27,11 @@ export class SideNavMenu {
 
   // Internal signal to force reactivity
   private routeChangeSignal = signal(0);
+
+    TooltipPosition = TooltipPosition;
+      TooltipTheme = TooltipTheme;
+
+
 
   constructor() {
     // Listen to navigation events and update the signal

@@ -19,7 +19,7 @@ import { Tooltip } from './tooltip';
   standalone: true,
 })
 export class TooltipDirective implements OnDestroy {
-  tooltip = input<string>('');
+  tooltip = input<string | null>(null);
   toolTipPosition = input<TooltipPosition>(TooltipPosition.DEFAULT);
   theme = input<TooltipTheme>(TooltipTheme.DEFAULT);
   showDelay = input<number>(0);

@@ -1,18 +1,18 @@
 import { Component, computed, input, output, signal, viewChild, HostListener, inject, PLATFORM_ID } from "@angular/core";
 import { isPlatformBrowser } from '@angular/common';
-import { SideMenuItem } from "./side-nav-model";
+import { SideMenuItem } from "./nav-model";
 import { CommonModule } from "@angular/common";
 import { SideNavMenu } from "./side-nav-menu/side-nav-menu";
 import { TopNav } from "./top-nav/top-nav";
 import { TopMenuItem } from "./top-nav/top-nav-model";
 
 @Component({
-  selector: "ui-side-nav",
+  selector: "ui-nav",
   standalone: true,
   imports: [CommonModule, SideNavMenu, TopNav],
-  templateUrl: "./side-nav.html",
+  templateUrl: "./nav.html",
 })
-export class SideNav {
+export class Nav {
   private platformId = inject(PLATFORM_ID);
 
   // Signals

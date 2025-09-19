@@ -1,10 +1,10 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { SideMenuItem, SideNav, TopMenuItem, TopNav } from 'projects/ui-lib/src/public-api';
+import { SideMenuItem, Nav, TopMenuItem, TopNav } from 'projects/ui-lib/src/public-api';
 
 @Component({
   selector: 'app-side-nav-demo',
-  imports: [SideNav, TopNav, RouterOutlet],
+  imports: [Nav, TopNav, RouterOutlet],
   templateUrl: './side-nav-demo.html',
   styleUrl: './side-nav-demo.css'
 })
