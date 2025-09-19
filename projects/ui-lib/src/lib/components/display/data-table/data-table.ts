@@ -18,6 +18,7 @@ import {
   Inject,
   PLATFORM_ID
 } from '@angular/core';
+import { TemplateRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Pagination, PaginationEvent } from '../../display/pagination/pagination';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -85,6 +86,8 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
   enableHorizontallyScrollable = input<boolean>(true);
   initialValue = input<TableStateEvent>({ searchText: '' });
   showLoadingOnlyInitial = input<boolean>(true);
+  // Optional filters template for wrapper projection
+  filtersTemplate = input<TemplateRef<any> | null>(null);
 
   // Outputs
   pageChange = output<PaginationEvent>();

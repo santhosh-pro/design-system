@@ -1,6 +1,6 @@
-<div class="flex w-full items-center justify-between px-2 py-1 bg-white border-t border-neutral-50">
+<div class="flex w-full items-center justify-between px-3 md:px-2 py-1 bg-white border-t border-neutral-50">
   <div>
-    <!-- Showing items text -->
+    <!-- Showing items text (visible in both modes) -->
     <p class="text-sm text-gray-700 text-nowrap">
       Showing <span class="font-semibold">{{ startItem }}</span> to <span class="font-semibold">{{ endItem }}</span>
       of <span class="font-semibold">{{ totalItems() }}</span> results
@@ -8,19 +8,19 @@
   </div>
 
   <div class="flex items-center space-x-2">
+    @if (!isSimple()) {
+      <span class="text-sm">Items per page:</span>
 
-    <span class="text-sm">Items per page:</span>
+      <div class="relative inline-block border rounded px-1 py-0.5 text-sm">
+        <select [(ngModel)]="pageSize" (ngModelChange)="changePageSize($event)" class="cursor-pointer">
+          @for (size of pageSizeOptions(); track size) {
+            <option [value]="size">{{ size }}</option>
+          }
+        </select>
+      </div>
 
-    <div class="relative inline-block border rounded px-1 py-0.5 text-sm">
-      <select [(ngModel)]="pageSize" (ngModelChange)="changePageSize($event)"
-              class="cursor-pointer">
-        @for (size of pageSizeOptions(); track size) {
-          <option [value]="size">{{ size }}</option>
-        }
-      </select>
-    </div>
-
-    <span class="text-sm">{{ startItem }} - {{ endItem }} of  {{ totalItems() }}</span>
+      <span class="text-sm">{{ startItem }} - {{ endItem }} of  {{ totalItems() }}</span>
+    }
 
     <button
       class="px-1 py-0.5 text-neutral-500 rounded cursor-pointer disabled:text-neutral-500 disabled:cursor-not-allowed"

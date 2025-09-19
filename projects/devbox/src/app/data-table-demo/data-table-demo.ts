@@ -2,14 +2,14 @@ import { Component, signal } from '@angular/core';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { DemoCard, DemoFile } from '../core/demo-card/demo-card';
 import { DocIoList } from '../core/doc-io-list/doc-io-list';
-import { ColumnDef, ColumnNode, DataTable, TableActionEvent, TableStateEvent, MultiDatePicker, TextField } from 'projects/ui-lib/src/public-api';
+import { ColumnDef, ColumnNode, DataTable, TableActionEvent, TableStateEvent, MultiDatePicker, TextField, ResponsiveDataTable } from 'projects/ui-lib/src/public-api';
 import { CommonModule } from '@angular/common';
 import { ExpandRowDemo } from './expand/expand-row-demo/expand-row-demo';
 
 @Component({
   selector: 'app-data-table-demo',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, DataTable, DemoCard, DocIoList, MultiDatePicker, TextField],
+  imports: [CommonModule, ReactiveFormsModule, ResponsiveDataTable, DataTable, DemoCard, DocIoList, MultiDatePicker, TextField],
   templateUrl: './data-table-demo.html',
 })
 export class DataTableDemo {

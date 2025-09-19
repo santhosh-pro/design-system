@@ -4,6 +4,8 @@
 
 // ========== DISPLAY ==========
 export * from './lib/components/display/data-table/data-table';
+export * from './lib/components/display/data-table/mobile-data-table/mobile-data-table';
+export * from './lib/components/display/data-table/responsive-data-table/responsive-data-table';
 export * from './lib/components/display/data-table/table-custom/table-custom';
 export * from './lib/components/display/data-table/no-data-table';
 export * from './lib/components/display/pagination/pagination';

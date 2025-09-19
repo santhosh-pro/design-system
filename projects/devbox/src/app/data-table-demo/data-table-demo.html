@@ -4,7 +4,7 @@
     <!-- Demo 1: Basic Table with Sorting and Pagination -->
     <app-demo-card title="Basic Data Table"
       description="A simple data table with sorting, pagination, and badge columns." [files]="basicFiles()">
-      <ui-data-table [columnGroups]="nestedColumns()" [data]="nestedData()" [enableRowSelection]="true"  [showLoadingOnlyInitial]="false" [isLoading]="false"
+      <ui-responsive-data-table [columnGroups]="nestedColumns()" [data]="nestedData()" [enableRowSelection]="true"  [showLoadingOnlyInitial]="false" [isLoading]="false"
         [rowSelectionKey]="'name'" [footerComponent]="ExpandRowDemo" [enablePagination]="true" [pageSize]="10"
         [totalCount]="nestedData().length" [enableSearch]="true" [formControl]="basicControl" [expandableComponent]="ExpandRowDemo"
         (rowSelectionChange)="onRowSelectionChange($event)"
@@ -16,7 +16,7 @@
         <button class="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors whitespace-nowrap text-sm font-medium h-10 flex items-center justify-center">
           Apply Filters
         </button>
-      </ui-data-table>
+      </ui-responsive-data-table>
       <p class="text-sm text-gray-600 mt-2">
         {{selectedRows | json}}
         Table State: {{ basicControl.value | json }}

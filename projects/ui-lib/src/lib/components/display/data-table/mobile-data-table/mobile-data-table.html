@@ -1,0 +1,119 @@
+<div class="flex flex-col bg-white rounded-2xl overflow-hidden shadow-md border border-gray-200">
+  <!-- Search & Filters -->
+  <div class="flex flex-col px-4 py-3 border-b border-gray-200 bg-white gap-3 items-stretch">
+    @if (enableSearch()) {
+      <ui-search-field placeholder="Search" type="search" [width]="'md'" (valueChange)="onSearchTextChanged($event)"></ui-search-field>
+    }
+    <div class="flex flex-col gap-2 items-stretch">
+      @if (filtersTemplate()) {
+        <ng-container [ngTemplateOutlet]="filtersTemplate()!"></ng-container>
+      } @else {
+        <ng-content></ng-content>
+      }
+    </div>
+  </div>
+
+  <!-- States & List -->
+  <div class="relative">
+    <!-- Add bottom padding so fixed pagination doesn't overlap content on mobile -->
+    <div class="pb-20 md:pb-0">
+  @if (hasError()) {
+    <div class="p-8 flex items-center justify-center">
+      <div class="text-center space-y-3">
+        <div class="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto shadow-sm">
+          <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        <div class="font-semibold text-gray-900">{{ errorMessage() || 'Failed to load data' }}</div>
+        <button type="button" class="px-4 py-2 rounded-lg text-white bg-primary-600 hover:bg-primary-700 active:bg-primary-700/90 transition" (click)="onRetryLoad()">Try again</button>
+      </div>
+    </div>
+  } @else if (isLoading() && data().length === 0) {
+    <div class="p-10 flex items-center justify-center">
+      <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-primary-600"></div>
+    </div>
+  } @else if (data().length === 0) {
+    <div class="p-8 text-center text-gray-500">No data available</div>
+  } @else {
+    <!-- Cards list -->
+    <div class="divide-y divide-gray-200">
+      @for (item of data(); track $index; let i = $index) {
+        <div class="p-4 bg-white" (click)="onRowClicked(item)">
+          <div class="flex items-start gap-3">
+            @if (enableRowSelection()) {
+              <input type="checkbox" [formControl]="getItemControl(item)" (click)="$event.stopPropagation()" class="h-5 w-5 mt-0.5 accent-primary-600" aria-label="Select" />
+            }
+            <div class="flex-1 min-w-0">
+              <!-- Header line: primary field and actions (right) -->
+              <div class="flex items-start gap-2">
+                <div class="flex-1 min-w-0">
+                  @let primary = getPrimaryColumn();
+                  @if (primary) {
+                    <div class="text-sm font-semibold text-gray-900 truncate">
+                      <ui-table-cell-renderer [column]="primary" [rowData]="item" [rowIndex]="i + 1" [isLastRow]="$last" (actionPerformed)="onActionPerformed($event)"></ui-table-cell-renderer>
+                    </div>
+                  }
+                </div>
+                @let actionCol = getActionColumn();
+                @if (actionCol) {
+                  <div class="shrink-0 -mr-1">
+                    <ui-table-cell-renderer [column]="actionCol" [rowData]="item" [rowIndex]="i + 1" [isLastRow]="$last" (actionPerformed)="onActionPerformed($event)"></ui-table-cell-renderer>
+                  </div>
+                }
+              </div>
+
+              <!-- Meta grid -->
+              @let details = getDetailColumns();
+              @if (details.length > 0) {
+                <div class="mt-2 grid grid-cols-2 gap-x-4 gap-y-1">
+                  @for (col of details; track col.key || $index) {
+                    <div class="min-w-0">
+                      <div class="text-[11px] uppercase tracking-wide text-gray-500">{{ col.title }}</div>
+                      <div class="text-sm text-gray-900 truncate">
+                        <ui-table-cell-renderer [column]="col" [rowData]="item" [rowIndex]="i + 1" [isLastRow]="$last" (actionPerformed)="onActionPerformed($event)"></ui-table-cell-renderer>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+
+              <!-- Expandable -->
+              @if (expandableComponent()) {
+                <div class="mt-2">
+                  <button type="button" class="text-primary-600 text-sm font-medium" (click)="$event.stopPropagation(); expandedRowIndex = (expandedRowIndex === i ? -1 : i)">
+                    {{ expandedRowIndex === i ? 'Hide details' : 'Show details' }}
+                  </button>
+                  @if (expandedRowIndex === i) {
+                    <div class="mt-2 rounded-lg border border-gray-200 p-3 bg-gray-50">
+                      <ui-dynamic-renderer [component]="expandableComponent()" [rowData]="item" (actionPerformed)="onActionPerformed({ actionKey: 'expand', item })"></ui-dynamic-renderer>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+    </div>
+
+    <!-- Fixed bottom pagination (mobile only) -->
+    @if (enablePagination()) {
+      <div class="md:hidden fixed bottom-0 inset-x-0 z-40 border-t border-gray-200 bg-white shadow-lg px-3 [padding-bottom:env(safe-area-inset-bottom)]">
+        <ui-pagination [isSimple]="true" [pageSize]="pageSize()" [totalItems]="totalCount()" (pageChange)="onPageChange($event)"></ui-pagination>
+      </div>
+    }
+  </div>
+
+  <!-- Footer: footer component and pagination -->
+  <div class="border-t border-gray-200 bg-white px-4 py-3 hidden md:block">
+    @if (footerComponent()) {
+      <ui-dynamic-renderer [component]="footerComponent()" [data]="data()" (actionPerformed)="footerAction.emit($event)"></ui-dynamic-renderer>
+    }
+    @if (enablePagination()) {
+      <ui-pagination [pageSize]="pageSize()" [totalItems]="totalCount()" (pageChange)="onPageChange($event)"></ui-pagination>
+    }
+  </div>
+</div>
