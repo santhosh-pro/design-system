@@ -696,13 +696,13 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
     let classes = this.getAlignmentClass(cell.node);
     
     if (!this.isColumnGroup(cell.node) && (cell.node as ColumnDef).type === 'actions') {
-      classes += ' sticky right-0 z-[110] bg-gray-100 shadow-[-2px_0_4px_rgba(0,0,0,0.1)] border-l-2 border-gray-300 w-32 min-w-[128px] max-w-[128px]';
+      classes += ' sticky right-0 z-[110] bg-gray-100 shadow-[-2px_0_4px_rgba(0,0,0,0.1)] border-l border-gray-300 w-32 min-w-[128px] max-w-[128px]';
     } else {
       classes += ' ' + this.getColumnWidthClass(cell.node);
     }
     
     if (this.isColumnGroup(cell.node) && cell.colspan > 1) {
-      classes += ' border-r-2 border-gray-400';
+      classes += ' border-r border-gray-300';
     }
     
     return classes;
@@ -793,6 +793,17 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
         visible: node.visible ?? true
       };
     }
+  }
+
+  // Accessibility helpers
+  getAriaSort(sortKey?: string): 'ascending' | 'descending' | 'none' {
+    if (!sortKey || !this.tableSortEvent || !this.tableSortEvent.key) return 'none';
+    if (this.tableSortEvent.key === sortKey) {
+      const dir = (this.tableSortEvent.direction || '').toString();
+      if (dir === 'asc') return 'ascending';
+      if (dir === 'desc') return 'descending';
+    }
+    return 'none';
   }
 
   private clearItemControlSubscriptions(): void {
