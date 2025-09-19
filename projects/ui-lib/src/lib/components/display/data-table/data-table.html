@@ -38,14 +38,14 @@
             <!-- Expandable Column Header -->
             @if (expandableComponent() && level === 0) {
             <th [attr.rowspan]="getHeaderRowSpan()"
-              class="sticky left-0 z-20 bg-gray-100 w-12 px-4 py-4 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.1)]">
+              class="sticky left-0 z-[100] bg-gray-100 w-12 px-4 py-4 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.1)]">
             </th>
             }
 
             <!-- Checkbox Column Header -->
             @if (enableRowSelection() && level === 0) {
             <th [attr.rowspan]="getHeaderRowSpan()"
-              class="sticky z-20 bg-gray-100 w-12 px-4 py-4 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.1)]"
+              class="sticky z-[100] bg-gray-100 w-12 px-4 py-4 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.1)]"
               [ngClass]="{ 'left-12': expandableComponent(), 'left-0': !expandableComponent() }">
               @if (getState() !== 'initializing') {
               <input 
@@ -103,17 +103,17 @@
         <tbody class="relative z-0 flex-1">
           @for (item of data(); track getItemId(item); let i = $index) {
             <tr (click)="onRowClicked(item)"
-              class="transition-all duration-200 hover:bg-blue-50 bg-white border-b border-gray-200 group"
+              class="transition-all duration-200 hover:bg-blue-50 odd:bg-white even:bg-gray-100/60 border-b border-gray-200 group"
               [class.cursor-pointer]="enableClickableRows()"
               [class.bg-blue-100]="isRowSelected(item)"
               [class.hover:bg-blue-200]="isRowSelected(item)">
 
               <!-- Expandable Column -->
               @if (expandableComponent()) {
-                <td class="sticky left-0 z-10 bg-white w-12 px-4 py-4 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.05)] group-hover:bg-blue-50 transition-colors duration-200"
+                <td class="sticky left-0 z-[70] bg-white w-12 px-3 py-2.5 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.05)] group-hover:bg-blue-50 transition-colors duration-200"
                   [class.bg-blue-100]="isRowSelected(item)" [class.group-hover:bg-blue-200]="isRowSelected(item)">
                   <div (click)="onRowExpandedClicked(i); $event.stopPropagation()"
-                    class="mx-auto flex items-center justify-center h-[40px] w-[40px] rounded-full bg-gray-50 hover:bg-gray-100 cursor-pointer transition-all duration-500">
+                    class="mx-auto flex items-center justify-center h-[36px] w-[36px] rounded-full bg-gray-50 hover:bg-gray-100 cursor-pointer transition-all duration-500">
                     <svg class="h-[20px] w-[20px] text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
                       <path d="M7.41 8.58L12 13.17L16.59 8.58L18 10L12 16L6 10L7.41 8.58Z" fill="currentColor" />
                     </svg>
@@ -123,7 +123,7 @@
 
               <!-- Checkbox Column -->
               @if (enableRowSelection()) {
-                <td class="sticky z-10 bg-white w-12 px-4 py-4 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.05)] group-hover:bg-blue-50 transition-colors duration-200"
+                <td class="sticky z-[70] bg-white w-12 px-3 py-2.5 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.05)] group-hover:bg-blue-50 transition-colors duration-200"
                   [ngClass]="{ 'left-12': expandableComponent(), 'left-0': !expandableComponent() }"
                   [class.bg-blue-100]="isRowSelected(item)" [class.group-hover:bg-blue-200]="isRowSelected(item)">
                   <input type="checkbox" [formControl]="getItemControl(item)"
@@ -135,7 +135,7 @@
 
               <!-- Data Columns -->
               @for (column of allLeafColumns(); track column.key || $index) {
-                <td class="px-4 py-4 relative text-sm text-gray-900 bg-white border-r border-gray-200 group-hover:bg-blue-50 transition-colors duration-200"
+                <td class="px-3 py-2.5 relative text-sm text-gray-900 border-r border-gray-200 group-hover:bg-blue-50 transition-colors duration-200"
                   [ngClass]="getCellClass(column)"
                   [class.bg-blue-100]="isRowSelected(item)"
                   [class.group-hover:bg-blue-200]="isRowSelected(item)">
@@ -223,17 +223,17 @@
         <tbody class="relative z-0 flex-1">
           @for (item of data(); track getItemId(item); let i = $index) {
             <tr (click)="onRowClicked(item)"
-              class="transition-all duration-200 hover:bg-blue-50 bg-white border-b border-gray-200 group"
+              class="transition-all duration-200 hover:bg-blue-50 odd:bg-white even:bg-gray-100/60 border-b border-gray-200 group"
               [class.cursor-pointer]="enableClickableRows()"
               [class.bg-blue-100]="isRowSelected(item)"
               [class.hover:bg-blue-200]="isRowSelected(item)">
 
               <!-- Same row structure as above -->
               @if (expandableComponent()) {
-                <td class="sticky left-0 z-10 bg-white w-12 px-4 py-4 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.05)] group-hover:bg-blue-50 transition-colors duration-200"
+                <td class="sticky left-0 z-[70] bg-white w-12 px-3 py-2.5 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.05)] group-hover:bg-blue-50 transition-colors duration-200"
                   [class.bg-blue-100]="isRowSelected(item)" [class.group-hover:bg-blue-200]="isRowSelected(item)">
                   <div (click)="onRowExpandedClicked(i); $event.stopPropagation()"
-                    class="mx-auto flex items-center justify-center h-[40px] w-[40px] rounded-full bg-gray-50 hover:bg-gray-100 cursor-pointer transition-all duration-500">
+                    class="mx-auto flex items-center justify-center h-[36px] w-[36px] rounded-full bg-gray-50 hover:bg-gray-100 cursor-pointer transition-all duration-500">
                     <svg class="h-[20px] w-[20px] text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
                       <path d="M7.41 8.58L12 13.17L16.59 8.58L18 10L12 16L6 10L7.41 8.58Z" fill="currentColor" />
                     </svg>
@@ -242,7 +242,7 @@
               }
 
               @if (enableRowSelection()) {
-                <td class="sticky z-10 bg-white w-12 px-4 py-4 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.05)] group-hover:bg-blue-50 transition-colors duration-200"
+                <td class="sticky z-[70] bg-white w-12 px-3 py-2.5 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.05)] group-hover:bg-blue-50 transition-colors duration-200"
                   [ngClass]="{ 'left-12': expandableComponent(), 'left-0': !expandableComponent() }"
                   [class.bg-blue-100]="isRowSelected(item)" [class.group-hover:bg-blue-200]="isRowSelected(item)">
                   <input type="checkbox" [formControl]="getItemControl(item)"
@@ -253,7 +253,7 @@
               }
 
               @for (column of allLeafColumns(); track column.key || $index) {
-                <td class="px-4 py-4 relative text-sm text-gray-900 bg-white border-r border-gray-200 group-hover:bg-blue-50 transition-colors duration-200"
+                <td class="px-3 py-2.5 relative text-sm text-gray-900 border-r border-gray-200 group-hover:bg-blue-50 transition-colors duration-200"
                   [ngClass]="getCellClass(column)"
                   [class.bg-blue-100]="isRowSelected(item)"
                   [class.group-hover:bg-blue-200]="isRowSelected(item)">
