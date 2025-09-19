@@ -18,11 +18,12 @@ import {
   Inject,
   PLATFORM_ID
 } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Pagination, PaginationEvent } from '../../display/pagination/pagination';
 import { DatePipe } from '@angular/common';
 import { StatusBadge } from '../../feedback/status-badge/status-badge';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { BaseControlValueAccessor } from '../../../core/base-control-value-accessor';
 import { DynamicRenderer } from './dynamic-renderer';
 import { ContextMenuButton, ContextMenuButtonAction } from '../../overlay/context-menu-button/context-menu-button';
@@ -30,21 +31,31 @@ import { AppSvgIcon } from "../../misc/app-svg-icon/app-svg-icon";
 import { SortableTable, TableSortEvent } from './sortable-table';
 import { SearchField } from '../../forms/text/search-field/search-field';
 import { resolveTemplateWithObject } from '../../../core/template-resolver';
+import { TableCellRenderer } from './table-data-rows/table-cell-renderer/table-cell-renderer';
+import { TableDataRows } from './table-data-rows/table-data-rows';
+import { TableEmptyState } from './table-empty-state/table-empty-state';
+import { TableErrorState } from './table-error-state/table-error-state';
+import { TableLoadingState } from './table-loading-state/table-loading-state';
+
+// Import refactored components
+
+interface RowSelectionEvent {
+  selected: boolean;
+  item: any;
+}
 
 @Component({
   selector: 'ui-data-table',
   standalone: true,
   imports: [
-    Pagination,
-    DatePipe,
-    StatusBadge,
-    SortableTable,
-    FormsModule,
+    CommonModule,
     ReactiveFormsModule,
     DynamicRenderer,
-    ContextMenuButton,
-    AppSvgIcon,
-    SearchField
+    // Header and controls
+    SortableTable,
+    SearchField,
+    Pagination,
+  TableCellRenderer
   ],
   templateUrl: './data-table.html',
 })
@@ -110,7 +121,7 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
   private mediaQueryList?: MediaQueryList;
   private updateMobile?: () => void;
 
-  // FIXED: Computed States - Correct initial loading detection
+  // Computed States - Loading detection
   isInitialLoading = computed(() => {
     // If showLoadingOnlyInitial is false, always show loading when isLoading=true
     if (!this.showLoadingOnlyInitial()) {
@@ -135,7 +146,7 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
   isErrorState = computed(() => this.hasError() || this._hasLocalError());
   isSuccess = computed(() => !this.isLoading() && !this.isErrorState() && this.columnGroups().length > 0);
 
-  // FIXED: Template State Logic - Prioritize loading states (TYPOS FIXED)
+  // Template State Logic - Prioritize loading states
   currentState = computed(() => {
     // If table is not configured, show empty
     if (!this.columnGroups() || this.columnGroups().length === 0) {
@@ -171,6 +182,7 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
   private subscriptions: any[] = [];
   private lastStateChangeTimestamp = 0;
   private readonly debounceTimeMs = 200;
+  private itemControlSubscriptions: Subscription[] = [];
 
   // State Management
   paginationEvent?: PaginationEvent;
@@ -184,7 +196,7 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
   constructor(private cdr: ChangeDetectorRef, @Inject(PLATFORM_ID) private platformId: Object) {
     super();
 
-    // FIXED: Track data changes and initial load state
+    // Track data changes and initial load state
     effect(() => {
       const dataLength = this.data().length;
       const isLoading = this.isLoading();
@@ -211,17 +223,27 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
       }
     });
 
-    // Initialize row selection
+    // Initialize default selected IDs only when defaults change or selection is enabled
     effect(() => {
-      if (this.enableRowSelection()) {
-        this.selectedIds.set([...this.defaultSelectedKeys()]);
+      const enabled = this.enableRowSelection();
+      const defaults = this.defaultSelectedKeys();
+      if (enabled && defaults && defaults.length > 0 && this.selectedIds().length === 0) {
+        this.selectedIds.set([...defaults]);
+      }
+    });
+
+    // Keep item controls in sync with data when selection is enabled
+    effect(() => {
+      const enabled = this.enableRowSelection();
+      const _data = this.data();
+      if (enabled) {
         this.initializeItemControls();
         this.updateItemControls();
         this.updateSelectAllControl();
       }
     });
 
-    // FIXED: SSR-safe Mobile detection
+    // SSR-safe Mobile detection
     if (isPlatformBrowser(this.platformId)) {
       this.mediaQueryList = window.matchMedia('(max-width: 768px)');
       this.updateMobile = () => this.isMobile.set(this.mediaQueryList!.matches);
@@ -280,6 +302,7 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.clearItemControlSubscriptions();
     if (this.mediaQueryList && this.updateMobile) {
       this.mediaQueryList.removeEventListener('change', this.updateMobile);
     }
@@ -430,14 +453,17 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
   }
 
   private initializeItemControls(): void {
+    // Clean up old subscriptions and controls to avoid leaks when data changes
+    this.clearItemControlSubscriptions();
     this.itemControls.clear();
     this.data().forEach((item) => {
       const control = new FormControl<boolean>(this.isRowSelected(item), { nonNullable: true });
-      control.valueChanges.subscribe((checked) => {
+      const sub = control.valueChanges.subscribe((checked) => {
         if (checked !== this.isRowSelected(item)) {
           this.onRowSelectionChange(checked, item);
         }
       });
+      this.itemControlSubscriptions.push(sub);
       this.itemControls.set(item, control);
     });
   }
@@ -456,12 +482,20 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
     this.selectAllControl.setValue(isAllSelected, { emitEvent: false });
   }
 
+  isSelectAllIndeterminate(): boolean {
+    const items = this.data();
+    if (!items || items.length === 0) return false;
+    const pageIds = items.map((item: any) => this.getItemId(item));
+    const selectedOnPage = pageIds.filter(id => this.selectedIds().includes(id)).length;
+    return selectedOnPage > 0 && selectedOnPage < pageIds.length;
+  }
+
   isRowSelected(item: any): boolean {
     const id = this.getItemId(item);
     return this.selectedIds().includes(id);
   }
 
-  private getItemId(item: any): any {
+  getItemId(item: any): any {
     const key = this.rowSelectionKey();
     return key.split('.').reduce((acc, part) => acc && acc[part], item);
   }
@@ -475,11 +509,12 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
     let control = this.itemControls.get(item);
     if (!control) {
       control = new FormControl<boolean>(this.isRowSelected(item), { nonNullable: true });
-      control.valueChanges.subscribe((checked) => {
+      const sub = control.valueChanges.subscribe((checked) => {
         if (checked !== this.isRowSelected(item)) {
           this.onRowSelectionChange(checked, item);
         }
       });
+      this.itemControlSubscriptions.push(sub);
       this.itemControls.set(item, control);
     }
     return control;
@@ -492,6 +527,10 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
 
   onRowExpandedClicked(i: number): void {
     this.expandedRowIndex.set(this.expandedRowIndex() === i ? null : i);
+  }
+
+  onActionPerformed(event: TableActionEvent): void {
+    this.action.emit(event);
   }
 
   onActionClicked(actionKey: string, item: any, mouseEvent: MouseEvent | null): void {
@@ -635,6 +674,11 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
     return this.getMaxDepth();
   }
 
+  // Helper Methods for Template
+  getTotalColspan(): number {
+    return this.allLeafColumns().length + (this.enableRowSelection() ? 1 : 0) + (this.expandableComponent() ? 1 : 0);
+  }
+
   // Styling & Layout
   getCellClass(column: ColumnDef): string {
     let classes = this.getAlignmentClass(column);
@@ -750,6 +794,11 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
       };
     }
   }
+
+  private clearItemControlSubscriptions(): void {
+    this.itemControlSubscriptions.forEach(sub => sub.unsubscribe());
+    this.itemControlSubscriptions = [];
+  }
 }
 
 // Types & Interfaces
@@ -785,7 +834,7 @@ export interface ColumnDef {
   customConfig?: CustomRendererConfig;
   actionsConfig?: ActionConfig;
   formatter?: (value: any) => any;
-  objectFormatter?: (value: any) => any;
+  objectFormatter?: (item: any) => any;
   propertyStyle?: (value: any) => any;
 }
 
