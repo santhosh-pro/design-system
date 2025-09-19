@@ -20,22 +20,15 @@ import {
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Pagination, PaginationEvent } from '../../display/pagination/pagination';
-import { DatePipe } from '@angular/common';
-import { StatusBadge } from '../../feedback/status-badge/status-badge';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { BaseControlValueAccessor } from '../../../core/base-control-value-accessor';
 import { DynamicRenderer } from './dynamic-renderer';
-import { ContextMenuButton, ContextMenuButtonAction } from '../../overlay/context-menu-button/context-menu-button';
-import { AppSvgIcon } from "../../misc/app-svg-icon/app-svg-icon";
+import { ContextMenuButtonAction } from '../../overlay/context-menu-button/context-menu-button';
 import { SortableTable, TableSortEvent } from './sortable-table';
 import { SearchField } from '../../forms/text/search-field/search-field';
 import { resolveTemplateWithObject } from '../../../core/template-resolver';
-import { TableCellRenderer } from './table-data-rows/table-cell-renderer/table-cell-renderer';
-import { TableDataRows } from './table-data-rows/table-data-rows';
-import { TableEmptyState } from './table-empty-state/table-empty-state';
-import { TableErrorState } from './table-error-state/table-error-state';
-import { TableLoadingState } from './table-loading-state/table-loading-state';
+import { TableCellRenderer } from './table-cell-renderer/table-cell-renderer';
 
 // Import refactored components
 

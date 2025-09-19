@@ -6,7 +6,7 @@ import { DynamicRenderer } from '../dynamic-renderer';
 import { StatusBadge } from '../../../../components/feedback/status-badge/status-badge';
 import { ContextMenuButton } from '../../../../components/overlay/context-menu-button/context-menu-button';
 import { AppSvgIcon } from '../../../../components/misc/app-svg-icon/app-svg-icon';
-import { TableCellRenderer } from "./table-cell-renderer/table-cell-renderer";
+import { TableCellRenderer } from '../table-cell-renderer/table-cell-renderer';
 
 interface RowSelectionEvent {
   selected: boolean;
