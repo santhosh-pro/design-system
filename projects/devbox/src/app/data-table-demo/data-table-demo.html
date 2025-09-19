@@ -5,12 +5,12 @@
     <app-demo-card title="Basic Data Table"
       description="A simple data table with sorting, pagination, and badge columns." [files]="basicFiles()">
       <ui-data-table [columnGroups]="nestedColumns()" [data]="nestedData()" [enableRowSelection]="true"  [showLoadingOnlyInitial]="false" [isLoading]="false"
-        [rowSelectionKey]="'name'" [footerComponent]="ExpandRowDemo" [enablePagination]="false" [pageSize]="10"
+        [rowSelectionKey]="'name'" [footerComponent]="ExpandRowDemo" [enablePagination]="true" [pageSize]="10"
         [totalCount]="nestedData().length" [enableSearch]="true" [formControl]="basicControl" [expandableComponent]="ExpandRowDemo"
         (rowSelectionChange)="onRowSelectionChange($event)"
         (stateChange)="onTableStateChanged($event)">
 
- <ui-multi-date-picker></ui-multi-date-picker>
+<ui-text-field placeholder="Enter text"></ui-text-field>
       </ui-data-table>
       <p class="text-sm text-gray-600 mt-2">
         {{selectedRows | json}}
