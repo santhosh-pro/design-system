@@ -113,24 +113,24 @@ nestedColumns = signal<ColumnNode[]>([
 ]);
 
 // Data for 20 rows
-// nestedData = signal<any[]>(Array.from({ length: 20 }, (_, i) => ({
-//   id: i + 1,
-//   name: `User ${i + 1}`,
-//   email: `user${i + 1}@example.com`,
-//   phone: `+91-98765${1000 + i}`,
-//   age: 20 + (i % 30),
-//   status: i % 2 === 0 ? 'Active' : 'Inactive',
-//   role: i % 3 === 0 ? 'Admin' : 'User',
-//   location: i % 2 === 0 ? 'Remote' : 'Onsite',
-//   joined: new Date(2020, i % 12, (i % 28) + 1),
-//   department: ['HR', 'Finance', 'Engineering', 'Sales'][i % 4],
-//   manager: `Manager ${Math.floor(i / 5) + 1}`,
-//   salary: 30000 + (i * 500),
-//   country: ['India', 'USA', 'UK', 'Canada'][i % 4],
-//   city: ['Delhi', 'New York', 'London', 'Toronto'][i % 4],
-// })));
+nestedData = signal<any[]>(Array.from({ length: 20 }, (_, i) => ({
+  id: i + 1,
+  name: `User ${i + 1}`,
+  email: `user${i + 1}@example.com`,
+  phone: `+91-98765${1000 + i}`,
+  age: 20 + (i % 30),
+  status: i % 2 === 0 ? 'Active' : 'Inactive',
+  role: i % 3 === 0 ? 'Admin' : 'User',
+  location: i % 2 === 0 ? 'Remote' : 'Onsite',
+  joined: new Date(2020, i % 12, (i % 28) + 1),
+  department: ['HR', 'Finance', 'Engineering', 'Sales'][i % 4],
+  manager: `Manager ${Math.floor(i / 5) + 1}`,
+  salary: 30000 + (i * 500),
+  country: ['India', 'USA', 'UK', 'Canada'][i % 4],
+  city: ['Delhi', 'New York', 'London', 'Toronto'][i % 4],
+})));
 
-nestedData = signal<any[]>([]);
+// nestedData = signal<any[]>([]);
 
 
 

@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { DemoCard, DemoFile } from '../core/demo-card/demo-card';
 import { DocIoList } from '../core/doc-io-list/doc-io-list';
-import { BaseOverlay, Button, ContextMenuButtonAction, ContextMenuButton, OverlayStore } from 'projects/ui-lib/src/public-api';
+import { BaseOverlay, Button, ContextMenuButton, ContextMenuButtonAction, OverlayStore } from 'projects/ui-lib/src/public-api';
 
 @Component({
   selector: 'app-overlay-demo',

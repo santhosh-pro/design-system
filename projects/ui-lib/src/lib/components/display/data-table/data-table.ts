@@ -13,7 +13,8 @@ import {
   ElementRef,
   ViewChild,
   OnDestroy,
-  effect
+  effect,
+  computed
 } from '@angular/core';
 import { Pagination, PaginationEvent } from '../../display/pagination/pagination';
 import { DatePipe } from '@angular/common';
@@ -21,7 +22,7 @@ import { StatusBadge } from '../../feedback/status-badge/status-badge';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BaseControlValueAccessor } from '../../../core/base-control-value-accessor';
 import { DynamicRenderer } from './dynamic-renderer';
-import { ContextMenuButtonAction, ContextMenuButton } from '../../overlay/context-menu-button/context-menu-button';
+import { ContextMenuButton, ContextMenuButtonAction } from '../../overlay/context-menu-button/context-menu-button';
 import { AppSvgIcon } from "../../misc/app-svg-icon/app-svg-icon";
 import { SortableTable, TableSortEvent } from './sortable-table';
 import { SearchField } from '../../forms/text/search-field/search-field';
@@ -45,46 +46,125 @@ import { resolveTemplateWithObject } from '../../../core/template-resolver';
   templateUrl: './data-table.html',
 })
 export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> implements OnInit, AfterViewInit, OnDestroy {
+
+  protected onValueReady(value: TableStateEvent): void {
+    this.applyInitialState(value);
+    this.stateChange.emit(value);
+  }
+
   @ContentChildren('filter') headerComponents!: QueryList<any>;
   @ViewChild('table', { static: false }) tableRef!: ElementRef;
 
-  // Inputs
+  // Core Data Inputs
   columnGroups = input.required<ColumnNode[]>();
-  pageSize = input(50);
-  enableHorizontallyScrollable = input(true);
-  enableClickableRows = input(false);
-  expandableComponent = input<any>();
-  enableSearch = input(true);
-  disableInitialLoad = input(false);
-  rowSelectionKey = input<string>('id');
-  enableRowSelection = input(false);
-  defaultSelectedKeys = input<any[]>([]);
-  initialValue = input<TableStateEvent>({ searchText: '' });
   data = input<T[]>([]);
   totalCount = input<number>(0);
-  enablePagination = input(true);
-  footerComponent = input<any>();
+
+  // State Integration Inputs
+  isLoading = input<boolean>(false);
+  hasError = input<boolean>(false);
+  errorMessage = input<string | null>(null);
+
+  // Configuration Inputs
+  pageSize = input<number>(50);
+  enableSearch = input<boolean>(true);
+  enablePagination = input<boolean>(true);
+  enableRowSelection = input<boolean>(false);
+  enableClickableRows = input<boolean>(false);
+  rowSelectionKey = input<string>('id');
+  defaultSelectedKeys = input<any[]>([]);
+  expandableComponent = input<any | null>(null);
+  footerComponent = input<any | null>(null);
+  enableHorizontallyScrollable = input<boolean>(true);
+  initialValue = input<TableStateEvent>({ searchText: '' });
+  showLoadingOnlyInitial = input<boolean>(true);
 
   // Outputs
   pageChange = output<PaginationEvent>();
   sortChange = output<TableSortEvent>();
   stateChange = output<TableStateEvent>();
-  action = output<TableActionEvent>(); 
-  rowClick = output<any>(); 
+  action = output<TableActionEvent>();
+  rowClick = output<T>();
   rowSelectionChange = output<any[]>();
   footerAction = output<TableActionEvent>();
 
-  // Signals
+  // Internal Signals
   private internalPageSize: number = this.pageSize();
   selectedIds = signal<any[]>([]);
   columnGroupsSignal: WritableSignal<ColumnNode[]> = signal([]);
-  headerHeight = signal(0);
+  headerHeight = signal<number>(0);
+  expandedRowIndex = signal<number | null>(null);
 
-  // Internal state
+  // Local Error State
+  private _hasLocalError = signal<boolean>(false);
+  private _localErrorMessage = signal<string | null>(null);
+
+  // Track if we've ever had data (for initial load detection)
+  private hasEverHadData = signal<boolean>(false);
+
+  // FIXED: Computed States - Correct initial loading detection
+  isInitialLoading = computed(() => {
+    // If showLoadingOnlyInitial is false, always show loading when isLoading=true
+    if (!this.showLoadingOnlyInitial()) {
+      return this.isLoading();
+    }
+    
+    // For initial load only: show loading spinner when isLoading=true AND (no data OR first time)
+    return this.isLoading() && (
+      this.data().length === 0 || 
+      !this.hasEverHadData()
+    );
+  });
+
+  isDataLoading = computed(() => {
+    // Show existing data during loading for subsequent loads when showLoadingOnlyInitial=true
+    return this.showLoadingOnlyInitial() && 
+           this.isLoading() && 
+           this.data().length > 0 && 
+           this.hasEverHadData();
+  });
+
+  isErrorState = computed(() => this.hasError() || this._hasLocalError());
+  isSuccess = computed(() => !this.isLoading() && !this.isErrorState() && this.columnGroups().length > 0);
+
+  // FIXED: Template State Logic - Prioritize loading states (TYPOS FIXED)
+  currentState = computed(() => {
+    // If table is not configured, show empty
+    if (!this.columnGroups() || this.columnGroups().length === 0) {
+      return 'empty';
+    }
+    
+    // PRIORITY 1: Show initial loading spinner (blocks content)
+    if (this.isInitialLoading()) {
+      return 'initializing';
+    }
+    
+    // PRIORITY 2: Show data during subsequent loading (no spinner, just data)
+    if (this.isDataLoading()) {
+      return 'loading';
+    }
+    
+    // PRIORITY 3: Show error state
+    if (this.isErrorState()) {
+      return 'error';
+    }
+    
+    // PRIORITY 4: Show success with data
+    if (this.isSuccess() && this.data().length > 0) {
+      return 'success';
+    }
+    
+    // PRIORITY 5: Show empty state
+    return 'empty';
+  });
+
+  // Change Detection
+  private previousDataLength = 0;
   private subscriptions: any[] = [];
   private lastStateChangeTimestamp = 0;
   private readonly debounceTimeMs = 200;
 
+  // State Management
   paginationEvent?: PaginationEvent;
   tableSortEvent?: TableSortEvent;
   searchText: string = '';
@@ -95,26 +175,51 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
 
   constructor(private cdr: ChangeDetectorRef) {
     super();
-    // Effect to react to data changes
+
+    // FIXED: Track data changes and initial load state
     effect(() => {
-      this.data(); // Access data to trigger effect
-      this.initializeItemControls();
-      this.updateSelectAllControl();
-      this.cdr.detectChanges();
+      const dataLength = this.data().length;
+      const isLoading = this.isLoading();
+      
+      // Only mark as having data if we're not currently loading
+      // This prevents false positives during initial load
+      if (dataLength > 0 && !isLoading && !this.hasEverHadData()) {
+        this.hasEverHadData.set(true);
+      }
+
+      // Clear error when data changes and not loading
+      if (dataLength !== this.previousDataLength && !isLoading) {
+        this.previousDataLength = dataLength;
+        this.clearLocalError();
+      }
+    });
+
+    // Auto-process column groups
+    effect(() => {
+      const columns = this.columnGroups();
+      if (columns?.length > 0) {
+        const updatedGroups = columns.map(node => this.cloneNodeWithVisibility(node));
+        this.columnGroupsSignal.set(updatedGroups);
+      }
+    });
+
+    // Initialize row selection
+    effect(() => {
+      if (this.enableRowSelection()) {
+        this.selectedIds.set([...this.defaultSelectedKeys()]);
+        this.initializeItemControls();
+        this.updateItemControls();
+        this.updateSelectAllControl();
+      }
     });
   }
 
-  // Lifecycle hooks
   ngOnInit(): void {
     const initialValue = this.initialValue();
     if (initialValue) {
       this.applyInitialState(initialValue);
     }
-    // Initialize column visibility and sync with signal
-    const updatedGroups = this.columnGroups().map(node => this.cloneNodeWithVisibility(node));
-    this.columnGroupsSignal.set(updatedGroups);
 
-    // Subscribe to selectAllControl changes
     this.subscriptions.push(
       this.selectAllControl.valueChanges.subscribe((checked) => {
         this.onSelectAllRows(checked);
@@ -123,22 +228,12 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
   }
 
   ngAfterViewInit(): void {
-    if (this.enableRowSelection() && this.defaultSelectedKeys().length > 0) {
-      this.selectedIds.set([...this.defaultSelectedKeys()]);
-      this.initializeItemControls();
-      this.updateItemControls();
-      this.updateSelectAllControl();
-      this.rowSelectionChange.emit(this.selectedIds());
-    }
-
-    // Initial pagination setup
     this.paginationEvent = {
       pageNumber: 1,
       pageSize: this.internalPageSize,
     };
     this.pageChange.emit(this.paginationEvent);
 
-    // Initial table state
     const tableStateEvent: TableStateEvent = {
       searchText: '',
       paginationEvent: this.paginationEvent,
@@ -146,24 +241,20 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
     };
     this.onValueChange(tableStateEvent);
 
-    // Subscribe to custom header component actions
-    this.headerComponents.forEach((component) => {
-      if (component.filtersChanged) {
-        const sub = component.filtersChanged.subscribe((newFilters: any) => {
-          const updatedTableStateEvent: TableStateEvent = {
-            searchText: this.searchText,
-            paginationEvent: this.paginationEvent,
-            tableSortEvent: this.tableSortEvent,
-          };
-          this.emitTableStateChanged(updatedTableStateEvent);
-        });
-        this.subscriptions.push(sub);
-      }
+    // Handle header components
+    this.headerComponents.changes.subscribe(() => {
+      this.subscriptions.forEach(sub => sub.unsubscribe());
+      this.headerComponents.forEach((component) => {
+        if (component.filtersChanged) {
+          const sub = component.filtersChanged.subscribe((newFilters: any) => {
+            this.onFiltersChanged();
+          });
+          this.subscriptions.push(sub);
+        }
+      });
     });
 
     this.updateHeaderHeight();
-
-    // Delay to ensure DOM is ready
     setTimeout(() => {
       this.cdr.detectChanges();
     }, 0);
@@ -173,10 +264,15 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
-  // State management
-  protected onValueReady(value: TableStateEvent): void {
-    this.applyInitialState(value);
-    this.stateChange.emit(value);
+  // State Management
+  private setLocalError(error: string): void {
+    this._hasLocalError.set(true);
+    this._localErrorMessage.set(error);
+  }
+
+  private clearLocalError(): void {
+    this._hasLocalError.set(false);
+    this._localErrorMessage.set(null);
   }
 
   private applyInitialState(value: TableStateEvent): void {
@@ -196,18 +292,20 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
     this.stateChange.emit(tableStateEvent);
   }
 
-  // Event handlers
+  // Event Handlers
   onSearchTextChanged(event: string | any): void {
     this.searchText = event;
     this.paginationEvent = {
       pageNumber: 1,
       pageSize: this.paginationEvent?.pageSize ?? this.internalPageSize
     };
+
     const tableStateEvent: TableStateEvent = {
       searchText: this.searchText,
       paginationEvent: this.paginationEvent,
       tableSortEvent: this.tableSortEvent,
     };
+    
     this.emitTableStateChanged(tableStateEvent);
     this.onValueChange(tableStateEvent);
   }
@@ -219,6 +317,7 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
       paginationEvent: event,
       tableSortEvent: this.tableSortEvent,
     };
+    
     this.pageChange.emit(event);
     this.emitTableStateChanged(tableStateEvent);
     this.onValueChange(tableStateEvent);
@@ -234,11 +333,49 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
       },
       tableSortEvent: event,
     };
+    
     this.sortChange.emit(event);
     this.emitTableStateChanged(tableStateEvent);
     this.onValueChange(tableStateEvent);
   }
 
+  onClearSearch(): void {
+    this.searchText = '';
+    this.paginationEvent = {
+      pageNumber: 1,
+      pageSize: this.internalPageSize
+    };
+
+    const tableStateEvent: TableStateEvent = {
+      searchText: '',
+      paginationEvent: this.paginationEvent,
+      tableSortEvent: this.tableSortEvent,
+    };
+    
+    this.emitTableStateChanged(tableStateEvent);
+    this.onValueChange(tableStateEvent);
+  }
+
+  onRetryLoad(): void {
+    const tableStateEvent: TableStateEvent = {
+      searchText: this.searchText,
+      paginationEvent: this.paginationEvent,
+      tableSortEvent: this.tableSortEvent,
+    };
+    this.emitTableStateChanged(tableStateEvent);
+    this.onValueChange(tableStateEvent);
+  }
+
+  onFiltersChanged(): void {
+    const tableStateEvent: TableStateEvent = {
+      searchText: this.searchText,
+      paginationEvent: this.paginationEvent,
+      tableSortEvent: this.tableSortEvent,
+    };
+    this.emitTableStateChanged(tableStateEvent);
+  }
+
+  // Row Selection Methods
   onRowSelectionChange(selected: boolean, item: T): void {
     const id = this.getItemId(item);
     let updatedIds: any[];
@@ -264,7 +401,7 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
       updatedIds = this.selectedIds().filter(id => !currentPageIds.includes(id));
     }
     this.selectedIds.set(updatedIds);
-    this.initializeItemControls(); // Reinitialize to ensure all controls are created
+    this.initializeItemControls();
     this.updateItemControls();
     this.updateSelectAllControl();
     this.rowSelectionChange.emit(this.selectedIds());
@@ -272,7 +409,7 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
   }
 
   private initializeItemControls(): void {
-    this.itemControls.clear(); // Clear existing controls to avoid duplicates
+    this.itemControls.clear();
     this.data().forEach((item) => {
       const control = new FormControl<boolean>(this.isRowSelected(item), { nonNullable: true });
       control.valueChanges.subscribe((checked) => {
@@ -289,15 +426,6 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
       const control = this.itemControls.get(item);
       if (control) {
         control.setValue(this.isRowSelected(item), { emitEvent: false });
-      } else {
-        // Create control if it doesn't exist
-        const newControl = new FormControl<boolean>(this.isRowSelected(item), { nonNullable: true });
-        newControl.valueChanges.subscribe((checked) => {
-          if (checked !== this.isRowSelected(item)) {
-            this.onRowSelectionChange(checked, item);
-          }
-        });
-        this.itemControls.set(item, newControl);
       }
     });
   }
@@ -307,40 +435,68 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
     this.selectAllControl.setValue(isAllSelected, { emitEvent: false });
   }
 
+  isRowSelected(item: any): boolean {
+    const id = this.getItemId(item);
+    return this.selectedIds().includes(id);
+  }
+
+  private getItemId(item: any): any {
+    const key = this.rowSelectionKey();
+    return key.split('.').reduce((acc, part) => acc && acc[part], item);
+  }
+
+  isAllSelected(): boolean {
+    if (this.data().length === 0) return false;
+    return this.data().every((item: any) => this.isRowSelected(item));
+  }
+
+  getItemControl(item: T): FormControl<boolean> {
+    let control = this.itemControls.get(item);
+    if (!control) {
+      control = new FormControl<boolean>(this.isRowSelected(item), { nonNullable: true });
+      control.valueChanges.subscribe((checked) => {
+        if (checked !== this.isRowSelected(item)) {
+          this.onRowSelectionChange(checked, item);
+        }
+      });
+      this.itemControls.set(item, control);
+    }
+    return control;
+  }
+
+  // Row Actions
+  onRowClicked(item: T): void {
+    this.rowClick.emit(item);
+  }
+
+  onRowExpandedClicked(i: number): void {
+    this.expandedRowIndex.set(this.expandedRowIndex() === i ? null : i);
+  }
+
+  onActionClicked(actionKey: string, item: any, mouseEvent: MouseEvent | null): void {
+    if (mouseEvent) {
+      mouseEvent.stopPropagation();
+    }
+    const tableActionEvent: TableActionEvent = {
+      actionKey,
+      item
+    };
+    this.action.emit(tableActionEvent);
+  }
+
+  onCellActionPerformed(event: TableActionEvent): void {
+    this.action.emit(event);
+  }
+
+  onRowActionPerformed(event: TableActionEvent): void {
+    this.action.emit(event);
+  }
+
   onFooterActionPerformed(event: TableActionEvent): void {
     this.footerAction.emit(event);
   }
 
-  // Helper methods
-  private cloneNodeWithVisibility(node: ColumnNode): ColumnNode {
-    if ('children' in node) {
-      return {
-        ...node,
-        children: node.children.map(child => this.cloneNodeWithVisibility(child))
-      };
-    } else {
-      return {
-        ...node,
-        visible: node.visible ?? true
-      };
-    }
-  }
-
-  private updateHeaderHeight(): void {
-    if (this.tableRef) {
-      const headers = this.tableRef.nativeElement.querySelectorAll('thead tr');
-      let height = 0;
-      headers.forEach((tr: HTMLElement) => {
-        height += tr.offsetHeight;
-      });
-      this.headerHeight.set(height);
-    }
-  }
-
-  getHeaderHeight(): number {
-    return this.headerHeight();
-  }
-
+  // Data Processing
   getPropertyValue(item: any, column: ColumnDef): any {
     if (column.displayTemplate) {
       return resolveTemplateWithObject(item, column.displayTemplate);
@@ -356,163 +512,6 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
     } else {
       return value;
     }
-  }
-
-  getCellClass(column: ColumnDef): string {
-    let classes = this.getAlignmentClass(column);
-    
-    if (column.type === 'actions') {
-      classes += ' sticky right-0 z-[40] bg-white shadow-[-2px_0_4px_rgba(0,0,0,0.1)] border-l-2 border-gray-300 w-32 min-w-[128px] max-w-[128px]';
-    } else {
-      classes += ' ' + this.getColumnWidthClass(column);
-    }
-    
-    return classes;
-  }
-
-  getHeaderThClass(cell: HeaderCell): string {
-    let classes = this.getAlignmentClass(cell.node);
-    
-    if (!this.isColumnGroup(cell.node) && (cell.node as ColumnDef).type === 'actions') {
-      classes += ' sticky right-0 z-[110] bg-gray-100 shadow-[-2px_0_4px_rgba(0,0,0,0.1)] border-l-2 border-gray-300 w-32 min-w-[128px] max-w-[128px]';
-    } else {
-      classes += ' ' + this.getColumnWidthClass(cell.node);
-    }
-    
-    if (this.isColumnGroup(cell.node) && cell.colspan > 1) {
-      classes += ' border-r-2 border-gray-400';
-    }
-    
-    return classes;
-  }
-
-  private getAlignmentClass(node: ColumnNode): string {
-    const alignment = node.alignment;
-    switch (alignment) {
-      case 'left':
-        return 'text-left';
-      case 'center':
-        return 'text-center';
-      case 'right':
-        return 'text-right';
-      default:
-        return 'text-left';
-    }
-  }
-
-  getFlexJustifyClass(cell: HeaderCell): string {
-    const alignment = cell.node.alignment;
-    switch (alignment) {
-      case 'left':
-        return 'justify-start';
-      case 'center':
-        return 'justify-center';
-      case 'right':
-        return 'justify-end';
-      default:
-        return 'justify-start';
-    }
-  }
-
-  getFlexJustify(column: ColumnDef): string {
-    switch (column.alignment) {
-      case 'left':
-        return 'justify-start';
-      case 'center':
-        return 'justify-center';
-      case 'right':
-        return 'justify-end';
-      default:
-        return 'justify-start';
-    }
-  }
-
-  getColumnWidthClass(node: ColumnNode): string {
-    if ('children' in node) return '';
-
-    const column = node as ColumnDef;
-    switch (column.type) {
-      case 'checkbox':
-        return 'w-12 min-w-[48px] max-w-[48px]';
-      case 'actions':
-        return 'w-32 min-w-[128px] max-w-[128px]';
-      default:
-        return 'w-40 min-w-[120px] max-w-[200px]';
-    }
-  }
-
-  getTableStyles(): string {
-    return `
-      /* Custom shadow for sticky elements */
-      .shadow-right {
-        box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
-      }
-      
-      /* Ensure proper table layout */
-      .table-fixed {
-        table-layout: fixed;
-      }
-      
-      /* Enhanced hover effects */
-      .group:hover .group-hover\\:bg-blue-50 {
-        background-color: rgb(239 246 255);
-      }
-      
-      .group:hover .group-hover\\:bg-blue-200 {
-        background-color: rgb(191 219 254);
-      }
-      
-      /* Context menu positioning fix */
-      app-context-menu-button {
-        position: relative;
-        z-index: 70;
-      }
-      
-      /* Ensure actions column stays fixed */
-      td[class*="actions"] {
-        position: sticky;
-        right: 0;
-        background: inherit;
-      }
-      
-      th[class*="actions"] {
-        position: sticky;
-        right: 0;
-        background: inherit;
-      }
-      
-      /* Better scrollbar styling */
-      .overflow-auto::-webkit-scrollbar {
-        height: 8px;
-        width: 8px;
-      }
-      
-      .overflow-auto::-webkit-scrollbar-track {
-        background: #f1f5f9;
-        border-radius: 4px;
-      }
-      
-      .overflow-auto::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 4px;
-      }
-      
-      .overflow-auto::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
-      }
-      
-      /* Fix for border gaps on scroll */
-      table {
-        border-collapse: separate;
-        border-spacing: 0;
-      }
-      
-      /* Ensure consistent border rendering */
-      td, th {
-        border-style: solid;
-        border-color: inherit;
-      }
-    `;
   }
 
   getBadgeProperty(item: any, column: ColumnDef): BadgeConfigProperty | null {
@@ -541,65 +540,7 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
     }));
   }
 
-  onActionClicked(actionKey: string, item: any, mouseEvent: MouseEvent | null): void {
-    if (mouseEvent) {
-      mouseEvent.stopPropagation();
-    }
-    const tableActionEvent: TableActionEvent = {
-      actionKey,
-      item
-    };
-    this.action.emit(tableActionEvent);
-  }
-
-  expandedRowIndex = signal<number | null>(null);
-
-  onRowExpandedClicked(i: number): void {
-    this.expandedRowIndex.set(this.expandedRowIndex() === i ? null : i);
-  }
-
-  onRowClicked(item: any): void {
-    this.rowClick.emit(item);
-  }
-
-  onCellActionPerformed(event: TableActionEvent): void {
-    this.action.emit(event);
-  }
-
-  onRowActionPerformed(event: TableActionEvent): void {
-    this.action.emit(event);
-  }
-
-  isRowSelected(item: any): boolean {
-    const id = this.getItemId(item);
-    return this.selectedIds().includes(id);
-  }
-
-  private getItemId(item: any): any {
-    const key = this.rowSelectionKey();
-    return key.split('.').reduce((acc, part) => acc && acc[part], item);
-  }
-
-  isAllSelected(): boolean {
-    if (this.data().length === 0) return false;
-    return this.data().every((item: any) => this.isRowSelected(item));
-  }
-
-  protected getItemControl(item: T): FormControl<boolean> {
-    let control = this.itemControls.get(item);
-    if (!control) {
-      control = new FormControl<boolean>(this.isRowSelected(item), { nonNullable: true });
-      control.valueChanges.subscribe((checked) => {
-        if (checked !== this.isRowSelected(item)) {
-          this.onRowSelectionChange(checked, item);
-        }
-      });
-      this.itemControls.set(item, control);
-    }
-    return control;
-  }
-
-  // Nested header utilities
+  // Header Processing
   getMaxDepth(): number {
     const nodes = this.columnGroupsSignal();
     let max = 1;
@@ -669,16 +610,123 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
     return 'children' in node;
   }
 
+  getHeaderRowSpan(): number {
+    return this.getMaxDepth();
+  }
+
+  // Styling & Layout
+  getCellClass(column: ColumnDef): string {
+    let classes = this.getAlignmentClass(column);
+    
+    if (column.type === 'actions') {
+      classes += ' sticky right-0 z-[40] bg-white shadow-[-2px_0_4px_rgba(0,0,0,0.1)] border-l-2 border-gray-300 w-32 min-w-[128px] max-w-[128px]';
+    } else {
+      classes += ' ' + this.getColumnWidthClass(column);
+    }
+    
+    return classes;
+  }
+
+  getHeaderThClass(cell: HeaderCell): string {
+    let classes = this.getAlignmentClass(cell.node);
+    
+    if (!this.isColumnGroup(cell.node) && (cell.node as ColumnDef).type === 'actions') {
+      classes += ' sticky right-0 z-[110] bg-gray-100 shadow-[-2px_0_4px_rgba(0,0,0,0.1)] border-l-2 border-gray-300 w-32 min-w-[128px] max-w-[128px]';
+    } else {
+      classes += ' ' + this.getColumnWidthClass(cell.node);
+    }
+    
+    if (this.isColumnGroup(cell.node) && cell.colspan > 1) {
+      classes += ' border-r-2 border-gray-400';
+    }
+    
+    return classes;
+  }
+
+  private getAlignmentClass(node: ColumnNode): string {
+    const alignment = node.alignment;
+    switch (alignment) {
+      case 'left': return 'text-left';
+      case 'center': return 'text-center';
+      case 'right': return 'text-right';
+      default: return 'text-left';
+    }
+  }
+
+  getFlexJustifyClass(cell: HeaderCell): string {
+    const alignment = cell.node.alignment;
+    switch (alignment) {
+      case 'left': return 'justify-start';
+      case 'center': return 'justify-center';
+      case 'right': return 'justify-end';
+      default: return 'justify-start';
+    }
+  }
+
+  getFlexJustify(column: ColumnDef): string {
+    switch (column.alignment) {
+      case 'left': return 'justify-start';
+      case 'center': return 'justify-center';
+      case 'right': return 'justify-end';
+      default: return 'justify-start';
+    }
+  }
+
+  getColumnWidthClass(node: ColumnNode): string {
+    if ('children' in node) return '';
+
+    const column = node as ColumnDef;
+    switch (column.type) {
+      case 'checkbox': return 'w-12 min-w-[48px] max-w-[48px]';
+      case 'actions': return 'w-32 min-w-[128px] max-w-[128px]';
+      default: return 'w-40 min-w-[120px] max-w-[200px]';
+    }
+  }
+
+  private updateHeaderHeight(): void {
+    if (this.tableRef) {
+      const headers = this.tableRef.nativeElement.querySelectorAll('thead tr');
+      let height = 0;
+      headers.forEach((tr: HTMLElement) => {
+        height += tr.offsetHeight;
+      });
+      this.headerHeight.set(height);
+    }
+  }
+
+  getHeaderHeight(): number {
+    return this.headerHeight();
+  }
+
   hasActionColumn(): boolean {
     return this.allLeafColumns().some(col => col.type === 'actions');
   }
 
-  getHeaderRowSpan(): number {
-    return this.getMaxDepth();
+  // Template Getters
+  getState(): 'initializing' | 'loading' | 'success' | 'error' | 'empty' {
+    return this.currentState();
+  }
+
+  getErrorMessage(): string | null {
+    return this.errorMessage() || this._localErrorMessage();
+  }
+
+  private cloneNodeWithVisibility(node: ColumnNode): ColumnNode {
+    if ('children' in node) {
+      return {
+        ...node,
+        children: node.children.map(child => this.cloneNodeWithVisibility(child))
+      };
+    } else {
+      return {
+        ...node,
+        visible: node.visible ?? true
+      };
+    }
   }
 }
 
-// Interfaces and types
+// Types & Interfaces
 export type ColumnNode = ColumnDef | ColumnGroup;
 
 export interface ColumnGroup {
@@ -743,7 +791,7 @@ export interface CustomRendererConfig {
 
 export interface ActionConfig {
   iconActions?: IconAction[];
-  threeDotMenuActions?: ContextMenuActionConfig[] | null | ((item: any) => ContextMenuActionConfig[]);
+  threeDotMenuActions?: ContextMenuActionConfig[] | ((item: any) => ContextMenuActionConfig[]) | null;
   textMenuActions?: ContextMenuActionConfig[] | null;
   components?: Type<any>[];
 }
