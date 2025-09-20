@@ -59,6 +59,14 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
   private lastStateChangeTimestamp = 0;
   private readonly debounceTimeMs = 200;
   expandedRowIndex: number = -1;
+  @ViewChild('root', { static: false }) rootEl!: ElementRef<HTMLElement>;
+
+  // Fixed pagination metrics
+  private resizeObserver?: ResizeObserver;
+  private onWinResize?: () => void;
+  private onWinScroll?: () => void;
+  private paginationLeft = signal<number>(0);
+  private paginationWidth = signal<number>(0);
 
   selectAllControl = new FormControl<boolean>(false, { nonNullable: true });
   itemControls = new Map<T, FormControl<boolean>>();
@@ -109,9 +117,28 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
     this.emitTableStateChanged(state);
     this.onValueChange(state);
     setTimeout(() => this.cdr.detectChanges());
+
+    // Setup fixed pagination sizing/positioning relative to component
+    if (isPlatformBrowser(this.platformId)) {
+      const update = () => this.updateFixedPaginationMetrics();
+      this.onWinResize = update;
+      this.onWinScroll = update;
+      window.addEventListener('resize', this.onWinResize);
+      window.addEventListener('scroll', this.onWinScroll, true);
+      if (this.rootEl?.nativeElement) {
+        this.resizeObserver = new ResizeObserver(update);
+        this.resizeObserver.observe(this.rootEl.nativeElement);
+      }
+      // Initial compute
+      setTimeout(update);
+    }
   }
 
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void {
+    if (this.onWinResize) window.removeEventListener('resize', this.onWinResize);
+    if (this.onWinScroll) window.removeEventListener('scroll', this.onWinScroll, true);
+    if (this.resizeObserver) this.resizeObserver.disconnect();
+  }
 
   // API parity helpers
   onSearchTextChanged(event: string | any): void {
@@ -288,5 +315,30 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
 
   hasDetailsToExpand(): boolean {
     return this.getExpandableDetailColumns().length > 0 || !!this.expandableComponent();
+  }
+
+  // Fixed pagination helpers
+  private updateFixedPaginationMetrics(): void {
+    try {
+      const el = this.rootEl?.nativeElement;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const left = rect.left + (window.scrollX || window.pageXOffset);
+      const width = rect.width;
+      if (width > 0) {
+        this.paginationLeft.set(left);
+        this.paginationWidth.set(width);
+      }
+    } catch {}
+  }
+
+  getFixedPaginationStyle(): { [k: string]: string } {
+    const left = this.paginationLeft();
+    const width = this.paginationWidth();
+    return {
+      left: `${left}px`,
+      width: `${width}px`,
+      bottom: '0px'
+    };
   }
 }

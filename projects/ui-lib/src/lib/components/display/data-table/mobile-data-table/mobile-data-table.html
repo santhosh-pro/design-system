@@ -1,4 +1,4 @@
-<div class="flex flex-col bg-white rounded-2xl overflow-hidden shadow-md border border-gray-200">
+<div #root class="flex flex-col bg-white rounded-2xl overflow-hidden shadow-md border border-gray-200">
   <!-- Search & Filters -->
   <div class="flex flex-col px-4 py-3 border-b border-gray-200 bg-white gap-3 items-stretch">
     @if (enableSearch()) {
@@ -110,9 +110,9 @@
   }
     </div>
 
-    <!-- Fixed bottom pagination (mobile only) -->
+    <!-- Fixed bottom pagination (mobile only, aligned to component bounds) -->
     @if (enablePagination()) {
-      <div class="md:hidden fixed bottom-0 inset-x-0 z-40 border-t border-gray-200 bg-white shadow-lg px-3 [padding-bottom:env(safe-area-inset-bottom)]">
+      <div class="md:hidden fixed z-40 border-t border-gray-200 bg-white/95 backdrop-blur px-3 pt-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] shadow-lg" [ngStyle]="getFixedPaginationStyle()">
         <ui-pagination [isSimple]="true" [pageSize]="pageSize()" [totalItems]="totalCount()" (pageChange)="onPageChange($event)"></ui-pagination>
       </div>
     }
