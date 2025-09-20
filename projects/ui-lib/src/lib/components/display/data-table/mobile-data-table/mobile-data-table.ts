@@ -10,6 +10,8 @@ import { BaseControlValueAccessor } from '../../../../core/base-control-value-ac
 import { ColumnNode, ColumnDef, TableActionEvent, TableStateEvent, ContextMenuActionConfig } from '../data-table';
 import { TableSortEvent } from '../sortable-table';
 import { SearchField } from '../../../forms/text/search-field/search-field';
+import { OverlayStore } from '../../../overlay/overlay';
+import { MobileFiltersOverlay } from './filters-overlay/filters-overlay';
 
 @Component({
   selector: 'ui-mobile-data-table',
@@ -62,6 +64,7 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
   private readonly debounceTimeMs = 200;
   expandedRowIndex: number = -1;
   @ViewChild('root', { static: false }) rootEl!: ElementRef<HTMLElement>;
+  @ViewChild('header', { static: false }) headerEl!: ElementRef<HTMLElement>;
 
   // Fixed pagination metrics
   private resizeObserver?: ResizeObserver;
@@ -69,6 +72,9 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
   private onWinScroll?: () => void;
   private paginationLeft = signal<number>(0);
   private paginationWidth = signal<number>(0);
+  private headerLeft = signal<number>(0);
+  private headerWidth = signal<number>(0);
+  private headerHeight = signal<number>(0);
 
   // Filters UI state (mobile-only)
   filtersExpanded = signal<boolean>(false);
@@ -76,7 +82,7 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
   selectAllControl = new FormControl<boolean>(false, { nonNullable: true });
   itemControls = new Map<T, FormControl<boolean>>();
 
-  constructor(private cdr: ChangeDetectorRef, @Inject(PLATFORM_ID) private platformId: Object) {
+  constructor(private cdr: ChangeDetectorRef, @Inject(PLATFORM_ID) private platformId: Object, private overlayStore: OverlayStore) {
     super();
 
     effect(() => {
@@ -123,7 +129,7 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
     this.onValueChange(state);
     setTimeout(() => this.cdr.detectChanges());
 
-    // Setup fixed pagination sizing/positioning relative to component
+    // Setup fixed header/pagination sizing/positioning relative to component
     if (isPlatformBrowser(this.platformId)) {
       const update = () => this.updateFixedPaginationMetrics();
       this.onWinResize = update;
@@ -333,6 +339,16 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
       if (width > 0) {
         this.paginationLeft.set(left);
         this.paginationWidth.set(width);
+        this.headerLeft.set(left);
+        this.headerWidth.set(width);
+      }
+
+      // Measure header height for padding compensation
+      const header = this.headerEl?.nativeElement;
+      if (header) {
+        const hRect = header.getBoundingClientRect();
+        const h = Math.round(hRect.height);
+        if (h > 0) this.headerHeight.set(h);
       }
     } catch {}
   }
@@ -347,7 +363,27 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
     };
   }
 
+  getFixedHeaderStyle(): { [k: string]: string } {
+    const left = this.headerLeft();
+    const width = this.headerWidth();
+    return {
+      left: `${left}px`,
+      width: `${width}px`,
+      top: '0px'
+    };
+  }
+
+  getFixedHeaderPadding(): number {
+    return this.headerHeight();
+  }
+
   toggleFilters(): void {
-    this.filtersExpanded.update(v => !v);
+    const tpl = this.filtersTemplate();
+    if (!tpl) return;
+    // Open as bottom-sheet overlay
+    this.overlayStore.openBackdrop(MobileFiltersOverlay, {
+      data: { title: 'Advanced filters', template: tpl },
+      backdropOptions: { showBackdrop: true, blur: true }
+    });
   }
 }

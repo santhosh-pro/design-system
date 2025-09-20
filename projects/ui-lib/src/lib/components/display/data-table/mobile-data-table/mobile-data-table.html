@@ -1,37 +1,22 @@
 <div #root class="flex flex-col bg-white rounded-2xl overflow-hidden shadow-md border border-gray-200">
-  <!-- Search & Filters (mobile sticky header) -->
-  <div class="flex flex-col px-4 py-3 border-b border-gray-200 bg-white/95 backdrop-blur gap-3 items-stretch sticky top-0 z-30 md:static md:z-auto md:bg-white md:backdrop-blur-0">
+  <!-- Search & Filters (mobile fixed header) -->
+  <div #header class="md:hidden fixed z-40 border-b border-gray-200 bg-white/95 backdrop-blur px-3 py-2 flex items-center gap-2" [ngStyle]="getFixedHeaderStyle()">
     @if (enableSearch()) {
-      <div class="w-full">
-        <ui-search-field placeholder="Search" type="search" [width]="'full'" (valueChange)="onSearchTextChanged($event)"></ui-search-field>
-      </div>
+      <ui-search-field class="flex-1" placeholder="Search" type="search" [width]="'full'" (valueChange)="onSearchTextChanged($event)"></ui-search-field>
     }
-    <!-- Advanced filters toggle (mobile) -->
     @if (filtersTemplate()) {
-      <div class="flex items-center justify-between">
-        <div class="text-[11px] uppercase tracking-wide text-gray-400">Advanced filters</div>
-        <button type="button" class="h-8 w-8 inline-flex items-center justify-center rounded-full text-gray-600 hover:text-gray-900 hover:bg-gray-100 active:bg-gray-100 transition-colors" aria-label="Toggle filters" (click)="toggleFilters()">
-          <svg class="w-5 h-5 transition-transform duration-200" [class.rotate-180]="filtersExpanded()" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd" />
-          </svg>
-        </button>
-      </div>
-      @if (filtersExpanded()) {
-        <div class="flex flex-col gap-2 items-stretch">
-          <ng-container [ngTemplateOutlet]="filtersTemplate()!"></ng-container>
-        </div>
-      }
-    } @else {
-      <div class="flex flex-col gap-2 items-stretch">
-        <ng-content></ng-content>
-      </div>
+      <button type="button" class="shrink-0 p-2 text-gray-600 hover:text-gray-900" (click)="toggleFilters()" aria-label="Open advanced filters">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 6h18M6 12h12m-7 6h2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
     }
   </div>
 
   <!-- States & List -->
   <div class="relative">
     <!-- Add bottom padding so fixed pagination doesn't overlap content on mobile -->
-    <div class="pb-20 md:pb-0">
+  <div class="pt-[var(--ui-mobile-header-h,0px)] pb-20 md:pt-0 md:pb-0" [style.--ui-mobile-header-h.px]="getFixedHeaderPadding()">
   @if (hasError()) {
     <div class="p-8 flex items-center justify-center">
       <div class="text-center space-y-3">

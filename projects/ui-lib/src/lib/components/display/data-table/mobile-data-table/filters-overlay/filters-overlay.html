@@ -1,0 +1,21 @@
+<div class="w-full h-full flex flex-col bg-white">
+  <div class="py-2 px-4 border-b border-gray-200 sticky top-0 bg-white">
+    <div class="mx-auto w-10 h-1.5 rounded-full bg-gray-300 mb-2"></div>
+    <div class="flex items-center justify-between">
+      <h3 class="text-base font-semibold text-gray-900">{{ data.title || 'Filters' }}</h3>
+      <button type="button" class="h-8 w-8 inline-flex items-center justify-center rounded-full text-gray-600 hover:text-gray-900 hover:bg-gray-100" (click)="close()" aria-label="Close">
+        <svg class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 8.586L4.293 2.879A1 1 0 102.879 4.293L8.586 10l-5.707 5.707a1 1 0 101.414 1.414L10 11.414l5.707 5.707a1 1 0 001.414-1.414L11.414 10l5.707-5.707A1 1 0 0015.707 2.88L10 8.586z" clip-rule="evenodd"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="flex-1 overflow-y-auto p-4">
+    <ng-container [ngTemplateOutlet]="data.template"></ng-container>
+  </div>
+
+  <div class="border-t border-gray-200 p-3 bg-white sticky bottom-0">
+    <button type="button" class="w-full px-4 py-2 rounded-lg text-white bg-primary-600 hover:bg-primary-700 active:bg-primary-700/90 transition" (click)="close()">Apply</button>
+  </div>
+</div>
