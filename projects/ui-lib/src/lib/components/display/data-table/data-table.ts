@@ -30,6 +30,8 @@ import { SortableTable, TableSortEvent } from './sortable-table';
 import { SearchField } from '../../forms/text/search-field/search-field';
 import { resolveTemplateWithObject } from '../../../core/template-resolver';
 import { TableCellRenderer } from './table-cell-renderer/table-cell-renderer';
+import { OverlayStore } from '../../overlay/overlay';
+import { MobileFiltersOverlay } from './mobile-data-table/filters-overlay/filters-overlay';
 
 // Import refactored components
 
@@ -189,7 +191,7 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
   selectAllControl = new FormControl<boolean>(false, { nonNullable: true });
   itemControls = new Map<T, FormControl<boolean>>();
 
-  constructor(private cdr: ChangeDetectorRef, @Inject(PLATFORM_ID) private platformId: Object) {
+  constructor(private cdr: ChangeDetectorRef, @Inject(PLATFORM_ID) private platformId: Object, private overlayStore: OverlayStore) {
     super();
 
     // Track data changes and initial load state
@@ -413,6 +415,26 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
       tableSortEvent: this.tableSortEvent,
     };
     this.emitTableStateChanged(tableStateEvent);
+  }
+
+  // Advanced filters overlay: right side panel on desktop, fullscreen on small screens
+  toggleFilters(tpl?: TemplateRef<any>): void {
+    tpl = tpl ?? this.filtersTemplate() ?? undefined as any;
+    if (!tpl) return;
+    const data = { title: 'Advanced filters', template: tpl };
+    if (this.isMobile()) {
+      this.overlayStore.openFullScreen(MobileFiltersOverlay, {
+        data,
+        backdropOptions: { showBackdrop: true, blur: true }
+      });
+    } else {
+      this.overlayStore.openSidePanelRight(MobileFiltersOverlay, {
+        widthInPx: 380,
+        disableClose: false,
+        data,
+        backdropOptions: { showBackdrop: true, blur: true }
+      });
+    }
   }
 
   // Row Selection Methods

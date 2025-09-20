@@ -311,10 +311,21 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
   toggleFilters(): void {
     const tpl = this.filtersTemplate();
     if (!tpl) return;
-    // Open as bottom-sheet overlay
-    this.overlayStore.openBackdrop(MobileFiltersOverlay, {
-      data: { title: 'Advanced filters', template: tpl },
-      backdropOptions: { showBackdrop: true, blur: true }
-    });
+    const data = { title: 'Advanced filters', template: tpl };
+    if (isPlatformBrowser(this.platformId) && window.matchMedia('(max-width: 768px)').matches) {
+      // Small screens: fullscreen overlay
+      this.overlayStore.openFullScreen(MobileFiltersOverlay, {
+        data,
+        backdropOptions: { showBackdrop: true, blur: true }
+      });
+    } else {
+      // Larger screens: right side panel
+      this.overlayStore.openSidePanelRight(MobileFiltersOverlay, {
+        widthInPx: 380,
+        disableClose: false,
+        data,
+        backdropOptions: { showBackdrop: true, blur: true }
+      });
+    }
   }
 }

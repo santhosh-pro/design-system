@@ -6,6 +6,10 @@
       @if (enableSearch()) {
         <ui-search-field class="flex-1" placeholder="Search" type="search" [width]="'full'" (valueChange)="onSearchTextChanged($event)"></ui-search-field>
       }
+      <!-- Inline actions (projected) on mobile -->
+      <div class="flex items-center gap-2 overflow-x-auto">
+        <ng-content select="[table-action]"></ng-content>
+      </div>
       @if (filtersTemplate()) {
         <button type="button" class="shrink-0 p-2 text-gray-600 hover:text-gray-900" (click)="toggleFilters()" aria-label="Open advanced filters">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

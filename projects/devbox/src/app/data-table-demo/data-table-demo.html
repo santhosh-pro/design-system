@@ -13,11 +13,11 @@
         (stateChange)="onTableStateChanged($event)">
 
         <!-- Multiple filter fields to test responsive layout -->
-        <ui-text-field placeholder="Status Filter" [width]="'sm'"></ui-text-field>
+         <div table-filter>
+        <ui-month-year-picker [label]="'Select Month and Year'" [width]="'full'"></ui-month-year-picker>
         <ui-text-field placeholder="Role Filter" [width]="'sm'"></ui-text-field>
-        <button class="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors whitespace-nowrap text-sm font-medium h-10 flex items-center justify-center">
-          Apply Filters
-        </button>
+
+        </div>
       </ui-responsive-data-table>
 
 </div>

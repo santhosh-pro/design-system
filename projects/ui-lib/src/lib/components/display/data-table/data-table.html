@@ -3,7 +3,7 @@
 
   <!-- Search Bar -->
   <div
-    class="flex flex-col lg:flex-row px-3 py-2 border-b border-gray-200 bg-white flex-shrink-0 gap-3 lg:gap-4 items-stretch lg:items-end">
+    class="flex flex-col sm:flex-row px-3 py-2 border-b border-gray-200 bg-white flex-shrink-0 gap-3 sm:gap-4 items-stretch sm:items-end">
     @if (enableSearch()) {
     <div class="flex-1 min-w-0">
       <ui-search-field placeholder="Search..." type="search" [width]="'md'" (valueChange)="onSearchTextChanged($event)"
@@ -11,12 +11,28 @@
       </ui-search-field>
     </div>
     }
-    <!-- Filter Fields Container -->
+    <!-- Actions and Filters Controls -->
     <div class="flex flex-col sm:flex-row gap-2 lg:gap-3 items-stretch sm:items-end lg:flex-shrink-0">
+      <!-- Inline actions slot: visible in header -->
+      <div class="flex items-end gap-2 sm:ml-auto sm:justify-end flex-wrap max-w-full overflow-x-auto">
+        <ng-content select="[table-action]"></ng-content>
+      </div>
+
+      <!-- Capture filters content for overlay only (not shown inline) -->
+      <ng-template #projectedFiltersTpl>
+        <ng-content select="[table-filter]"></ng-content>
+      </ng-template>
+
+      <!-- Advanced Filters trigger (uses filtersTemplate input provided by parent like ui-responsive-data-table) -->
       @if (filtersTemplate()) {
-        <ng-container [ngTemplateOutlet]="filtersTemplate()!"></ng-container>
-      } @else {
-        <ng-content></ng-content>
+        <button type="button"
+                class="inline-flex items-center gap-1.5 self-end sm:self-auto px-2 py-1.5 rounded-lg border border-gray-300 text-gray-700 hover:text-gray-900 hover:bg-gray-100 active:bg-gray-100 transition-colors"
+                (click)="toggleFilters()" aria-label="Open advanced filters">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 6h18M6 12h12m-7 6h2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="text-xs font-medium">Filters</span>
+        </button>
       }
     </div>
   </div>
