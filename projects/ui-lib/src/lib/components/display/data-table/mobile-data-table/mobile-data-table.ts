@@ -64,17 +64,8 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
   private readonly debounceTimeMs = 200;
   expandedRowIndex: number = -1;
   @ViewChild('root', { static: false }) rootEl!: ElementRef<HTMLElement>;
-  @ViewChild('header', { static: false }) headerEl!: ElementRef<HTMLElement>;
 
-  // Fixed pagination metrics
-  private resizeObserver?: ResizeObserver;
-  private onWinResize?: () => void;
-  private onWinScroll?: () => void;
-  private paginationLeft = signal<number>(0);
-  private paginationWidth = signal<number>(0);
-  private headerLeft = signal<number>(0);
-  private headerWidth = signal<number>(0);
-  private headerHeight = signal<number>(0);
+  // Internal scroll layout: no viewport-fixed metrics needed
 
   // Filters UI state (mobile-only)
   filtersExpanded = signal<boolean>(false);
@@ -129,26 +120,11 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
     this.onValueChange(state);
     setTimeout(() => this.cdr.detectChanges());
 
-    // Setup fixed header/pagination sizing/positioning relative to component
-    if (isPlatformBrowser(this.platformId)) {
-      const update = () => this.updateFixedPaginationMetrics();
-      this.onWinResize = update;
-      this.onWinScroll = update;
-      window.addEventListener('resize', this.onWinResize);
-      window.addEventListener('scroll', this.onWinScroll, true);
-      if (this.rootEl?.nativeElement) {
-        this.resizeObserver = new ResizeObserver(update);
-        this.resizeObserver.observe(this.rootEl.nativeElement);
-      }
-      // Initial compute
-      setTimeout(update);
-    }
+    // No viewport-fixed listeners required; scrolling is contained within the component
   }
 
   ngOnDestroy(): void {
-    if (this.onWinResize) window.removeEventListener('resize', this.onWinResize);
-    if (this.onWinScroll) window.removeEventListener('scroll', this.onWinScroll, true);
-    if (this.resizeObserver) this.resizeObserver.disconnect();
+    // Nothing to clean up for viewport-fixed listeners
   }
 
   // API parity helpers
@@ -328,54 +304,7 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
     return this.getExpandableDetailColumns().length > 0 || !!this.expandableComponent();
   }
 
-  // Fixed pagination helpers
-  private updateFixedPaginationMetrics(): void {
-    try {
-      const el = this.rootEl?.nativeElement;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const left = rect.left + (window.scrollX || window.pageXOffset);
-      const width = rect.width;
-      if (width > 0) {
-        this.paginationLeft.set(left);
-        this.paginationWidth.set(width);
-        this.headerLeft.set(left);
-        this.headerWidth.set(width);
-      }
-
-      // Measure header height for padding compensation
-      const header = this.headerEl?.nativeElement;
-      if (header) {
-        const hRect = header.getBoundingClientRect();
-        const h = Math.round(hRect.height);
-        if (h > 0) this.headerHeight.set(h);
-      }
-    } catch {}
-  }
-
-  getFixedPaginationStyle(): { [k: string]: string } {
-    const left = this.paginationLeft();
-    const width = this.paginationWidth();
-    return {
-      left: `${left}px`,
-      width: `${width}px`,
-      bottom: '0px'
-    };
-  }
-
-  getFixedHeaderStyle(): { [k: string]: string } {
-    const left = this.headerLeft();
-    const width = this.headerWidth();
-    return {
-      left: `${left}px`,
-      width: `${width}px`,
-      top: '0px'
-    };
-  }
-
-  getFixedHeaderPadding(): number {
-    return this.headerHeight();
-  }
+  // No fixed header/pagination calculations needed
 
   toggleFilters(): void {
     const tpl = this.filtersTemplate();

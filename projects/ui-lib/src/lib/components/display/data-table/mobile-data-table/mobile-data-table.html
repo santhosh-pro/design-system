@@ -1,6 +1,6 @@
 <div #root class="flex flex-col bg-white rounded-2xl overflow-hidden shadow-md border border-gray-200">
-  <!-- Search & Filters (mobile fixed header) -->
-  <div #header class="md:hidden fixed z-40 border-b border-gray-200 bg-white/95 backdrop-blur px-3 py-2 flex items-center gap-2" [ngStyle]="getFixedHeaderStyle()">
+  <!-- Search & Filters (mobile sticky inside component) -->
+  <div class="md:hidden sticky top-0 z-10 border-b border-gray-200 bg-white/95 backdrop-blur px-3 py-2 flex items-center gap-2">
     @if (enableSearch()) {
       <ui-search-field class="flex-1" placeholder="Search" type="search" [width]="'full'" (valueChange)="onSearchTextChanged($event)"></ui-search-field>
     }
@@ -15,8 +15,8 @@
 
   <!-- States & List -->
   <div class="relative">
-    <!-- Add bottom padding so fixed pagination doesn't overlap content on mobile -->
-  <div class="pt-[var(--ui-mobile-header-h,0px)] pb-20 md:pt-0 md:pb-0" [style.--ui-mobile-header-h.px]="getFixedHeaderPadding()">
+    <!-- Internal scroll area ensures header/pagination stay put within the card -->
+    <div class="pb-16 md:pb-0">
   @if (hasError()) {
     <div class="p-8 flex items-center justify-center">
       <div class="text-center space-y-3">
@@ -110,9 +110,9 @@
   }
     </div>
 
-    <!-- Fixed bottom pagination (mobile only, aligned to component bounds) -->
+    <!-- Sticky bottom pagination (mobile only, within component) -->
     @if (enablePagination() || alwaysShowPagination()) {
-      <div class="md:hidden fixed z-40 border-t border-gray-200 bg-white/95 backdrop-blur px-3 pt-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] shadow-lg" [ngStyle]="getFixedPaginationStyle()">
+      <div class="md:hidden sticky bottom-0 z-10 border-t border-gray-200 bg-white/95 backdrop-blur px-3 pt-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] shadow-lg">
         <ui-pagination [isSimple]="true" [pageSize]="pageSize()" [totalItems]="totalCount()" (pageChange)="onPageChange($event)"></ui-pagination>
       </div>
     }
