@@ -7,7 +7,7 @@
 
 
     <ui-responsive-data-table [columnGroups]="nestedColumns()" [data]="nestedData()" [enableRowSelection]="true"  [showLoadingOnlyInitial]="false" [isLoading]="false"
-        [rowSelectionKey]="'name'" [footerComponent]="ExpandRowDemo" [enablePagination]="true" [pageSize]="10"
+        [rowSelectionKey]="'name'" [footerComponent]="ExpandRowDemo" [enablePagination]="true" [pageSize]="10" [(pageNumber)]="pageNumber"
         [totalCount]="nestedData().length" [enableSearch]="true" [formControl]="basicControl" [expandableComponent]="ExpandRowDemo"
         (rowSelectionChange)="onRowSelectionChange($event)"
       [enableFilters]="true" [filtersApplied]="filtersApplied()" (clearFilters)="onClearFilters()" (applyFilters)="onApplyFilters()"

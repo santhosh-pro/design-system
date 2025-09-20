@@ -361,8 +361,8 @@
     </ui-dynamic-renderer>
     }
 
-    @if (enablePagination()) {
-    <ui-pagination [pageSize]="pageSize()" [totalItems]="totalCount()" (pageChange)="onPageChange($event)">
+  @if (enablePagination()) {
+  <ui-pagination [(pageNumber)]="pageNumber" [pageSize]="pageSize()" [totalItems]="totalCount()" (pageChange)="onPageChange($event)">
     </ui-pagination>
     }
 

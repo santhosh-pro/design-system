@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, ElementRef, inject, signal, input, output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, ElementRef, inject, signal, input, output, model} from '@angular/core';
 import {FormsModule} from "@angular/forms";
 import {NgClass} from "@angular/common";
 
@@ -24,8 +24,9 @@ export class Pagination implements OnChanges {
   pageChange = output<PaginationEvent>();
   // Optional two-way binding support: [(pageSize)]
   pageSizeChange = output<number>();
-
-  currentPage: number = 1;
+  // Two-way bindable page number using signal models API
+  // Usage from parent: <ui-pagination [(pageNumber)]="page"></ui-pagination>
+  pageNumber = model<number>(1);
   // Internal state decoupled from @Input to avoid parent reset on change detection
   selectedPageSize: number = this.pageSize;
 
@@ -46,26 +47,26 @@ export class Pagination implements OnChanges {
 
   get startItem(): number {
     const size = this.selectedPageSize;
-    return this.totalItems() === 0 ? 0 : (this.currentPage - 1) * size + 1;
+    return this.totalItems() === 0 ? 0 : (this.pageNumber() - 1) * size + 1;
   }
 
   get endItem(): number {
     const size = this.selectedPageSize;
-    return Math.min(this.currentPage * size, this.totalItems());
+    return Math.min(this.pageNumber() * size, this.totalItems());
   }
 
   changePageSize(newSize: number): void {
     this.selectedPageSize = newSize;
     // Reflect change to input (for consumers using [(pageSize)])
     this.pageSizeChange.emit(newSize);
-    this.currentPage = 1; // Reset to first page when page size changes
+    this.pageNumber.set(1); // Reset to first page when page size changes
     this.emitPageChange();
     this.closeMenu();
   }
 
   goToPage(page: number): void {
     if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
+      this.pageNumber.set(page);
       this.emitPageChange();
     }
   }
@@ -79,19 +80,19 @@ export class Pagination implements OnChanges {
   }
 
   goToNextPage(): void {
-    if (this.currentPage < this.totalPages) {
-      this.goToPage(this.currentPage + 1);
+    if (this.pageNumber() < this.totalPages) {
+      this.goToPage(this.pageNumber() + 1);
     }
   }
 
   goToPreviousPage(): void {
-    if (this.currentPage > 1) {
-      this.goToPage(this.currentPage - 1);
+    if (this.pageNumber() > 1) {
+      this.goToPage(this.pageNumber() - 1);
     }
   }
 
   emitPageChange(): void {
-    this.pageChange.emit({ pageNumber: this.currentPage, pageSize: this.selectedPageSize });
+    this.pageChange.emit({ pageNumber: this.pageNumber(), pageSize: this.selectedPageSize });
   }
 
   // Dropdown controls

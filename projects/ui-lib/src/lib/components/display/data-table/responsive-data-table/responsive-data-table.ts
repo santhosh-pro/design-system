@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Inject, PLATFORM_ID, TemplateRef, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, PLATFORM_ID, TemplateRef, input, output, signal, model } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { DataTable, ColumnNode, TableActionEvent, TableStateEvent } from '../data-table';
 import { MobileDataTable } from '../mobile-data-table/mobile-data-table';
@@ -38,6 +38,7 @@ export class ResponsiveDataTable<T> extends BaseControlValueAccessor<TableStateE
   enableHorizontallyScrollable = input<boolean>(true);
   initialValue = input<TableStateEvent>({ searchText: '' });
   showLoadingOnlyInitial = input<boolean>(true);
+  resetPageOnQueryChange = input<boolean>(true);
 
   // Projected filters support
   filtersTemplate = input<TemplateRef<any> | null>(null);
@@ -54,6 +55,8 @@ export class ResponsiveDataTable<T> extends BaseControlValueAccessor<TableStateE
   applyFilters = output<void>();
 
   isMobile = signal(false);
+  // Expose pageNumber for parent; propagate to underlying table components
+  pageNumber = model<number>(1);
   private cvaValue = signal<TableStateEvent | null>(null);
   private mediaQueryList?: MediaQueryList;
   private updateMobile?: () => void;

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, ContentChildren, ElementRef, Inject, OnDestroy, OnInit, PLATFORM_ID, QueryList, TemplateRef, Type, ViewChild, ChangeDetectorRef, input, output, signal, computed, effect } from '@angular/core';
+import { AfterViewInit, Component, ContentChildren, ElementRef, Inject, OnDestroy, OnInit, PLATFORM_ID, QueryList, TemplateRef, Type, ViewChild, ChangeDetectorRef, input, output, signal, computed, effect, model } from '@angular/core';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { isPlatformBrowser } from '@angular/common';
 import { Pagination, PaginationEvent } from '../../../display/pagination/pagination';
@@ -48,6 +48,8 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
   filtersTemplate = input<TemplateRef<any> | null>(null);
   // Mobile: constrain height so only content scrolls
   mobileScrollMaxHeight = input<string>('80dvh');
+  // Control automatic page reset on search/sort/clear
+  resetPageOnQueryChange = input<boolean>(true);
 
   // Outputs
   pageChange = output<PaginationEvent>();
@@ -59,6 +61,9 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
   footerAction = output<TableActionEvent>();
   clearFilters = output<void>();
   applyFilters = output<void>();
+
+  // Two-way page number for parent control
+  pageNumber = model<number>(1);
 
   // Local state
   selectedIds = signal<any[]>([]);
@@ -120,7 +125,7 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
   }
 
   ngAfterViewInit(): void {
-    this.paginationEvent = { pageNumber: 1, pageSize: this.pageSize() };
+    this.paginationEvent = { pageNumber: this.pageNumber(), pageSize: this.pageSize() };
     const state: TableStateEvent = { searchText: '', paginationEvent: this.paginationEvent, tableSortEvent: this.tableSortEvent };
     this.pageChange.emit(this.paginationEvent);
     this.emitTableStateChanged(state);
@@ -137,7 +142,10 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
   // API parity helpers
   onSearchTextChanged(event: string | any): void {
     this.searchText = event;
-    this.paginationEvent = { pageNumber: 1, pageSize: this.paginationEvent?.pageSize ?? this.pageSize() };
+    const shouldReset = this.resetPageOnQueryChange();
+    const nextPage = shouldReset ? 1 : this.pageNumber();
+    this.paginationEvent = { pageNumber: nextPage, pageSize: this.paginationEvent?.pageSize ?? this.pageSize() };
+    if (shouldReset) this.pageNumber.set(1);
     const state: TableStateEvent = { searchText: this.searchText, paginationEvent: this.paginationEvent, tableSortEvent: this.tableSortEvent };
     this.emitTableStateChanged(state);
     this.onValueChange(state);
@@ -145,6 +153,9 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
 
   onPageChange(event: PaginationEvent): void {
     this.paginationEvent = event;
+    if (event.pageNumber != null) {
+      this.pageNumber.set(event.pageNumber);
+    }
     const state: TableStateEvent = { searchText: this.searchText, paginationEvent: event, tableSortEvent: this.tableSortEvent };
     this.pageChange.emit(event);
     this.emitTableStateChanged(state);

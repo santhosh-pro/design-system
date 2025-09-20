@@ -16,6 +16,8 @@ export class DataTableDemo {
 
   ExpandRowDemo=ExpandRowDemo;
 
+  pageNumber = signal(2);
+
    menus = signal<SideMenuItem[]>([
 
     // {

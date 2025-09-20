@@ -16,7 +16,8 @@ import {
   effect,
   computed,
   Inject,
-  PLATFORM_ID
+  PLATFORM_ID,
+  model
 } from '@angular/core';
 import { TemplateRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
@@ -93,6 +94,8 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
   showLoadingOnlyInitial = input<boolean>(true);
   // Optional filters template for wrapper projection
   filtersTemplate = input<TemplateRef<any> | null>(null);
+  // Control automatic page reset on search/sort/clear
+  resetPageOnQueryChange = input<boolean>(true);
 
   // Outputs
   pageChange = output<PaginationEvent>();
@@ -106,6 +109,9 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
   clearFilters = output<void>();
   // Apply filters action
   applyFilters = output<void>();
+
+  // Expose current page for two-way binding from parents via [(pageNumber)]
+  pageNumber = model<number>(1);
 
   // Internal Signals
   private internalPageSize: number = this.pageSize();
@@ -274,7 +280,7 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
 
   ngAfterViewInit(): void {
     this.paginationEvent = {
-      pageNumber: 1,
+      pageNumber: this.pageNumber(),
       pageSize: this.internalPageSize,
     };
     this.pageChange.emit(this.paginationEvent);
@@ -328,6 +334,9 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
     if (value) {
       this.searchText = value.searchText ?? '';
       this.paginationEvent = value.paginationEvent;
+      if (value.paginationEvent?.pageNumber != null) {
+        this.pageNumber.set(value.paginationEvent.pageNumber);
+      }
       this.tableSortEvent = value.tableSortEvent;
     }
   }
@@ -347,10 +356,13 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
   }
   onSearchTextChanged(event: string | any): void {
     this.searchText = event;
+    const shouldReset = this.resetPageOnQueryChange();
+    const nextPage = shouldReset ? 1 : this.pageNumber();
     this.paginationEvent = {
-      pageNumber: 1,
+      pageNumber: nextPage,
       pageSize: this.paginationEvent?.pageSize ?? this.internalPageSize
     };
+    if (shouldReset) this.pageNumber.set(1);
 
     const tableStateEvent: TableStateEvent = {
       searchText: this.searchText,
@@ -364,6 +376,9 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
 
   onPageChange(event: PaginationEvent): void {
     this.paginationEvent = event;
+    if (event.pageNumber != null) {
+      this.pageNumber.set(event.pageNumber);
+    }
     const tableStateEvent: TableStateEvent = {
       searchText: this.searchText,
       paginationEvent: event,
@@ -377,14 +392,17 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
 
   onSortChanged(event: TableSortEvent): void {
     this.tableSortEvent = event;
+    const shouldReset = this.resetPageOnQueryChange();
+    const nextPage = shouldReset ? 1 : this.pageNumber();
     const tableStateEvent: TableStateEvent = {
       searchText: this.searchText,
       paginationEvent: {
-        pageNumber: 1,
+        pageNumber: nextPage,
         pageSize: this.paginationEvent?.pageSize ?? this.internalPageSize
       },
       tableSortEvent: event,
     };
+    if (shouldReset) this.pageNumber.set(1);
     
     this.sortChange.emit(event);
     this.emitTableStateChanged(tableStateEvent);
@@ -393,10 +411,13 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
 
   onClearSearch(): void {
     this.searchText = '';
+    const shouldReset = this.resetPageOnQueryChange();
+    const nextPage = shouldReset ? 1 : this.pageNumber();
     this.paginationEvent = {
-      pageNumber: 1,
+      pageNumber: nextPage,
       pageSize: this.internalPageSize
     };
+    if (shouldReset) this.pageNumber.set(1);
 
     const tableStateEvent: TableStateEvent = {
       searchText: '',

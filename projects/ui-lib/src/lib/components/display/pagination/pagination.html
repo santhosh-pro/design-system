@@ -47,8 +47,8 @@
     <div class="flex items-center gap-1">
     <button
       class="px-1 py-0.5 text-neutral-500 rounded cursor-pointer disabled:text-neutral-500 disabled:cursor-not-allowed"
-      [ngClass]="{ 'opacity-50': currentPage === 1 }"
-      [disabled]="currentPage === 1"
+      [ngClass]="{ 'opacity-50': pageNumber() === 1 }"
+      [disabled]="pageNumber() === 1"
       (click)="goToFirstPage()">
       <svg class="text-neutral-500 h-[18px] w-[18px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
         <path d="M18.41 16.59L13.82 12L18.41 7.41L17 6L11 12L17 18L18.41 16.59ZM6 6H8V18H6V6Z" fill="currentColor"/>
@@ -57,8 +57,8 @@
 
     <button
       class="px-1 py-0.5 text-neutral-500 rounded cursor-pointer disabled:text-neutral-500 disabled:cursor-not-allowed"
-      [ngClass]="{ 'opacity-50': currentPage === 1 }"
-      [disabled]="currentPage === 1"
+      [ngClass]="{ 'opacity-50': pageNumber() === 1 }"
+      [disabled]="pageNumber() === 1"
       (click)="goToPreviousPage()">
       <svg class="text-neutral-500 h-[18px] w-[18px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
         <path d="M15.41 16.58L10.83 12L15.41 7.41L14 6L8 12L14 18L15.41 16.58Z" fill="currentColor"/>
@@ -67,8 +67,8 @@
 
     <button
       class="px-1 py-0.5 text-neutral-500 rounded cursor-pointer disabled:text-neutral-500 disabled:cursor-not-allowed"
-      [ngClass]="{ 'opacity-50': currentPage === totalPages }"
-      [disabled]="currentPage === totalPages"
+      [ngClass]="{ 'opacity-50': pageNumber() === totalPages }"
+      [disabled]="pageNumber() === totalPages"
       (click)="goToNextPage()">
       <svg class="text-neutral-500 h-[18px] w-[18px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
         <path d="M8.59 16.58L13.17 12L8.59 7.41L10 6L16 12L10 18L8.59 16.58Z" fill="currentColor"/>
@@ -77,8 +77,8 @@
 
     <button
       class="px-1 py-0.5 text-neutral-500 rounded cursor-pointer disabled:text-neutral-500 disabled:cursor-not-allowed"
-      [ngClass]="{ 'opacity-50': currentPage === totalPages }"
-      [disabled]="currentPage === totalPages"
+      [ngClass]="{ 'opacity-50': pageNumber() === totalPages }"
+      [disabled]="pageNumber() === totalPages"
       (click)="goToLastPage()">
       <svg class="text-neutral-500 h-[18px] w-[18px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
         <path d="M5.59 7.41L10.18 12L5.59 16.59L7 18L13 12L7 6L5.59 7.41ZM16 6H18V18H16V6Z" fill="currentColor"/>
