@@ -43,6 +43,8 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
   initialValue = input<TableStateEvent>({ searchText: '' });
   showLoadingOnlyInitial = input<boolean>(true);
   filtersTemplate = input<TemplateRef<any> | null>(null);
+  // Mobile: constrain height so only content scrolls
+  mobileScrollMaxHeight = input<string>('80dvh');
 
   // Outputs
   pageChange = output<PaginationEvent>();
