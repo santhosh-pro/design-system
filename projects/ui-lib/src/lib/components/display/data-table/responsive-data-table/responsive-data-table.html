@@ -34,12 +34,8 @@
     (rowClick)="rowClick.emit($event)"
     (rowSelectionChange)="rowSelectionChange.emit($event)"
     (footerAction)="footerAction.emit($event)">
-    <!-- Re-project header action content to child table -->
-    <div class="min-w-0">
-      <ng-content select="[table-action]"></ng-content>
-    </div>
-    <!-- Re-project filters too (even though overlay uses the template input), harmless and future-proof -->
-    <ng-content select="[table-filter]"></ng-content>
+  <!-- Project header actions directly to desktop table -->
+  <ng-content select="[table-action]"></ng-content>
   </ui-data-table>
 } @else {
   <ui-mobile-data-table
@@ -72,8 +68,7 @@
     (rowClick)="rowClick.emit($event)"
     (rowSelectionChange)="rowSelectionChange.emit($event)"
     (footerAction)="footerAction.emit($event)">
-    <!-- Re-project action and filter content to mobile table if needed in future -->
+    <!-- Project header actions directly to mobile table -->
     <ng-content select="[table-action]"></ng-content>
-    <ng-content select="[table-filter]"></ng-content>
   </ui-mobile-data-table>
 }
