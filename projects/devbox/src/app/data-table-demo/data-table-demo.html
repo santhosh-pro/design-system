@@ -1,7 +1,9 @@
 <ui-nav [menus]="menus()" [logoutMenu]="logoutMenu()" [username]="'Santhosh M'" (menuClick)="handleMenuClick($event)">
   <main class="">
    
-    
+    <div class="flex flex-col space-y-4">
+
+    <!-- <ui-breadcrumb ></ui-breadcrumb> -->
 
 
      <ui-responsive-data-table [columnGroups]="nestedColumns()" [data]="nestedData()" [enableRowSelection]="true"  [showLoadingOnlyInitial]="false" [isLoading]="false"
@@ -18,7 +20,7 @@
         </button>
       </ui-responsive-data-table>
 
-
+</div>
 
       
   </main>

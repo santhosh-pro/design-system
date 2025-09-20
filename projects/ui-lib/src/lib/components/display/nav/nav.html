@@ -53,14 +53,14 @@
       </nav>
 
       <!-- Main Content -->
-      <main class="flex-1 px-1 mt-6 sm:p-6 bg-gray-50 transition-all duration-300 overflow-y-auto"
+      <main class="flex-1 px-1 sm:mt-2 mt-6 sm:p-6 bg-gray-50 transition-all duration-300 overflow-y-auto"
         [ngClass]="mainContentClasses()">
         <ng-content></ng-content>
       </main>
     </div>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200 py-4 mt-auto">
+    <footer class="bg-white border-t border-gray-200 py-2 mt-auto">
       <ng-content select="[footer]"></ng-content>
     </footer>
   </div>

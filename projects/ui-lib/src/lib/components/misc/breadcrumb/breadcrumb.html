@@ -1,10 +1,10 @@
-<div class="flex items-center px-3 py-1.5 bg-gradient-to-r from-purple-50 via-pink-50 to-yellow-50 rounded-full shadow-sm mx-4 my-2 border border-purple-100/50">
+<div class="flex items-center px-3 py-1.5"  >
   @for (breadcrumb of breadcrumbs; track i; let last = $last; let i = $index) {
     <div class="flex items-center group">
       <span (click)="!last ? navigate(breadcrumb.route!) : null"
             class="text-xs font-semibold px-3 py-1 rounded-full transition-all duration-300 cursor-pointer transform hover:scale-105 flex items-center"
             [ngClass]="[
-              last ? 'bg-primary-500 text-white shadow-sm' : 'text-purple-700 hover:bg-pink-100 hover:text-pink-600'
+              last ? 'bg-primary-500 text-white ' : 'text-primary-700 hover:bg-pink-100 hover:text-pink-600'
             ]">
         @if (breadcrumb.icon) {
           <span class="mr-1.5" [innerHTML]="breadcrumb.icon"></span>
