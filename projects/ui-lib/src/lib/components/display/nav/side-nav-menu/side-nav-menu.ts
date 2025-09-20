@@ -21,6 +21,7 @@ export class SideNavMenu {
   // Input signals
   menuItem = input.required<SideMenuItem>();
   isExpanded = input(true);
+  isMobile = input(false);
 
   // Output signals
   menuClick = output<SideMenuItem>();
@@ -52,10 +53,17 @@ export class SideNavMenu {
 
   menuItemClasses = computed(() => {
     const base = 'transition-all duration-300 ease-in-out';
-    const active = this.isActive()
-      ? 'bg-primary-100 text-primary-600 shadow-lg scale-[1.02]'
-      : 'text-gray-700 hover:text-primary-500 hover:bg-primary-50 hover:scale-[1.01]';
-    return `${base} ${active}`;
+    const isRail = !this.isExpanded() && this.isMobile();
+    if (this.isActive()) {
+      // On collapsed mobile rail, avoid pill/shadow/scale which can overflow the narrow width
+      const activeRail = 'bg-transparent shadow-none scale-100';
+      const activeFull = 'bg-primary-100 text-primary-600 shadow-lg scale-[1.02]';
+      return `${base} ${isRail ? activeRail : activeFull}`;
+    }
+    // Inactive state: suppress hover bg/scale on rail to keep it tidy
+    const inactiveRail = '';
+    const inactiveFull = 'text-gray-700 hover:text-primary-500 hover:bg-primary-50 hover:scale-[1.01]';
+    return `${base} ${isRail ? inactiveRail : inactiveFull}`;
   });
 
   iconClasses = computed(() => {
@@ -70,6 +78,27 @@ export class SideNavMenu {
       : 'opacity-0 max-w-0 overflow-hidden';
     const textColor = this.isActive() ? 'text-primary-600' : 'text-gray-700';
     return `transition-all duration-300 ${visibility} ${textColor}`;
+  });
+
+  // Adjust container and icon sizing when collapsed on mobile for narrower rail
+  itemContainerClasses = computed(() => {
+    const isRail = !this.isExpanded() && this.isMobile();
+    const justify = isRail ? 'justify-center' : 'justify-between';
+    const radius = isRail ? 'rounded-lg' : 'rounded-xl';
+    const base = `group flex items-center ${justify} ${radius} cursor-pointer relative z-50`;
+    const spacing = this.isExpanded()
+      ? 'py-2 px-3 sm:px-4 sm:py-3'
+      : (this.isMobile() ? 'py-2 px-1.5' : 'py-2 px-2');
+    const marginX = isRail ? 'mx-1' : 'mx-2';
+    return `${base} ${spacing} ${marginX}`;
+  });
+
+  iconWrapperClasses = computed(() => {
+    // Smaller icon box when collapsed on mobile
+    if (!this.isExpanded() && this.isMobile()) {
+      return 'flex-shrink-0 w-4 h-4 mr-0';
+    }
+    return 'flex-shrink-0 w-5 h-5 mr-3 sm:mr-4';
   });
 
   onMenuClick(menu: SideMenuItem) {

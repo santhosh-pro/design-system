@@ -12,14 +12,14 @@
     <!-- Sidebar and Content Row -->
     <div class="flex flex-1">
       <!-- Sidebar -->
-      <nav class="flex bg-white border-r border-gray-200 shadow-sm transition-all duration-300 ease-in-out"
+      <nav class="flex bg-white border-r border-gray-200 shadow-sm transition-all duration-300 ease-in-out overflow-hidden"
         [ngClass]="sidebarClasses()" (click)="onSidebarClick($event)">
         <div class="flex flex-col w-full h-full">
           <!-- Navigation Menu -->
-          <div class="flex-1 overflow-y-auto py-2 px-1 sm:py-3 sm:px-2 space-y-1 min-h-0">
+          <div class="flex-1 overflow-y-auto py-1 px-0.5 sm:py-3 sm:px-2 space-y-1 min-h-0">
             @for (menu of menus(); track menu.id) {
             @if (menu.isEnabled) {
-            <ui-side-nav-menu [menuItem]="menu" [isExpanded]="isExpanded()" (menuClick)="onMenuClick($event)" />
+            <ui-side-nav-menu [menuItem]="menu" [isExpanded]="isExpanded()" [isMobile]="isMobile()" (menuClick)="onMenuClick($event)" />
             }
             }
           </div>
@@ -27,7 +27,7 @@
           <!-- Settings Menu -->
           @if (settingsMenu() && settingsMenu()!.isEnabled) {
           <div class="border-t border-gray-200 p-2 flex-shrink-0">
-            <ui-side-nav-menu #settingsMenuRef [menuItem]="settingsMenu()!" [isExpanded]="isExpanded()"
+            <ui-side-nav-menu #settingsMenuRef [menuItem]="settingsMenu()!" [isExpanded]="isExpanded()" [isMobile]="isMobile()"
               (menuClick)="onMenuClick($event)" />
           </div>
           }

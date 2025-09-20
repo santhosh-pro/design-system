@@ -77,7 +77,8 @@ export class Nav {
       widthClass = 'w-full bg-white';
     } else {
       // Standard mode
-      widthClass = this.isExpanded() ? 'w-64 sm:w-72 md:w-80' : 'w-20';
+      const collapsedWidth = this.isMobile() ? 'w-12' : 'w-20';
+      widthClass = this.isExpanded() ? 'w-64 sm:w-72 md:w-80' : collapsedWidth;
       positionClass += ` ${widthClass}`;
     }
     return `${positionClass} border-r border-gray-200 bg-white transition-all duration-300 ease-in-out`;
@@ -89,7 +90,7 @@ export class Nav {
     } else if (this.isExpanded()) {
       return 'ml-64 sm:ml-72 md:ml-80';
     } else {
-      return 'ml-20';
+      return this.isMobile() ? 'ml-12' : 'ml-20';
     }
   });
 
