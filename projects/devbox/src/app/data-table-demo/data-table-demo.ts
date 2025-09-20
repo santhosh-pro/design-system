@@ -2,19 +2,82 @@ import { Component, signal } from '@angular/core';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { DemoCard, DemoFile } from '../core/demo-card/demo-card';
 import { DocIoList } from '../core/doc-io-list/doc-io-list';
-import { ColumnDef, ColumnNode, DataTable, TableActionEvent, TableStateEvent, MultiDatePicker, TextField, ResponsiveDataTable } from 'projects/ui-lib/src/public-api';
+import { ColumnDef, ColumnNode, DataTable, TableActionEvent, TableStateEvent, MultiDatePicker, TextField, ResponsiveDataTable, Nav, SideMenuItem, TopMenuItem } from 'projects/ui-lib/src/public-api';
 import { CommonModule } from '@angular/common';
 import { ExpandRowDemo } from './expand/expand-row-demo/expand-row-demo';
 
 @Component({
   selector: 'app-data-table-demo',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ResponsiveDataTable, DataTable, DemoCard, DocIoList, MultiDatePicker, TextField],
+  imports: [CommonModule, ReactiveFormsModule, ResponsiveDataTable, DataTable, DemoCard, DocIoList, MultiDatePicker, TextField, Nav],
   templateUrl: './data-table-demo.html',
 })
 export class DataTableDemo {
 
   ExpandRowDemo=ExpandRowDemo;
+
+   menus = signal<SideMenuItem[]>([
+
+    // {
+    //   id: 'overview',
+    //   label: 'Overview',
+    //   link: '/overview',
+    //   iconPath: 'icons/edit.svg',
+    //   isEnabled: true
+    // },
+    {
+      id: "ffgfg",
+      isSeparator: true,
+      isEnabled: true,
+      groupHeading: "billing",
+    },
+    {
+      id: "resource_cost",
+      label: "Resource Cost",
+      link: "/home",
+      iconPath: "icons/resource.svg",
+      isEnabled: true,
+    },
+    {
+      id: "invoice",
+      label: "Invoice",
+      link: "/invoice",
+      iconPath: "icons/invoice.svg",
+      isEnabled: true,
+    },
+    {
+      id: "separator1",
+      isSeparator: true,
+      isEnabled: true,
+      groupHeading: "Marketplace",
+    },
+    {
+      id: "marketplace",
+      label: "Marketplace",
+      iconPath: "icons/marketplace.svg",
+      externalLink:'https://marketplace.azure.com/marketplace/apps?search=',
+      isEnabled: true,
+    },
+  ]);
+
+  // settingsMenu = signal<SideMenuItem>({
+  //   id: 'settings',
+  //   label: 'Settings',
+  //   link: '/settings',
+  //   isEnabled: true,
+  // });
+
+  logoutMenu = signal<TopMenuItem>({
+    id: "logout",
+    label: "Logout",
+    iconPath: "M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z",
+    isEnabled: true,
+  });
+
+   handleMenuClick(menu: SideMenuItem) {
+    console.log("Menu clicked:", menu.label);
+    // Implement navigation or other logic here
+  }
   // Data for all variants
 nestedColumns = signal<ColumnNode[]>([
   {

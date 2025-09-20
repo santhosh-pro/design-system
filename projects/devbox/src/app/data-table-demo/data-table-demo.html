@@ -1,10 +1,10 @@
+<ui-nav [menus]="menus()" [logoutMenu]="logoutMenu()" [username]="'Santhosh M'" (menuClick)="handleMenuClick($event)">
+  <main class="">
+   
+    
 
-  <!-- Main Content -->
-  <div class="space-y-12 max-w-full">
-    <!-- Demo 1: Basic Table with Sorting and Pagination -->
-    <app-demo-card title="Basic Data Table"
-      description="A simple data table with sorting, pagination, and badge columns." [files]="basicFiles()">
-      <ui-responsive-data-table [columnGroups]="nestedColumns()" [data]="nestedData()" [enableRowSelection]="true"  [showLoadingOnlyInitial]="false" [isLoading]="false"
+
+     <ui-responsive-data-table [columnGroups]="nestedColumns()" [data]="nestedData()" [enableRowSelection]="true"  [showLoadingOnlyInitial]="false" [isLoading]="false"
         [rowSelectionKey]="'name'" [footerComponent]="ExpandRowDemo" [enablePagination]="true" [pageSize]="10"
         [totalCount]="nestedData().length" [enableSearch]="true" [formControl]="basicControl" [expandableComponent]="ExpandRowDemo"
         (rowSelectionChange)="onRowSelectionChange($event)"
@@ -17,37 +17,22 @@
           Apply Filters
         </button>
       </ui-responsive-data-table>
-      <p class="text-sm text-gray-600 mt-2">
-        {{selectedRows | json}}
-        Table State: {{ basicControl.value | json }}
-      </p>
-    </app-demo-card>
 
-  </div>
 
-  <!-- Fixed and Scrollable Sidebar -->
-  <div class="lg:w-80 lg:fixed lg:top-8 lg:right-8 lg:max-h-[calc(100vh-4rem)] lg:overflow-y-auto">
-    <app-doc-io-list class="block w-full bg-white shadow-lg p-4 rounded-lg" [items]="[
-        { title: 'columnGroups', desc: 'Array of column groups defining table structure', type: 'input' },
-        { title: 'pageSize', desc: 'Number of rows per page', type: 'input' },
-        { title: 'enableHorizontallyScrollable', desc: 'Enables horizontal scrolling', type: 'input' },
-        { title: 'enableResizableColumns', desc: 'Enables column resizing', type: 'input' },
-        { title: 'enableClickableRows', desc: 'Enables row click events', type: 'input' },
-        { title: 'expandableComponent', desc: 'Component for expandable rows', type: 'input' },
-        { title: 'enableSearch', desc: 'Enables search input', type: 'input' },
-        { title: 'rowSelectionKey', desc: 'Key for row selection', type: 'input' },
-        { title: 'enableRowSelection', desc: 'Enables row selection', type: 'input' },
-        { title: 'data', desc: 'Array of data to display', type: 'input' },
-        { title: 'totalCount', desc: 'Total number of data items', type: 'input' },
-        { title: 'maxPinnedLeft', desc: 'Maximum number of left-pinned columns', type: 'input' },
-        { title: 'maxPinnedRight', desc: 'Maximum number of right-pinned columns', type: 'input' },
-        { title: 'pageChange', desc: 'Emitted when pagination changes', type: 'output' },
-        { title: 'sortChanged', desc: 'Emitted when sorting changes', type: 'output' },
-        { title: 'tableStateChanged', desc: 'Emitted when table state changes', type: 'output' },
-        { title: 'onActionPerformed', desc: 'Emitted when an action is performed', type: 'output' },
-        { title: 'onRowClicked', desc: 'Emitted when a row is clicked', type: 'output' },
-        { title: 'rowSelectionChange', desc: 'Emitted when row selection changes', type: 'output' },
-        { title: 'pinChanged', desc: 'Emitted when column pinning changes', type: 'output' }
-      ]">
-    </app-doc-io-list>
+
+      
+  </main>
+  <div logo>
+    <div class="w-52 h-12 bg-gray-900 rounded-lg flex items-center justify-center">
+      <span class="text-white font-bold text-sm sm:text-base">Athang Client Hub</span>
+    </div>
   </div>
+  <div footer>
+    <div class="max-w-7xl mx-auto px-1 text-center">
+      <span class="text-sm text-gray-500">© All rights reserved.</span>
+    </div>
+  </div>
+</ui-nav>
+
+     
+   
