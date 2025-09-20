@@ -24,7 +24,7 @@ export class ResponsiveDataTable<T> extends BaseControlValueAccessor<TableStateE
   hasError = input<boolean>(false);
   errorMessage = input<string | null>(null);
 
-  pageSize = input<number>(50);
+  pageSize = model<number>(50);
   enableSearch = input<boolean>(true);
   enablePagination = input<boolean>(true);
   enableFilters = input<boolean>(true);

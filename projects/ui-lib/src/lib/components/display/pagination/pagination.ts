@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges, ElementRef, inject, signal, input, output, model} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, ElementRef, inject, signal, input, output, model} from '@angular/core';
 import {FormsModule} from "@angular/forms";
 import {NgClass} from "@angular/common";
 
@@ -15,50 +15,41 @@ import {NgClass} from "@angular/common";
     '(document:click)': 'onDocumentClick($event)'
   }
 })
-export class Pagination implements OnChanges {
+export class Pagination {
   totalItems = input<number>(0);
   pageSizeOptions = input<number[]>([5,10, 25, 50, 100]);
-  @Input() pageSize: number = 25; // Default page size
+  // Two-way bindable page size using models API
+  // Usage: <ui-pagination [(pageSize)]="size"></ui-pagination>
+  pageSize = model<number>(25);
   isSimple = input<boolean>(false);
 
   pageChange = output<PaginationEvent>();
-  // Optional two-way binding support: [(pageSize)]
-  pageSizeChange = output<number>();
   // Two-way bindable page number using signal models API
   // Usage from parent: <ui-pagination [(pageNumber)]="page"></ui-pagination>
   pageNumber = model<number>(1);
-  // Internal state decoupled from @Input to avoid parent reset on change detection
-  selectedPageSize: number = this.pageSize;
 
   // UI state for custom dropdown
   private readonly hostRef = inject(ElementRef<HTMLElement>);
   isMenuOpen = signal(false);
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['pageSize'] && typeof this.pageSize === 'number') {
-      this.selectedPageSize = this.pageSize;
-    }
-  }
-
   get totalPages(): number {
-    const size = this.selectedPageSize || 1;
+    const size = this.pageSize() || 1;
     return Math.max(1, Math.ceil(this.totalItems() / size));
   }
 
   get startItem(): number {
-    const size = this.selectedPageSize;
+    const size = this.pageSize();
     return this.totalItems() === 0 ? 0 : (this.pageNumber() - 1) * size + 1;
   }
 
   get endItem(): number {
-    const size = this.selectedPageSize;
+    const size = this.pageSize();
     return Math.min(this.pageNumber() * size, this.totalItems());
   }
 
   changePageSize(newSize: number): void {
-    this.selectedPageSize = newSize;
-    // Reflect change to input (for consumers using [(pageSize)])
-    this.pageSizeChange.emit(newSize);
+    // Reflect change via model (for consumers using [(pageSize)])
+    this.pageSize.set(newSize);
     this.pageNumber.set(1); // Reset to first page when page size changes
     this.emitPageChange();
     this.closeMenu();
@@ -92,7 +83,7 @@ export class Pagination implements OnChanges {
   }
 
   emitPageChange(): void {
-    this.pageChange.emit({ pageNumber: this.pageNumber(), pageSize: this.selectedPageSize });
+    this.pageChange.emit({ pageNumber: this.pageNumber(), pageSize: this.pageSize() });
   }
 
   // Dropdown controls

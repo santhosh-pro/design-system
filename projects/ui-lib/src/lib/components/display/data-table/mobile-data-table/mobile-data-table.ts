@@ -29,7 +29,7 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
   hasError = input<boolean>(false);
   errorMessage = input<string | null>(null);
 
-  pageSize = input<number>(50);
+  pageSize = model<number>(50);
   enableSearch = input<boolean>(true);
   enablePagination = input<boolean>(true);
   // Mobile enhancement: when true, pagination bar renders even if `enablePagination` is false
@@ -155,6 +155,9 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
     this.paginationEvent = event;
     if (event.pageNumber != null) {
       this.pageNumber.set(event.pageNumber);
+    }
+    if (event.pageSize != null && event.pageSize !== this.pageSize()) {
+      this.pageSize.set(event.pageSize);
     }
     const state: TableStateEvent = { searchText: this.searchText, paginationEvent: event, tableSortEvent: this.tableSortEvent };
     this.pageChange.emit(event);

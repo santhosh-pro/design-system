@@ -77,7 +77,8 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
   errorMessage = input<string | null>(null);
 
   // Configuration Inputs
-  pageSize = input<number>(50);
+  // Two-way bindable page size for parent control
+  pageSize = model<number>(50);
   enableSearch = input<boolean>(true);
   enablePagination = input<boolean>(true);
   // Filters enable/indicator
@@ -114,7 +115,6 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
   pageNumber = model<number>(1);
 
   // Internal Signals
-  private internalPageSize: number = this.pageSize();
   selectedIds = signal<any[]>([]);
   columnGroupsSignal: WritableSignal<ColumnNode[]> = signal([]);
   headerHeight = signal<number>(0);
@@ -281,7 +281,7 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
   ngAfterViewInit(): void {
     this.paginationEvent = {
       pageNumber: this.pageNumber(),
-      pageSize: this.internalPageSize,
+      pageSize: this.pageSize(),
     };
     this.pageChange.emit(this.paginationEvent);
 
@@ -334,6 +334,9 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
     if (value) {
       this.searchText = value.searchText ?? '';
       this.paginationEvent = value.paginationEvent;
+      if (value.paginationEvent?.pageSize != null) {
+        this.pageSize.set(value.paginationEvent.pageSize);
+      }
       if (value.paginationEvent?.pageNumber != null) {
         this.pageNumber.set(value.paginationEvent.pageNumber);
       }
@@ -360,7 +363,7 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
     const nextPage = shouldReset ? 1 : this.pageNumber();
     this.paginationEvent = {
       pageNumber: nextPage,
-      pageSize: this.paginationEvent?.pageSize ?? this.internalPageSize
+      pageSize: this.paginationEvent?.pageSize ?? this.pageSize()
     };
     if (shouldReset) this.pageNumber.set(1);
 
@@ -378,6 +381,9 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
     this.paginationEvent = event;
     if (event.pageNumber != null) {
       this.pageNumber.set(event.pageNumber);
+    }
+    if (event.pageSize != null && event.pageSize !== this.pageSize()) {
+      this.pageSize.set(event.pageSize);
     }
     const tableStateEvent: TableStateEvent = {
       searchText: this.searchText,
@@ -398,7 +404,7 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
       searchText: this.searchText,
       paginationEvent: {
         pageNumber: nextPage,
-        pageSize: this.paginationEvent?.pageSize ?? this.internalPageSize
+        pageSize: this.paginationEvent?.pageSize ?? this.pageSize()
       },
       tableSortEvent: event,
     };
@@ -415,7 +421,7 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
     const nextPage = shouldReset ? 1 : this.pageNumber();
     this.paginationEvent = {
       pageNumber: nextPage,
-      pageSize: this.internalPageSize
+      pageSize: this.pageSize()
     };
     if (shouldReset) this.pageNumber.set(1);
 

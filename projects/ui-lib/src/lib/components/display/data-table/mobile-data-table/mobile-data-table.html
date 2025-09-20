@@ -128,7 +128,7 @@
     <!-- Sticky bottom pagination (mobile only, within component) -->
     @if (enablePagination() || alwaysShowPagination()) {
       <div class="md:hidden sticky bottom-0 z-10 border-t border-gray-200 bg-white/95 backdrop-blur px-3 pt-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] shadow-lg">
-  <ui-pagination [(pageNumber)]="pageNumber" [isSimple]="false" [pageSize]="pageSize()" [totalItems]="totalCount()" (pageChange)="onPageChange($event)"></ui-pagination>
+  <ui-pagination [(pageNumber)]="pageNumber" [isSimple]="false" [(pageSize)]="pageSize" [totalItems]="totalCount()" (pageChange)="onPageChange($event)"></ui-pagination>
       </div>
     }
   </div>
@@ -139,7 +139,7 @@
       <ui-dynamic-renderer [component]="footerComponent()" [data]="data()" (actionPerformed)="footerAction.emit($event)"></ui-dynamic-renderer>
     }
     @if (enablePagination()) {
-  <ui-pagination [(pageNumber)]="pageNumber" [pageSize]="pageSize()" [totalItems]="totalCount()" (pageChange)="onPageChange($event)"></ui-pagination>
+  <ui-pagination [(pageNumber)]="pageNumber" [(pageSize)]="pageSize" [totalItems]="totalCount()" (pageChange)="onPageChange($event)"></ui-pagination>
     }
   </div>
 </div>
