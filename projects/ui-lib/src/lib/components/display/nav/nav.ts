@@ -78,7 +78,9 @@ export class Nav {
     } else {
       // Standard mode
       const collapsedWidth = this.isMobile() ? 'w-12' : 'w-20';
-      widthClass = this.isExpanded() ? 'w-64 sm:w-72 md:w-80' : collapsedWidth;
+      // Slightly narrower widths on desktop when expanded
+      // Previously: w-64 sm:w-72 md:w-80
+      widthClass = this.isExpanded() ? 'w-56 sm:w-64 md:w-64' : collapsedWidth;
       positionClass += ` ${widthClass}`;
     }
     return `${positionClass} border-r border-gray-200 bg-white transition-all duration-300 ease-in-out`;
@@ -88,7 +90,8 @@ export class Nav {
     if (this.isMobile() && this.isExpanded()) {
       return 'ml-0';
     } else if (this.isExpanded()) {
-      return 'ml-64 sm:ml-72 md:ml-80';
+      // Keep content offset in sync with the sidebar widths above
+      return 'ml-56 sm:ml-64 md:ml-64';
     } else {
       return this.isMobile() ? 'ml-12' : 'ml-20';
     }
