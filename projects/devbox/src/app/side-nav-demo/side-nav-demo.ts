@@ -26,7 +26,7 @@ export class SideNavDemo {
     {
       id: 'users',
       label: 'Users Management',
-      link: '/users',
+      link: '/data-table',
       isEnabled: true
     },
     {

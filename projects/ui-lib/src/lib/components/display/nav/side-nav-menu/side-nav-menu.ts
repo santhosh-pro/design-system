@@ -29,8 +29,8 @@ export class SideNavMenu {
   // Internal signal to force reactivity
   private routeChangeSignal = signal(0);
 
-    TooltipPosition = TooltipPosition;
-      TooltipTheme = TooltipTheme;
+  TooltipPosition = TooltipPosition;
+  TooltipTheme = TooltipTheme;
 
 
 
