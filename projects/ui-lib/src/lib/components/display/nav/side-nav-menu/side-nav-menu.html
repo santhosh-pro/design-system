@@ -1,6 +1,6 @@
 <div class="relative z-10 mt-3">
-  <!-- Tooltip wrapper - only when collapsed -->
-  @if (!isExpanded()) {
+  <!-- Tooltip wrapper - only when collapsed on non-mobile -->
+  @if (!isExpanded() && !isMobile()) {
     <div 
       class="relative"
       [tooltip]="menuItem().label ?? ''"
@@ -45,6 +45,46 @@
       }
       
     </div>
+  }
+
+  <!-- Collapsed on mobile: render without tooltip to keep taps working -->
+  @if (!isExpanded() && isMobile()) {
+    <!-- Separator -->
+    @if (menuItem().isSeparator && menuItem().isEnabled) {
+      <div class="my-2 mx-2 flex items-center justify-center text-gray-500 text-xs font-medium sm:mx-3 relative z-50">
+        <span class="border-t border-gray-200 flex-grow"></span>
+        @if (menuItem().label) {
+          <span class="px-2 truncate">{{ menuItem().label }}</span>
+        }
+        <span class="border-t border-gray-200 flex-grow"></span>
+      </div>
+    }
+
+    <!-- Group Heading (hidden when collapsed) -->
+    @if (menuItem().groupHeading && isExpanded()) {
+      <div class="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider sm:px-4 relative z-50">
+        {{ menuItem().groupHeading }}
+      </div>
+    }
+
+    <!-- Menu Item -->
+    @if (!menuItem().isSeparator && !menuItem().groupHeading && menuItem().isEnabled) {
+      <div
+        [class]="itemContainerClasses() + ' ' + menuItemClasses()"
+        (click)="onMenuClick(menuItem())">
+        <div class="flex items-center min-w-0 flex-1">
+          <!-- Icon -->
+          <div [class]="iconWrapperClasses()">
+            <ui-svg-icon [src]="menuItem().iconPath ?? ''" [class]="iconClasses()"></ui-svg-icon>
+          </div>
+
+          <!-- Label -->
+          <span class="text-sm font-medium truncate sm:text-sm" [class]="labelClasses()">
+            {{ menuItem().label }}
+          </span>
+        </div>
+      </div>
+    }
   }
   
   <!-- Content without tooltip - when expanded -->
