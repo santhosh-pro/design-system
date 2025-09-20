@@ -45,13 +45,19 @@
               <input type="checkbox" [formControl]="getItemControl(item)" (click)="$event.stopPropagation()" class="h-5 w-5 mt-0.5 accent-primary-600" aria-label="Select" />
             }
             <div class="flex-1 min-w-0">
-              <!-- Header line: primary field and actions (right) -->
+              <!-- Header line: primary field, optional mobile summary, and actions (right) -->
               <div class="flex items-start gap-2">
                 <div class="flex-1 min-w-0">
                   @let primary = getPrimaryColumn();
+                  @let summary = getMobileSummaryColumn();
                   @if (primary) {
                     <div class="text-sm font-semibold text-gray-900 truncate">
                       <ui-table-cell-renderer [column]="primary" [rowData]="item" [rowIndex]="i + 1" [isLastRow]="$last" (actionPerformed)="onActionPerformed($event)"></ui-table-cell-renderer>
+                    </div>
+                  }
+                  @if (summary) {
+                    <div class="text-xs text-gray-600 truncate mt-0.5">
+                      <ui-table-cell-renderer [column]="summary" [rowData]="item" [rowIndex]="i + 1" [isLastRow]="$last" (actionPerformed)="onActionPerformed($event)"></ui-table-cell-renderer>
                     </div>
                   }
                 </div>
@@ -63,9 +69,9 @@
                 }
               </div>
 
-              <!-- Meta grid -->
-              @let details = getDetailColumns();
-              @if (details.length > 0) {
+              <!-- Meta grid (only visible when expanded) -->
+              @let details = getExpandableDetailColumns();
+              @if (expandedRowIndex === i && details.length > 0) {
                 <div class="mt-2 grid grid-cols-2 gap-x-4 gap-y-1">
                   @for (col of details; track col.key || $index) {
                     <div class="min-w-0">
@@ -79,15 +85,17 @@
               }
 
               <!-- Expandable -->
-              @if (expandableComponent()) {
+              @if (hasDetailsToExpand()) {
                 <div class="mt-2">
                   <button type="button" class="text-primary-600 text-sm font-medium" (click)="$event.stopPropagation(); expandedRowIndex = (expandedRowIndex === i ? -1 : i)">
                     {{ expandedRowIndex === i ? 'Hide details' : 'Show details' }}
                   </button>
                   @if (expandedRowIndex === i) {
-                    <div class="mt-2 rounded-lg border border-gray-200 p-3 bg-gray-50">
-                      <ui-dynamic-renderer [component]="expandableComponent()" [rowData]="item" (actionPerformed)="onActionPerformed({ actionKey: 'expand', item })"></ui-dynamic-renderer>
-                    </div>
+                    @if (expandableComponent()) {
+                      <div class="mt-2 rounded-lg border border-gray-200 p-3 bg-gray-50">
+                        <ui-dynamic-renderer [component]="expandableComponent()" [rowData]="item" (actionPerformed)="onActionPerformed({ actionKey: 'expand', item })"></ui-dynamic-renderer>
+                      </div>
+                    }
                   }
                 </div>
               }

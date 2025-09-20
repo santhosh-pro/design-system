@@ -210,7 +210,17 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
   allLeafColumns(): ColumnDef[] {
     const leaves: ColumnDef[] = [];
     const traverse = (node: ColumnNode) => {
-      if ('children' in node) node.children.forEach(traverse); else if (node.visible ?? true) leaves.push(node);
+      if ('children' in node) {
+        node.children.forEach(traverse);
+      } else {
+        // Include column if visible OR explicitly marked as mobileOnly via customConfig.data.mobileOnly
+        const col = node as ColumnDef as any;
+        const isVisible = (col.visible ?? true) as boolean;
+        const isMobileOnly = !!col?.customConfig?.data?.mobileOnly;
+        if (isVisible || isMobileOnly) {
+          leaves.push(node);
+        }
+      }
     };
     this.columnGroups().forEach(traverse);
     return leaves;
@@ -230,7 +240,8 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
 
   getDetailColumns(): ColumnDef[] {
     const primary = this.getPrimaryColumn();
-    return this.displayColumns().filter(c => c !== primary);
+    const summary = this.getMobileSummaryColumn();
+    return this.displayColumns().filter(c => c !== primary && c !== summary);
   }
 
   getActionColumn(): ColumnDef | null {
@@ -255,5 +266,27 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
     let actionConfigs: ContextMenuActionConfig[] = [];
     if (typeof actions === 'function') actionConfigs = actions(item); else if (actions) actionConfigs = actions;
     return actionConfigs.map(a => ({ iconPath: a.iconPath, label: a.label, actionKey: a.actionKey }));
+  }
+
+  // Mobile-only helpers
+  getMobileSummaryColumn(): ColumnDef | null {
+    const cols = this.displayColumns();
+    const primary = this.getPrimaryColumn();
+    // Prefer a column explicitly marked as mobile summary
+    const flagged = cols.find(c => (c as any)?.customConfig?.data?.mobileSummary === true);
+    if (flagged && flagged !== primary) return flagged;
+    // Otherwise pick the first text column that's not primary
+    const fallback = cols.find(c => c.type === 'text' && c !== primary);
+    return fallback ?? null;
+  }
+
+  getExpandableDetailColumns(): ColumnDef[] {
+    // All display columns except the primary. We allow the summary column to appear in expanded details as well to show "all fields".
+    const primary = this.getPrimaryColumn();
+    return this.displayColumns().filter(c => c !== primary);
+  }
+
+  hasDetailsToExpand(): boolean {
+    return this.getExpandableDetailColumns().length > 0 || !!this.expandableComponent();
   }
 }
