@@ -19,7 +19,8 @@ export class OverlayStore {
   private rendererFactory = inject(RendererFactory2);
 
   private renderer!: Renderer2;
-  private activeDialogRef: DialogRef<any, any> | null = null; // Track active dialog
+  // Support multiple/nested overlays instead of a single active one
+  private dialogStack: DialogRef<any, any>[] = [];
 
   constructor() {
     this.renderer = this.rendererFactory.createRenderer(null, null);
@@ -148,11 +149,7 @@ export class OverlayStore {
       blurIntensity = 5,
     } = backdropOptions ?? {};
 
-    // Close existing dialog if open
-    if (this.activeDialogRef) {
-      console.log('Closing existing dialog:', this.activeDialogRef.id);
-      this.activeDialogRef.close();
-    }
+    // Do not auto-close existing dialogs; allow nested overlays
 
     const dialogId = Math.random().toString(36).substring(2);
     console.log('Opening dialog with ID:', dialogId);
@@ -175,22 +172,19 @@ export class OverlayStore {
     });
 
     // Handle backdrop click after dialog is opened
-    this.setupBackdropClick(dialogRef, disableClose, dialogId);
-
-    this.activeDialogRef = dialogRef as DialogRef<any, any>;
+  this.setupBackdropClick(dialogRef, disableClose, dialogId);
+  this.registerDialog(dialogRef as DialogRef<any, any>);
 
     return new Promise((resolve) => {
       dialogRef.closed.subscribe(
         (result) => {
           console.log('Dialog closed with ID:', dialogId, 'Result:', result);
           onClose?.(result);
-          this.activeDialogRef = null;
           resolve(result);
         },
         (error) => {
           console.error('Dialog close error for ID:', dialogId, error);
           onClose?.(null);
-          this.activeDialogRef = null;
           resolve(null);
         }
       );
@@ -210,11 +204,7 @@ export class OverlayStore {
       };
     }
   ): Promise<boolean> {
-    // Close existing dialog if open
-    if (this.activeDialogRef) {
-      console.log('Closing existing dialog:', this.activeDialogRef.id);
-      this.activeDialogRef.close();
-    }
+    // Do not auto-close existing dialogs; allow nested overlays
 
     const { onClose, backdropOptions } = options ?? {};
 
@@ -245,22 +235,19 @@ export class OverlayStore {
     });
 
     // Handle backdrop click after dialog is opened
-    this.setupBackdropClick(dialogRef, false, dialogId);
-
-    this.activeDialogRef = dialogRef;
+  this.setupBackdropClick(dialogRef, false, dialogId);
+  this.registerDialog(dialogRef);
 
     return new Promise((resolve) => {
       dialogRef.closed.subscribe(
         (result) => {
           console.log('Alert dialog closed with ID:', dialogId, 'Result:', result);
           onClose?.(!!result);
-          this.activeDialogRef = null;
           resolve(!!result);
         },
         (error) => {
           console.error('Alert dialog close error for ID:', dialogId, error);
           onClose?.(false);
-          this.activeDialogRef = null;
           resolve(false);
         }
       );
@@ -282,11 +269,7 @@ export class OverlayStore {
       };
     }
   ): Promise<any> {
-    // Close existing dialog if open
-    if (this.activeDialogRef) {
-      console.log('Closing existing dialog:', this.activeDialogRef.id);
-      this.activeDialogRef.close();
-    }
+    // Do not auto-close existing dialogs; allow nested overlays
 
     const dialogId = Math.random().toString(36).substring(2);
     console.log('Opening modal with ID:', dialogId);
@@ -324,9 +307,8 @@ export class OverlayStore {
     });
 
     // Handle backdrop click after dialog is opened
-    this.setupBackdropClick(dialogRef, disableClose, dialogId);
-
-    this.activeDialogRef = dialogRef;
+  this.setupBackdropClick(dialogRef, disableClose, dialogId);
+  this.registerDialog(dialogRef);
 
     this.setOverlayMaxHeight(maxHeightClass ?? this.modalMaxHeightClass);
 
@@ -335,13 +317,11 @@ export class OverlayStore {
         (result) => {
           console.log('Modal closed with ID:', dialogId, 'Result:', result);
           onClose?.(result);
-          this.activeDialogRef = null;
           resolve(result);
         },
         (error) => {
           console.error('Modal close error for ID:', dialogId, error);
           onClose?.(null);
-          this.activeDialogRef = null;
           resolve(null);
         }
       );
@@ -362,11 +342,7 @@ export class OverlayStore {
       };
     }
   ): Promise<any> {
-    // Close existing dialog if open
-    if (this.activeDialogRef) {
-      console.log('Closing existing dialog:', this.activeDialogRef.id);
-      this.activeDialogRef.close();
-    }
+    // Do not auto-close existing dialogs; allow nested overlays
 
     const dialogId = Math.random().toString(36).substring(2);
     console.log('Opening backdrop with ID:', dialogId);
@@ -404,22 +380,19 @@ export class OverlayStore {
     });
 
     // Handle backdrop click after dialog is opened
-    this.setupBackdropClick(dialogRef, disableClose, dialogId);
-
-    this.activeDialogRef = dialogRef;
+  this.setupBackdropClick(dialogRef, disableClose, dialogId);
+  this.registerDialog(dialogRef);
 
     return new Promise((resolve) => {
       dialogRef.closed.subscribe(
         (result) => {
           console.log('Backdrop closed with ID:', dialogId, 'Result:', result);
           onClose?.(result);
-          this.activeDialogRef = null;
           resolve(result);
         },
         (error) => {
           console.error('Backdrop close error for ID:', dialogId, error);
           onClose?.(null);
-          this.activeDialogRef = null;
           resolve(null);
         }
       );
@@ -440,11 +413,7 @@ export class OverlayStore {
       };
     }
   ): Promise<any> {
-    // Close existing dialog if open
-    if (this.activeDialogRef) {
-      console.log('Closing existing dialog:', this.activeDialogRef.id);
-      this.activeDialogRef.close();
-    }
+    // Do not auto-close existing dialogs; allow nested overlays
 
     const dialogId = Math.random().toString(36).substring(2);
     console.log('Opening bottom sheet with ID:', dialogId);
@@ -482,22 +451,19 @@ export class OverlayStore {
     });
 
     // Handle backdrop click after dialog is opened
-    this.setupBackdropClick(dialogRef, disableClose, dialogId);
-
-    this.activeDialogRef = dialogRef;
+  this.setupBackdropClick(dialogRef, disableClose, dialogId);
+  this.registerDialog(dialogRef);
 
     return new Promise((resolve) => {
       dialogRef.closed.subscribe(
         (result) => {
           console.log('Bottom sheet closed with ID:', dialogId, 'Result:', result);
           onClose?.(result);
-          this.activeDialogRef = null;
           resolve(result);
         },
         (error) => {
           console.error('Bottom sheet close error for ID:', dialogId, error);
           onClose?.(null);
-          this.activeDialogRef = null;
           resolve(null);
         }
       );
@@ -518,11 +484,7 @@ export class OverlayStore {
       };
     }
   ): Promise<any> {
-    // Close existing dialog if open
-    if (this.activeDialogRef) {
-      console.log('Closing existing dialog:', this.activeDialogRef.id);
-      this.activeDialogRef.close();
-    }
+    // Do not auto-close existing dialogs; allow nested overlays
 
     const dialogId = Math.random().toString(36).substring(2);
     console.log('Opening full screen with ID:', dialogId);
@@ -560,22 +522,19 @@ export class OverlayStore {
     });
 
     // Handle backdrop click after dialog is opened
-    this.setupBackdropClick(dialogRef, disableClose, dialogId);
-
-    this.activeDialogRef = dialogRef;
+  this.setupBackdropClick(dialogRef, disableClose, dialogId);
+  this.registerDialog(dialogRef);
 
     return new Promise((resolve) => {
       dialogRef.closed.subscribe(
         (result) => {
           console.log('Full screen closed with ID:', dialogId, 'Result:', result);
           onClose?.(result);
-          this.activeDialogRef = null;
           resolve(result);
         },
         (error) => {
           console.error('Full screen close error for ID:', dialogId, error);
           onClose?.(null);
-          this.activeDialogRef = null;
           resolve(null);
         }
       );
@@ -597,11 +556,7 @@ export class OverlayStore {
       };
     }
   ): Promise<any> {
-    // Close existing dialog if open
-    if (this.activeDialogRef) {
-      console.log('Closing existing dialog:', this.activeDialogRef.id);
-      this.activeDialogRef.close();
-    }
+    // Do not auto-close existing dialogs; allow nested overlays
 
     const dialogId = Math.random().toString(36).substring(2);
     console.log('Opening side panel with ID:', dialogId);
@@ -645,23 +600,20 @@ export class OverlayStore {
       ]
     });
 
-    this.activeDialogRef = dialogRef;
-
-    // Handle backdrop click after dialog is opened
-    this.setupBackdropClick(dialogRef, disableClose, dialogId);
+  // Handle backdrop click after dialog is opened
+  this.setupBackdropClick(dialogRef, disableClose, dialogId);
+  this.registerDialog(dialogRef);
 
     return new Promise((resolve) => {
       dialogRef.closed.subscribe(
         (result) => {
           console.log('Side panel closed with ID:', dialogId, 'Result:', result);
           onClose?.(result);
-          this.activeDialogRef = null;
           resolve(result);
         },
         (error) => {
           console.error('Side panel close error for ID:', dialogId, error);
           onClose?.(null);
-          this.activeDialogRef = null;
           resolve(null);
         }
       );
@@ -683,11 +635,7 @@ export class OverlayStore {
       };
     }
   ): Promise<any> {
-    // Close existing dialog if open
-    if (this.activeDialogRef) {
-      console.log('Closing existing dialog:', this.activeDialogRef.id);
-      this.activeDialogRef.close();
-    }
+    // Do not auto-close existing dialogs; allow nested overlays
 
     const dialogId = Math.random().toString(36).substring(2);
     console.log('Opening side panel left with ID:', dialogId);
@@ -731,23 +679,20 @@ export class OverlayStore {
       ]
     });
 
-    this.activeDialogRef = dialogRef;
-
-    // Handle backdrop click after dialog is opened
-    this.setupBackdropClick(dialogRef, disableClose, dialogId);
+  // Handle backdrop click after dialog is opened
+  this.setupBackdropClick(dialogRef, disableClose, dialogId);
+  this.registerDialog(dialogRef);
 
     return new Promise((resolve) => {
       dialogRef.closed.subscribe(
         (result) => {
           console.log('Side panel left closed with ID:', dialogId, 'Result:', result);
           onClose?.(result);
-          this.activeDialogRef = null;
           resolve(result);
         },
         (error) => {
           console.error('Side panel left close error for ID:', dialogId, error);
           onClose?.(null);
-          this.activeDialogRef = null;
           resolve(null);
         }
       );
@@ -797,6 +742,19 @@ export class OverlayStore {
     dialogRef.backdropClick.subscribe(() => {
       console.log('Backdrop clicked for dialog:', dialogId);
       dialogRef.close();
+    });
+  }
+
+  // Track dialogs so nested overlays don't close each other
+  private registerDialog(dialogRef: DialogRef<any, any>): void {
+    this.dialogStack.push(dialogRef);
+    dialogRef.closed.subscribe({
+      next: () => {
+        this.dialogStack = this.dialogStack.filter(ref => ref !== dialogRef);
+      },
+      error: () => {
+        this.dialogStack = this.dialogStack.filter(ref => ref !== dialogRef);
+      }
     });
   }
 
