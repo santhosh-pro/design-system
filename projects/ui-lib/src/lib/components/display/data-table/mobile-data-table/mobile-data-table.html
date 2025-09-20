@@ -10,12 +10,23 @@
       <div class="flex items-center gap-2 overflow-x-auto">
         <ng-content select="[table-action]"></ng-content>
       </div>
-      @if (filtersTemplate()) {
-        <button type="button" class="shrink-0 p-2 text-gray-600 hover:text-gray-900" (click)="toggleFilters()" aria-label="Open advanced filters">
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M3 6h18M6 12h12m-7 6h2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
+      @if (enableFilters() && filtersTemplate()) {
+        <div class="flex items-center gap-2">
+          <button type="button" class="shrink-0 p-2 text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100" (click)="toggleFilters()" aria-label="Open advanced filters">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 6h18M6 12h12m-7 6h2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          @if (filtersApplied()) {
+            <button type="button" class="inline-flex items-center gap-1 text-[11px] text-primary-700 bg-primary-50 border border-primary-200 px-2 py-1 rounded-full" (click)="onClearFiltersClicked()" aria-label="Clear filters">
+              <span class="inline-block w-2 h-2 rounded-full bg-primary-600"></span>
+              Clear
+              <svg class="w-3.5 h-3.5 ml-0.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          }
+        </div>
       }
     </div>
 

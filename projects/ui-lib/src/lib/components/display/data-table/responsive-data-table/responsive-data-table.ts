@@ -27,6 +27,8 @@ export class ResponsiveDataTable<T> extends BaseControlValueAccessor<TableStateE
   pageSize = input<number>(50);
   enableSearch = input<boolean>(true);
   enablePagination = input<boolean>(true);
+  enableFilters = input<boolean>(true);
+  filtersApplied = input<boolean>(false);
   enableRowSelection = input<boolean>(false);
   enableClickableRows = input<boolean>(false);
   rowSelectionKey = input<string>('id');
@@ -48,6 +50,8 @@ export class ResponsiveDataTable<T> extends BaseControlValueAccessor<TableStateE
   rowClick = output<T>();
   rowSelectionChange = output<any[]>();
   footerAction = output<TableActionEvent>();
+  clearFilters = output<void>();
+  applyFilters = output<void>();
 
   isMobile = signal(false);
   private cvaValue = signal<TableStateEvent | null>(null);

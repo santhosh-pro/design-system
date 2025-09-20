@@ -2,14 +2,14 @@ import { Component, signal } from '@angular/core';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { DemoCard, DemoFile } from '../core/demo-card/demo-card';
 import { DocIoList } from '../core/doc-io-list/doc-io-list';
-import { ColumnDef, ColumnNode, DataTable, TableActionEvent, TableStateEvent, MultiDatePicker, TextField, ResponsiveDataTable, Nav, SideMenuItem, TopMenuItem, Breadcrumb, MonthYearPicker } from 'projects/ui-lib/src/public-api';
+import { ColumnDef, ColumnNode, DataTable, TableActionEvent, TableStateEvent, MultiDatePicker, TextField, ResponsiveDataTable, Nav, SideMenuItem, TopMenuItem, Breadcrumb, MonthYearPicker, Button } from 'projects/ui-lib/src/public-api';
 import { CommonModule } from '@angular/common';
 import { ExpandRowDemo } from './expand/expand-row-demo/expand-row-demo';
 
 @Component({
   selector: 'app-data-table-demo',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ResponsiveDataTable, DataTable, DemoCard, DocIoList, MultiDatePicker, TextField, Nav, Breadcrumb, MonthYearPicker],
+  imports: [CommonModule, ReactiveFormsModule, Button, ResponsiveDataTable, DataTable, DemoCard, DocIoList, MultiDatePicker, TextField, Nav, Breadcrumb, MonthYearPicker],
   templateUrl: './data-table-demo.html',
 })
 export class DataTableDemo {
@@ -77,6 +77,15 @@ export class DataTableDemo {
    handleMenuClick(menu: SideMenuItem) {
     console.log("Menu clicked:", menu.label);
     // Implement navigation or other logic here
+  }
+
+  onClearFilters() {
+    console.log("Clear filters clicked");
+    this.filtersApplied.set(false);
+  }
+
+  onAddNew() {
+    console.log("Add New clicked");
   }
   // Data for all variants
 nestedColumns = signal<ColumnNode[]>([
@@ -248,6 +257,7 @@ nestedData = signal<any[]>(Array.from({ length: 20 }, (_, i) => ({
 
   // Form controls for table state
   basicControl = new FormControl<TableStateEvent>({ searchText: '' });
+  filtersApplied = signal<boolean>(true);
  
   // Demo files for code viewer
   basicFiles = signal<DemoFile[]>([
@@ -331,5 +341,10 @@ export class BasicDemoComponent {
 
   onPinChanged(event: { column: ColumnDef; pinned: 'left' | 'right' | null }) {
     console.log('Pin changed:', event);
+  }
+
+  onApplyFilters() {
+    console.log('Apply filters clicked');
+    this.filtersApplied.set(true);
   }
 }

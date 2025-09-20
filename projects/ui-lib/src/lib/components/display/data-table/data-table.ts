@@ -79,6 +79,9 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
   pageSize = input<number>(50);
   enableSearch = input<boolean>(true);
   enablePagination = input<boolean>(true);
+  // Filters enable/indicator
+  enableFilters = input<boolean>(true);
+  filtersApplied = input<boolean>(false);
   enableRowSelection = input<boolean>(false);
   enableClickableRows = input<boolean>(false);
   rowSelectionKey = input<string>('id');
@@ -99,6 +102,10 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
   rowClick = output<T>();
   rowSelectionChange = output<any[]>();
   footerAction = output<TableActionEvent>();
+  // Clear filters action
+  clearFilters = output<void>();
+  // Apply filters action
+  applyFilters = output<void>();
 
   // Internal Signals
   private internalPageSize: number = this.pageSize();
@@ -335,6 +342,9 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
   }
 
   // Event Handlers
+  onClearFiltersClicked(): void {
+    this.clearFilters.emit();
+  }
   onSearchTextChanged(event: string | any): void {
     this.searchText = event;
     this.paginationEvent = {
@@ -422,19 +432,22 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> impl
     tpl = tpl ?? this.filtersTemplate() ?? undefined as any;
     if (!tpl) return;
     const data = { title: 'Advanced filters', template: tpl };
-    if (this.isMobile()) {
-      this.overlayStore.openFullScreen(MobileFiltersOverlay, {
-        data,
-        backdropOptions: { showBackdrop: true, blur: true }
-      });
-    } else {
-      this.overlayStore.openSidePanelRight(MobileFiltersOverlay, {
-        widthInPx: 380,
-        disableClose: false,
-        data,
-        backdropOptions: { showBackdrop: true, blur: true }
-      });
-    }
+    const openPromise = this.isMobile()
+      ? this.overlayStore.openFullScreen(MobileFiltersOverlay, {
+          data,
+          backdropOptions: { showBackdrop: true, blur: true }
+        })
+      : this.overlayStore.openSidePanelRight(MobileFiltersOverlay, {
+          widthInPx: 380,
+          disableClose: false,
+          data,
+          backdropOptions: { showBackdrop: true, blur: true }
+        });
+    openPromise.then(res => {
+      if (res && res.action === 'apply') {
+        this.applyFilters.emit();
+      }
+    });
   }
 
   // Row Selection Methods

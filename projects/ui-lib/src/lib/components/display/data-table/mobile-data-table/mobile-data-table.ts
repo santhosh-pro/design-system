@@ -34,6 +34,9 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
   enablePagination = input<boolean>(true);
   // Mobile enhancement: when true, pagination bar renders even if `enablePagination` is false
   alwaysShowPagination = input<boolean>(true);
+  // Filters enable/indicator
+  enableFilters = input<boolean>(true);
+  filtersApplied = input<boolean>(false);
   enableRowSelection = input<boolean>(false);
   enableClickableRows = input<boolean>(false);
   rowSelectionKey = input<string>('id');
@@ -54,6 +57,8 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
   rowClick = output<T>();
   rowSelectionChange = output<any[]>();
   footerAction = output<TableActionEvent>();
+  clearFilters = output<void>();
+  applyFilters = output<void>();
 
   // Local state
   selectedIds = signal<any[]>([]);
@@ -312,20 +317,17 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
     const tpl = this.filtersTemplate();
     if (!tpl) return;
     const data = { title: 'Advanced filters', template: tpl };
-    if (isPlatformBrowser(this.platformId) && window.matchMedia('(max-width: 768px)').matches) {
-      // Small screens: fullscreen overlay
-      this.overlayStore.openFullScreen(MobileFiltersOverlay, {
-        data,
-        backdropOptions: { showBackdrop: true, blur: true }
-      });
-    } else {
-      // Larger screens: right side panel
-      this.overlayStore.openSidePanelRight(MobileFiltersOverlay, {
-        widthInPx: 380,
-        disableClose: false,
-        data,
-        backdropOptions: { showBackdrop: true, blur: true }
-      });
-    }
+    const openPromise = (isPlatformBrowser(this.platformId) && window.matchMedia('(max-width: 768px)').matches)
+      ? this.overlayStore.openFullScreen(MobileFiltersOverlay, { data, backdropOptions: { showBackdrop: true, blur: true } })
+      : this.overlayStore.openSidePanelRight(MobileFiltersOverlay, { widthInPx: 380, disableClose: false, data, backdropOptions: { showBackdrop: true, blur: true } });
+    openPromise.then(res => {
+      if (res && res.action === 'apply') {
+        this.applyFilters.emit();
+      }
+    });
+  }
+
+  onClearFiltersClicked(): void {
+    this.clearFilters.emit();
   }
 }

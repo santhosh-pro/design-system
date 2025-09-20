@@ -19,7 +19,7 @@ export class MobileFiltersOverlay {
     @Inject(DIALOG_DATA) public data: FiltersOverlayData
   ) {}
 
-  close(): void {
-    this.dialogRef.close();
+  close(result?: any): void {
+    this.dialogRef.close(result);
   }
 }
