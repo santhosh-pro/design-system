@@ -52,7 +52,10 @@
   <!-- Table Container -->
   <div class="flex-1 overflow-auto relative h-full" [class.overflow-x-auto]="enableHorizontallyScrollable()">
     <div class="h-full flex flex-col">
-      <table #table class="w-full border-separate min-w-[1400px] flex-1" style="border-spacing: 0; table-layout: auto;">
+   <!-- NOTE: Row height is intentionally fixed (h-12 on body rows/cells). The table itself should not be flexed
+     to fill the container, otherwise browsers distribute extra height across rows and the visual row height
+     varies with the number of records. Hence, no flex-1 on <table>. -->
+   <table #table class="w-full border-separate min-w-[1400px]" style="border-spacing: 0; table-layout: auto;">
 
         <!-- Sticky Table Header -->
         <thead
@@ -102,7 +105,7 @@
         <!-- State-Based Content Rendering -->
         @switch (getState()) {
         @case ('initializing') {
-        <tbody class="relative z-0 flex-1">
+  <tbody class="relative z-0">
           <tr class="h-full">
             <td [attr.colspan]="getTotalColspan()" class="h-full px-6 py-0 bg-gray-50 align-middle">
               <div class="h-full flex items-center justify-center min-h-[400px]">
@@ -124,17 +127,17 @@
         @case ('loading') {
         @if (data().length > 0) {
         <!-- Show existing data during subsequent loads -->
-        <tbody class="relative z-0 flex-1">
+  <tbody class="relative z-0">
           @for (item of data(); track getItemId(item); let i = $index) {
           <tr (click)="onRowClicked(item)"
-            class="transition-all duration-200 hover:bg-blue-50 odd:bg-white even:bg-gray-100/60 border-b border-gray-200 group"
+            class="transition-all duration-200 hover:bg-blue-50 odd:bg-white even:bg-gray-100/60 border-b border-gray-200 group h-12"
             [class.cursor-pointer]="enableClickableRows()" [class.bg-blue-100]="isRowSelected(item)"
             [class.hover:bg-blue-200]="isRowSelected(item)">
 
             <!-- Expandable Column -->
             @if (expandableComponent()) {
             <td
-              class="sticky left-0 z-[70] bg-white w-12 px-2 py-1.5 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.05)] group-hover:bg-blue-50 transition-colors duration-200"
+              class="sticky left-0 z-[70] bg-white w-12 px-2 py-0 h-12 align-middle text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.05)] group-hover:bg-blue-50 transition-colors duration-200"
               [class.bg-blue-100]="isRowSelected(item)" [class.group-hover:bg-blue-200]="isRowSelected(item)">
               <div (click)="onRowExpandedClicked(i); $event.stopPropagation()"
                 class="mx-auto flex items-center justify-center h-[30px] w-[30px] rounded-full bg-gray-50 hover:bg-gray-100 cursor-pointer transition-all duration-500">
@@ -149,7 +152,7 @@
             <!-- Checkbox Column -->
             @if (enableRowSelection()) {
             <td
-              class="sticky z-[70] bg-white w-12 px-2 py-1.5 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.05)] group-hover:bg-blue-50 transition-colors duration-200"
+              class="sticky z-[70] bg-white w-12 px-2 py-0 h-12 align-middle text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.05)] group-hover:bg-blue-50 transition-colors duration-200"
               [ngClass]="{ 'left-12': expandableComponent(), 'left-0': !expandableComponent() }"
               [class.bg-blue-100]="isRowSelected(item)" [class.group-hover:bg-blue-200]="isRowSelected(item)">
               <input type="checkbox" [formControl]="getItemControl(item)" (click)="$event.stopPropagation()"
@@ -161,12 +164,15 @@
             <!-- Data Columns -->
             @for (column of allLeafColumns(); track column.key || $index) {
             <td
-              class="px-2 py-1.5 relative text-base text-gray-900 border-r border-gray-200 group-hover:bg-blue-50 transition-colors duration-200"
+              class="px-2 py-0 h-12 align-middle relative text-base text-gray-900 border-r border-gray-200 group-hover:bg-blue-50 transition-colors duration-200"
               [ngClass]="getCellClass(column)" [class.bg-blue-100]="isRowSelected(item)"
               [class.group-hover:bg-blue-200]="isRowSelected(item)">
-              <ui-table-cell-renderer [column]="column" [rowData]="item" [rowIndex]="i + 1" [isLastRow]="$last"
-                (actionPerformed)="onActionPerformed($event)">
-              </ui-table-cell-renderer>
+              <!-- Fixed row height wrapper to ensure consistent row height -->
+              <div class="h-12 w-full flex items-center truncate">
+                <ui-table-cell-renderer [column]="column" [rowData]="item" [rowIndex]="i + 1" [isLastRow]="$last"
+                  (actionPerformed)="onActionPerformed($event)">
+                </ui-table-cell-renderer>
+              </div>
             </td>
             }
           </tr>
@@ -186,7 +192,7 @@
           }
         </tbody>
         } @else {
-        <tbody class="relative z-0 flex-1">
+  <tbody class="relative z-0">
           <tr class="h-full">
             <td [attr.colspan]="getTotalColspan()" class="h-full px-6 py-0 bg-gray-50 align-middle">
               <div class="h-full flex items-center justify-center min-h-[400px]">
@@ -207,7 +213,7 @@
         }
 
         @case ('error') {
-        <tbody class="relative z-0 flex-1">
+  <tbody class="relative z-0">
           <tr class="h-full">
             <td [attr.colspan]="getTotalColspan()" class="h-full px-6 py-0 bg-gray-50 align-middle">
               <div class="h-full flex items-center justify-center">
@@ -240,17 +246,17 @@
         @case ('success') {
         @if (data().length > 0) {
         <!-- Success with Data - Same structure as loading case -->
-        <tbody class="relative z-0 flex-1">
+  <tbody class="relative z-0">
           @for (item of data(); track getItemId(item); let i = $index) {
           <tr (click)="onRowClicked(item)"
-            class="transition-all duration-200 hover:bg-blue-50 odd:bg-white even:bg-gray-100/60 border-b border-gray-200 group"
+            class="transition-all duration-200 hover:bg-blue-50 odd:bg-white even:bg-gray-100/60 border-b border-gray-200 group h-12"
             [class.cursor-pointer]="enableClickableRows()" [class.bg-blue-100]="isRowSelected(item)"
             [class.hover:bg-blue-200]="isRowSelected(item)">
 
             <!-- Same row structure as above -->
             @if (expandableComponent()) {
             <td
-              class="sticky left-0 z-[70] bg-white w-12 px-2 py-1.5 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.05)] group-hover:bg-blue-50 transition-colors duration-200"
+              class="sticky left-0 z-[70] bg-white w-12 px-2 py-0 h-12 align-middle text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.05)] group-hover:bg-blue-50 transition-colors duration-200"
               [class.bg-blue-100]="isRowSelected(item)" [class.group-hover:bg-blue-200]="isRowSelected(item)">
               <div (click)="onRowExpandedClicked(i); $event.stopPropagation()"
                 class="mx-auto flex items-center justify-center h-[30px] w-[30px] rounded-full bg-gray-50 hover:bg-gray-100 cursor-pointer transition-all duration-500">
@@ -264,7 +270,7 @@
 
             @if (enableRowSelection()) {
             <td
-              class="sticky z-[70] bg-white w-12 px-2 py-1.5 text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.05)] group-hover:bg-blue-50 transition-colors duration-200"
+              class="sticky z-[70] bg-white w-12 px-2 py-0 h-12 align-middle text-center border-r-2 border-gray-300 shadow-[2px_0_4px_rgba(0,0,0,0.05)] group-hover:bg-blue-50 transition-colors duration-200"
               [ngClass]="{ 'left-12': expandableComponent(), 'left-0': !expandableComponent() }"
               [class.bg-blue-100]="isRowSelected(item)" [class.group-hover:bg-blue-200]="isRowSelected(item)">
               <input type="checkbox" [formControl]="getItemControl(item)" (click)="$event.stopPropagation()"
@@ -275,12 +281,15 @@
 
             @for (column of allLeafColumns(); track column.key || $index) {
             <td
-              class="px-2 py-1.5 relative text-base text-gray-900 border-r border-gray-200 group-hover:bg-blue-50 transition-colors duration-200"
+              class="px-2 py-0 h-12 align-middle relative text-base text-gray-900 border-r border-gray-200 group-hover:bg-blue-50 transition-colors duration-200"
               [ngClass]="getCellClass(column)" [class.bg-blue-100]="isRowSelected(item)"
               [class.group-hover:bg-blue-200]="isRowSelected(item)">
-              <ui-table-cell-renderer [column]="column" [rowData]="item" [rowIndex]="i + 1" [isLastRow]="$last"
-                (actionPerformed)="onActionPerformed($event)">
-              </ui-table-cell-renderer>
+              <!-- Fixed row height wrapper to ensure consistent row height -->
+              <div class="h-12 w-full flex items-center truncate">
+                <ui-table-cell-renderer [column]="column" [rowData]="item" [rowIndex]="i + 1" [isLastRow]="$last"
+                  (actionPerformed)="onActionPerformed($event)">
+                </ui-table-cell-renderer>
+              </div>
             </td>
             }
           </tr>
