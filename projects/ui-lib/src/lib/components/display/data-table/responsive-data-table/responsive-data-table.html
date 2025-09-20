@@ -1,3 +1,7 @@
+<ng-template #filtersTpl>
+  <ng-content></ng-content>
+</ng-template>
+
 @if (!isMobile()) {
   <ui-data-table
     [columnGroups]="columnGroups()"
@@ -18,7 +22,7 @@
     [enableHorizontallyScrollable]="enableHorizontallyScrollable()"
     [initialValue]="initialValue()"
     [showLoadingOnlyInitial]="showLoadingOnlyInitial()"
-    [filtersTemplate]="filtersTemplate()"
+  [filtersTemplate]="filtersTemplate() || filtersTpl"
     (pageChange)="pageChange.emit($event)"
     (sortChange)="sortChange.emit($event)"
     (stateChange)="stateChange.emit($event)"
@@ -26,7 +30,6 @@
     (rowClick)="rowClick.emit($event)"
     (rowSelectionChange)="rowSelectionChange.emit($event)"
     (footerAction)="footerAction.emit($event)">
-    <ng-content></ng-content>
   </ui-data-table>
 } @else {
   <ui-mobile-data-table
@@ -47,7 +50,7 @@
     [footerComponent]="footerComponent()"
     [initialValue]="initialValue()"
     [showLoadingOnlyInitial]="showLoadingOnlyInitial()"
-    [filtersTemplate]="filtersTemplate()"
+  [filtersTemplate]="filtersTemplate() || filtersTpl"
     (pageChange)="pageChange.emit($event)"
     (sortChange)="sortChange.emit($event)"
     (stateChange)="stateChange.emit($event)"
@@ -55,6 +58,5 @@
     (rowClick)="rowClick.emit($event)"
     (rowSelectionChange)="rowSelectionChange.emit($event)"
     (footerAction)="footerAction.emit($event)">
-    <ng-content></ng-content>
   </ui-mobile-data-table>
 }

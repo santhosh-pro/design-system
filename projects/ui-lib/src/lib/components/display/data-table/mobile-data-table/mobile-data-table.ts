@@ -30,6 +30,8 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
   pageSize = input<number>(50);
   enableSearch = input<boolean>(true);
   enablePagination = input<boolean>(true);
+  // Mobile enhancement: when true, pagination bar renders even if `enablePagination` is false
+  alwaysShowPagination = input<boolean>(true);
   enableRowSelection = input<boolean>(false);
   enableClickableRows = input<boolean>(false);
   rowSelectionKey = input<string>('id');
@@ -67,6 +69,9 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
   private onWinScroll?: () => void;
   private paginationLeft = signal<number>(0);
   private paginationWidth = signal<number>(0);
+
+  // Filters UI state (mobile-only)
+  filtersExpanded = signal<boolean>(false);
 
   selectAllControl = new FormControl<boolean>(false, { nonNullable: true });
   itemControls = new Map<T, FormControl<boolean>>();
@@ -340,5 +345,9 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
       width: `${width}px`,
       bottom: '0px'
     };
+  }
+
+  toggleFilters(): void {
+    this.filtersExpanded.update(v => !v);
   }
 }

@@ -1,16 +1,31 @@
 <div #root class="flex flex-col bg-white rounded-2xl overflow-hidden shadow-md border border-gray-200">
-  <!-- Search & Filters -->
-  <div class="flex flex-col px-4 py-3 border-b border-gray-200 bg-white gap-3 items-stretch">
+  <!-- Search & Filters (mobile sticky header) -->
+  <div class="flex flex-col px-4 py-3 border-b border-gray-200 bg-white/95 backdrop-blur gap-3 items-stretch sticky top-0 z-30 md:static md:z-auto md:bg-white md:backdrop-blur-0">
     @if (enableSearch()) {
-      <ui-search-field placeholder="Search" type="search" [width]="'md'" (valueChange)="onSearchTextChanged($event)"></ui-search-field>
+      <div class="w-full">
+        <ui-search-field placeholder="Search" type="search" [width]="'full'" (valueChange)="onSearchTextChanged($event)"></ui-search-field>
+      </div>
     }
-    <div class="flex flex-col gap-2 items-stretch">
-      @if (filtersTemplate()) {
-        <ng-container [ngTemplateOutlet]="filtersTemplate()!"></ng-container>
-      } @else {
-        <ng-content></ng-content>
+    <!-- Advanced filters toggle (mobile) -->
+    @if (filtersTemplate()) {
+      <div class="flex items-center justify-between">
+        <div class="text-[11px] uppercase tracking-wide text-gray-400">Advanced filters</div>
+        <button type="button" class="h-8 w-8 inline-flex items-center justify-center rounded-full text-gray-600 hover:text-gray-900 hover:bg-gray-100 active:bg-gray-100 transition-colors" aria-label="Toggle filters" (click)="toggleFilters()">
+          <svg class="w-5 h-5 transition-transform duration-200" [class.rotate-180]="filtersExpanded()" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z" clip-rule="evenodd" />
+          </svg>
+        </button>
+      </div>
+      @if (filtersExpanded()) {
+        <div class="flex flex-col gap-2 items-stretch">
+          <ng-container [ngTemplateOutlet]="filtersTemplate()!"></ng-container>
+        </div>
       }
-    </div>
+    } @else {
+      <div class="flex flex-col gap-2 items-stretch">
+        <ng-content></ng-content>
+      </div>
+    }
   </div>
 
   <!-- States & List -->
@@ -111,7 +126,7 @@
     </div>
 
     <!-- Fixed bottom pagination (mobile only, aligned to component bounds) -->
-    @if (enablePagination()) {
+    @if (enablePagination() || alwaysShowPagination()) {
       <div class="md:hidden fixed z-40 border-t border-gray-200 bg-white/95 backdrop-blur px-3 pt-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] shadow-lg" [ngStyle]="getFixedPaginationStyle()">
         <ui-pagination [isSimple]="true" [pageSize]="pageSize()" [totalItems]="totalCount()" (pageChange)="onPageChange($event)"></ui-pagination>
       </div>
