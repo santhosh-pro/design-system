@@ -129,6 +129,9 @@ export class DesktopDataTable<T> extends BaseControlValueAccessor<TableStateEven
 
   // Expose current page for two-way binding from parents via [(pageNumber)]
   pageNumber = model<number>(1);
+  // New: expose current sort for two-way binding from parents via [(sortBy)] and [(sortDirection)]
+  sortBy = model<string | null>(null);
+  sortDirection = model<'asc' | 'desc' | '' | null>(null);
 
   // Internal Signals
   selectedIds = signal<any[]>([]);
@@ -270,6 +273,33 @@ export class DesktopDataTable<T> extends BaseControlValueAccessor<TableStateEven
       }
     });
 
+    // Sync external sort models into internal state and emit state changes.
+    effect(() => {
+      const key = this.sortBy();
+      const dir = this.sortDirection();
+      // Ignore if neither provided
+      if (key == null && dir == null) return;
+      const currentKey = this.tableSortEvent?.key ?? null;
+      const currentDir = (this.tableSortEvent?.direction as any) ?? null;
+      if (currentKey === key && currentDir === dir) return;
+      // Update internal sort state
+      this.tableSortEvent = { key: key ?? undefined, direction: dir ?? undefined };
+      const shouldReset = this.resetPageOnQueryChange();
+      const nextPage = shouldReset ? 1 : this.pageNumber();
+      const tableStateEvent: TableStateEvent = {
+        searchText: this.searchText,
+        paginationEvent: {
+          pageNumber: nextPage,
+          pageSize: this.paginationEvent?.pageSize ?? this.pageSize()
+        },
+        tableSortEvent: this.tableSortEvent,
+      };
+      if (shouldReset) this.pageNumber.set(1);
+      // Do not emit sortChange here to avoid loops; only emit consolidated state
+      this.emitTableStateChanged(tableStateEvent);
+      this.onValueChange(tableStateEvent);
+    });
+
     // SSR-safe Mobile detection
     if (isPlatformBrowser(this.platformId)) {
       this.mediaQueryList = window.matchMedia('(max-width: 768px)');
@@ -295,6 +325,10 @@ export class DesktopDataTable<T> extends BaseControlValueAccessor<TableStateEven
   }
 
   ngAfterViewInit(): void {
+    // Respect any pre-set sort from models when initializing
+    if (this.sortBy() != null || this.sortDirection() != null) {
+      this.tableSortEvent = { key: this.sortBy() ?? undefined, direction: this.sortDirection() ?? undefined };
+    }
     this.paginationEvent = {
       pageNumber: this.pageNumber(),
       pageSize: this.pageSize(),
@@ -357,6 +391,11 @@ export class DesktopDataTable<T> extends BaseControlValueAccessor<TableStateEven
         this.pageNumber.set(value.paginationEvent.pageNumber);
       }
       this.tableSortEvent = value.tableSortEvent;
+      // Reflect into two-way models
+      if (value.tableSortEvent) {
+        this.sortBy.set(value.tableSortEvent.key ?? null);
+        this.sortDirection.set((value.tableSortEvent.direction as any) ?? null);
+      }
     }
   }
 
@@ -414,6 +453,10 @@ export class DesktopDataTable<T> extends BaseControlValueAccessor<TableStateEven
 
   onSortChanged(event: TableSortEvent): void {
     this.tableSortEvent = event;
+    // Update two-way models
+    this.sortBy.set(event.key ?? null);
+    this.sortDirection.set((event.direction as any) ?? null);
+    // Nothing else to do for header indicators; the directive receives models via bindings
     const shouldReset = this.resetPageOnQueryChange();
     const nextPage = shouldReset ? 1 : this.pageNumber();
     const tableStateEvent: TableStateEvent = {

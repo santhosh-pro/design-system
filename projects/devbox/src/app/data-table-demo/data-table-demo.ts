@@ -17,6 +17,8 @@ export class DataTableDemo {
   ExpandRowDemo=ExpandRowDemo;
 
   pageNumber = signal(2);
+  sortBy = signal<string | null>('name');
+  sortDirection = signal<'asc' | 'desc' | '' | null>('asc');
 
    menus = signal<SideMenuItem[]>([
 

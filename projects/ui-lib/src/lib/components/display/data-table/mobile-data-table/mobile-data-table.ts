@@ -64,6 +64,9 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
 
   // Two-way page number for parent control
   pageNumber = model<number>(1);
+  // New: two-way sort state for parent control
+  sortBy = model<string | null>(null);
+  sortDirection = model<'asc' | 'desc' | '' | null>(null);
 
   // Local state
   selectedIds = signal<any[]>([]);
@@ -111,6 +114,27 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
         this.updateSelectAllControl();
       }
     });
+
+    // Sync external sort models into internal state and emit state changes
+    effect(() => {
+      const key = this.sortBy();
+      const dir = this.sortDirection();
+      if (key == null && dir == null) return;
+      const currentKey = this.tableSortEvent?.key ?? null;
+      const currentDir = (this.tableSortEvent?.direction as any) ?? null;
+      if (currentKey === key && currentDir === dir) return;
+      this.tableSortEvent = { key: key ?? undefined, direction: dir ?? undefined };
+      const shouldReset = this.resetPageOnQueryChange();
+      const nextPage = shouldReset ? 1 : this.pageNumber();
+      const state: TableStateEvent = {
+        searchText: this.searchText,
+        paginationEvent: { pageNumber: nextPage, pageSize: this.paginationEvent?.pageSize ?? this.pageSize() },
+        tableSortEvent: this.tableSortEvent
+      };
+      if (shouldReset) this.pageNumber.set(1);
+      this.emitTableStateChanged(state);
+      this.onValueChange(state);
+    });
   }
 
   protected onValueReady(value: TableStateEvent): void {
@@ -125,6 +149,10 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
   }
 
   ngAfterViewInit(): void {
+    // Respect any pre-set sort from models when initializing
+    if (this.sortBy() != null || this.sortDirection() != null) {
+      this.tableSortEvent = { key: this.sortBy() ?? undefined, direction: this.sortDirection() ?? undefined };
+    }
     this.paginationEvent = { pageNumber: this.pageNumber(), pageSize: this.pageSize() };
     const state: TableStateEvent = { searchText: '', paginationEvent: this.paginationEvent, tableSortEvent: this.tableSortEvent };
     this.pageChange.emit(this.paginationEvent);
@@ -288,6 +316,10 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
       this.searchText = value.searchText ?? '';
       this.paginationEvent = value.paginationEvent;
       this.tableSortEvent = value.tableSortEvent;
+      if (value.tableSortEvent) {
+        this.sortBy.set(value.tableSortEvent.key ?? null);
+        this.sortDirection.set((value.tableSortEvent.direction as any) ?? null);
+      }
     }
   }
   private emitTableStateChanged(state: TableStateEvent): void {

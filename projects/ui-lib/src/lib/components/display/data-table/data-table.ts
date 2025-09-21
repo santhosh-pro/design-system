@@ -26,6 +26,9 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> {
   errorMessage = input<string | null>(null);
 
   pageSize = model<number>(50);
+  // New: two-way sortable state models
+  sortBy = model<string | null>(null);
+  sortDirection = model<'asc' | 'desc' | '' | null>(null);
   enableSearch = input<boolean>(true);
   enablePagination = input<boolean>(true);
   enableFilters = input<boolean>(true);

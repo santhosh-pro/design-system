@@ -4,7 +4,9 @@ import {
   ElementRef,
   OnInit,
   output,
-  Renderer2
+  Renderer2,
+  input,
+  effect
 } from '@angular/core';
 
 @Directive({
@@ -15,22 +17,43 @@ export class SortableTable implements OnInit, AfterViewInit {
 
   sortChange = output<TableSortEvent>();
 
+  // New: accept externally controlled sort so we can render initial icon state
+  sortKey = input<string | null>(null);
+  sortDirection = input<'asc' | 'desc' | '' | null>(null);
+
   private currentKey: string = '';
   private currentDirection: 'asc' | 'desc' | '' = '';
+  private viewInitialized = false;
 
   constructor(private el: ElementRef, private renderer: Renderer2) {
+    // React to external sort changes (after headers exist, this will render icons)
+    effect(() => {
+      const key = this.sortKey();
+      const dir = this.sortDirection();
+      // Skip if nothing specified
+      if (key == null && dir == null) return;
+      // Apply only if changed from current
+      const normalizedKey = key ?? '';
+      const normalizedDir = (dir ?? '') as '' | 'asc' | 'desc';
+      if (this.currentKey === normalizedKey && this.currentDirection === normalizedDir) return;
+      this.currentKey = normalizedKey;
+      this.currentDirection = normalizedDir;
+      // Only try to render after view is initialized
+      if (this.viewInitialized) {
+        this.applyExternalSortIndicators();
+      }
+    });
   }
 
-  ngOnInit() {
-
-  }
+  ngOnInit() {}
 
   ngAfterViewInit(): void {
+    this.viewInitialized = true;
     // Find all <th> elements inside the table with data-sortable-key
-    const thElements = this.el.nativeElement.querySelectorAll('th[data-sortable-key]');
+    const thElements = this.el?.nativeElement?.querySelectorAll?.('th[data-sortable-key]');
 
     // Add click listeners to each <th>
-    thElements.forEach((th: HTMLElement) => {
+    thElements?.forEach((th: HTMLElement) => {
       // this.renderer.addClass(th, 'flex');
       this.renderer.setStyle(th, 'cursor', 'pointer');
 
@@ -41,6 +64,31 @@ export class SortableTable implements OnInit, AfterViewInit {
       // Add click listener for sorting
       this.renderer.listen(th, 'click', () => this.onHeaderClick(th));
     });
+
+    // After headers are ready, apply any externally provided sort state
+    this.applyExternalSortIndicators();
+  }
+
+  private applyExternalSortIndicators() {
+    if (!this.viewInitialized || !this.el?.nativeElement) return;
+    const thElements: NodeListOf<HTMLElement> = this.el.nativeElement.querySelectorAll('th[data-sortable-key]');
+    // Clear any existing icons first
+    thElements?.forEach((header: HTMLElement) => {
+      const icon = header.querySelector('.sort-icon');
+      if (icon) icon.remove();
+      const container = header.querySelector('.sort-icon-container');
+      if (container) container.remove();
+    });
+
+    if (!this.currentKey || !this.currentDirection) {
+      // Nothing to render
+      return;
+    }
+    const target = Array.from(thElements || []).find(h => h.getAttribute('data-sortable-key') === this.currentKey) || null;
+    if (!target) return;
+    if (this.currentDirection === 'asc' || this.currentDirection === 'desc') {
+      this.addSvgIcon(target, this.currentDirection);
+    }
   }
 
   // Handle hover enter - show the up arrow

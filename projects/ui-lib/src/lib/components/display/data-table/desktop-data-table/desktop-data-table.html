@@ -70,7 +70,7 @@
         <thead
           class="sticky top-0 z-[80] flex-shrink-0 bg-gradient-to-b from-gray-50 to-gray-100/95 backdrop-blur supports-[backdrop-filter]:bg-gray-100/80 shadow-sm border-b border-gray-200">
           @for (level of getHeaderLevels(); track level) {
-          <tr sortableTable (sortChange)="onSortChanged($event)"
+          <tr sortableTable [sortKey]="sortBy()" [sortDirection]="sortDirection()" (sortChange)="onSortChanged($event)"
             class="text-xs font-semibold text-gray-700 uppercase tracking-wide"
             [class.opacity-50]="getState() === 'initializing'"
             [class.pointer-events-none]="getState() === 'initializing'">
