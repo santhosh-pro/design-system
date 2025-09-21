@@ -1,6 +1,6 @@
 {
   "name": "@santhoshsept94.pro/ui-lib",
-  "version": "0.0.97",
+  "version": "0.0.98",
   "description": "UI component library built with Angular and TailwindCSS",
   "peerDependencies": {
     "@angular/common": "^20.1.0",
