@@ -1,6 +1,8 @@
 /*
  * Public API Surface of ui-lib
  */
+//
+export * from './lib/core/base-control-value-accessor';
 
 // ========== DISPLAY ==========
 export * from './lib/components/display/data-table/mobile-data-table/mobile-data-table';
