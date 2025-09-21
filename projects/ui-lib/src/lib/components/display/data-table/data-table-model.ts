@@ -37,6 +37,19 @@ export interface ColumnDef {
   formatter?: (value: any) => any;
   objectFormatter?: (item: any) => any;
   propertyStyle?: (value: any) => any;
+  /**
+   * Mobile-only display configuration.
+   * - slot: choose where this column appears on mobile cards
+   *   - 'primary': main title line (left)
+   *   - 'summary': secondary line under title
+   *   - 'detail': appears in the expandable details grid
+   *   - 'hidden': excluded from mobile entirely (still visible on desktop)
+   * - order: optional ordering hint for details grid when multiple columns are present
+   */
+  mobile?: {
+    slot?: 'primary' | 'summary' | 'detail' | 'hidden';
+    order?: number;
+  };
 }
 
 export interface TextConfig {

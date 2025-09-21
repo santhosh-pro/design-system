@@ -97,7 +97,7 @@ nestedColumns = signal<ColumnNode[]>([
     title: 'User Info',
     alignment: 'center',
     children: [
-      { title: 'ID', key: 'id', type: 'text', alignment: 'left', sortKey: 'id' },
+      { title: 'ID', key: 'id', type: 'text', alignment: 'left', sortKey: 'id', mobile: { slot: 'hidden' } },
       {
         title: 'Personal Details',
         alignment: 'center',
@@ -108,6 +108,7 @@ nestedColumns = signal<ColumnNode[]>([
             type: 'text',
             alignment: 'left',
             sortKey: 'name',
+            mobile: { slot: 'primary' },
            
           },
           {
@@ -116,6 +117,7 @@ nestedColumns = signal<ColumnNode[]>([
             type: 'text',
             alignment: 'left',
             sortKey: 'email',
+            mobile: { slot: 'summary' },
           },
           {
             title: 'Phone',
@@ -132,7 +134,7 @@ nestedColumns = signal<ColumnNode[]>([
   {
     title: 'Status Info',
     children: [
-      { title: 'Age', key: 'age', type: 'text', alignment: 'center', sortKey: 'age' },
+      { title: 'Age', key: 'age', type: 'text', alignment: 'center', sortKey: 'age'},
       {
         title: 'Status',
         key: 'status',
@@ -145,8 +147,8 @@ nestedColumns = signal<ColumnNode[]>([
           ],
         },
       },
-      { title: 'Role', key: 'role', type: 'text', sortKey: 'role', alignment: 'left' },
-      { title: 'Location', key: 'location', type: 'text', sortKey: 'location', alignment: 'left' },
+      { title: 'Role', key: 'role', type: 'text', sortKey: 'role', alignment: 'left',},
+      { title: 'Location', key: 'location', type: 'text', sortKey: 'location', alignment: 'left'},
     ]
   },
   {
@@ -160,16 +162,16 @@ nestedColumns = signal<ColumnNode[]>([
         alignment: 'center',
         dateConfig: { dateFormat: 'MMM d, y', showIcon: true },
       },
-      { title: 'Department', key: 'department', type: 'text', sortKey: 'department', alignment: 'center' },
-      { title: 'Manager', key: 'manager', type: 'text', sortKey: 'manager', alignment: 'center' },
-      { title: 'Salary', key: 'salary', type: 'text', sortKey: 'salary', alignment: 'center' },
+      { title: 'Department', key: 'department', type: 'text', sortKey: 'department', alignment: 'center'},
+      { title: 'Manager', key: 'manager', type: 'text', sortKey: 'manager', alignment: 'center', },
+      { title: 'Salary', key: 'salary', type: 'text', sortKey: 'salary', alignment: 'center',},
     ]
   },
   {
     title: 'Other Details',
     children: [
-      { title: 'Country', key: 'country', type: 'text', sortKey: 'country', alignment: 'left' },
-      { title: 'City', key: 'city', type: 'text', sortKey: 'city', alignment: 'left' },
+      { title: 'Country', key: 'country', type: 'text', sortKey: 'country', alignment: 'left', mobile: { slot: 'detail', order: 9 } },
+      { title: 'City', key: 'city', type: 'text', sortKey: 'city', alignment: 'left', mobile: { slot: 'detail', order: 10 } },
     ]
   },
   {
@@ -213,13 +215,14 @@ nestedData = signal<any[]>(Array.from({ length: 20 }, (_, i) => ({
 
   // Column definitions for all variants
   basicColumns = signal<ColumnDef[]>([
-    { title: 'ID', key: 'id', type: 'text', alignment: 'left', sortKey: 'id' },
-    { title: 'Name', key: 'name', type: 'text', alignment: 'left', sortKey: 'name' },
-    { title: 'Age', key: 'age', type: 'custom', component:ExpandRowDemo, alignment: 'center', sortKey: 'age' },
+    { title: 'ID', key: 'id', type: 'text', alignment: 'left', sortKey: 'id', mobile: { slot: 'hidden' } },
+    { title: 'Name', key: 'name', type: 'text', alignment: 'left', sortKey: 'name', mobile: { slot: 'primary' } },
+    { title: 'Age', key: 'age', type: 'custom', component:ExpandRowDemo, alignment: 'center', sortKey: 'age', mobile: { slot: 'detail', order: 2 } },
     {
       title: 'Status',
       key: 'status',
       type: 'badge',
+      mobile: { slot: 'summary' },
       badgeConfig: {
         properties: [
           { data: 'Active', displayText: 'Active', backgroundColorClass: 'bg-green-100', textColorClass: 'text-green-800' },
@@ -227,20 +230,20 @@ nestedData = signal<any[]>(Array.from({ length: 20 }, (_, i) => ({
         ],
       },
     },
-    { title: 'Email', key: 'email', type: 'text', alignment: 'left', sortKey: 'email' },
+    { title: 'Email', key: 'email', type: 'text', alignment: 'left', sortKey: 'email', mobile: { slot: 'detail', order: 1 } },
   ]);
 
   selectionColumns = signal<ColumnDef[]>([
-    { title: 'ID', key: 'id', type: 'text', alignment: 'left', sortKey: 'id' },
-    { title: 'Name', key: 'name', type: 'text', alignment: 'left', sortKey: 'name' },
-    { title: 'Role', key: 'role', type: 'text', alignment: 'center', sortKey: 'role' },
-    { title: 'Department', key: 'department', type: 'text', alignment: 'left', sortKey: 'department' },
+    { title: 'ID', key: 'id', type: 'text', alignment: 'left', sortKey: 'id', mobile: { slot: 'hidden' } },
+    { title: 'Name', key: 'name', type: 'text', alignment: 'left', sortKey: 'name', mobile: { slot: 'primary' } },
+    { title: 'Role', key: 'role', type: 'text', alignment: 'center', sortKey: 'role', mobile: { slot: 'summary' } },
+    { title: 'Department', key: 'department', type: 'text', alignment: 'left', sortKey: 'department', mobile: { slot: 'detail', order: 1 } },
   ]);
 
   actionColumns = signal<ColumnDef[]>([
-    { title: 'ID', key: 'id', type: 'text', alignment: 'left', sortKey: 'id' },
-    { title: 'Name', key: 'name', type: 'text', alignment: 'left', sortKey: 'name' },
-    { title: 'Email', key: 'email', type: 'text', alignment: 'left', sortKey: 'email' },
+    { title: 'ID', key: 'id', type: 'text', alignment: 'left', sortKey: 'id', mobile: { slot: 'hidden' } },
+    { title: 'Name', key: 'name', type: 'text', alignment: 'left', sortKey: 'name', mobile: { slot: 'primary' } },
+    { title: 'Email', key: 'email', type: 'text', alignment: 'left', sortKey: 'email', mobile: { slot: 'summary' } },
     {
       title: 'Actions',
       key: 'actions',

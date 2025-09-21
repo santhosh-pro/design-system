@@ -290,13 +290,17 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
   }
 
   private displayColumns(): ColumnDef[] {
-    return this.allLeafColumns().filter(c => c.type !== 'checkbox' && c.type !== 'actions');
+    // Exclude checkbox/actions and honor explicit mobile.hidden
+    return this.allLeafColumns().filter(c => c.type !== 'checkbox' && c.type !== 'actions' && (c as any)?.mobile?.slot !== 'hidden');
   }
 
   getPrimaryColumn(): ColumnDef | null {
     const cols = this.displayColumns();
     if (cols.length === 0) return null;
-    // Prefer a text column if present
+    // 1) Explicit primary wins
+    const explicit = cols.find(c => (c as any)?.mobile?.slot === 'primary');
+    if (explicit) return explicit;
+    // 2) Backward compat: prefer first text column
     const text = cols.find(c => c.type === 'text');
     return text ?? cols[0];
   }
@@ -304,7 +308,12 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
   getDetailColumns(): ColumnDef[] {
     const primary = this.getPrimaryColumn();
     const summary = this.getMobileSummaryColumn();
-    return this.displayColumns().filter(c => c !== primary && c !== summary);
+    const cols = this.displayColumns();
+    const explicit = cols.filter(c => (c as any)?.mobile?.slot === 'detail' && c !== primary && c !== summary)
+      .sort((a, b) => (((a as any).mobile?.order ?? 0) - ((b as any).mobile?.order ?? 0)));
+    const rest = cols.filter(c => c !== primary && c !== summary && !(c as any)?.mobile?.slot);
+    // Return explicit details first (ordered), then all remaining non-explicit columns
+    return [...explicit, ...rest];
   }
 
   getActionColumn(): ColumnDef | null {
@@ -339,18 +348,24 @@ export class MobileDataTable<T> extends BaseControlValueAccessor<TableStateEvent
   getMobileSummaryColumn(): ColumnDef | null {
     const cols = this.displayColumns();
     const primary = this.getPrimaryColumn();
-    // Prefer a column explicitly marked as mobile summary
+    // 1) Explicit new API
+    const explicit = cols.find(c => (c as any)?.mobile?.slot === 'summary');
+    if (explicit && explicit !== primary) return explicit;
+    // 2) Backward compat with previous customConfig flag
     const flagged = cols.find(c => (c as any)?.customConfig?.data?.mobileSummary === true);
     if (flagged && flagged !== primary) return flagged;
-    // Otherwise pick the first text column that's not primary
-    const fallback = cols.find(c => c.type === 'text' && c !== primary);
-    return fallback ?? null;
+    // 3) Otherwise, no summary by default; remaining columns will appear under details
+    return null;
   }
 
   getExpandableDetailColumns(): ColumnDef[] {
-    // All display columns except the primary. We allow the summary column to appear in expanded details as well to show "all fields".
+    // All display columns except the primary. Summary may also appear here.
     const primary = this.getPrimaryColumn();
-    return this.displayColumns().filter(c => c !== primary);
+    const cols = this.displayColumns();
+    const explicit = cols.filter(c => (c as any)?.mobile?.slot === 'detail' && c !== primary)
+      .sort((a, b) => (((a as any).mobile?.order ?? 0) - ((b as any).mobile?.order ?? 0)));
+    const rest = cols.filter(c => c !== primary && (c as any)?.mobile?.slot !== 'detail');
+    return [...explicit, ...rest];
   }
 
   hasDetailsToExpand(): boolean {
