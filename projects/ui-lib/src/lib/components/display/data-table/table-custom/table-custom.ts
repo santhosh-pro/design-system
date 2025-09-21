@@ -1,5 +1,5 @@
 import {Component, input, Input, output} from '@angular/core'; 
-import { TableActionEvent } from '../desktop-data-table/desktop-data-table';
+import { TableActionEvent } from '../data-table-model';
 
 @Component({
   standalone: true,

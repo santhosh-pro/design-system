@@ -9,6 +9,7 @@ export * from './lib/components/display/data-table/data-table';
 export * from './lib/components/display/data-table/table-custom/table-custom';
 export * from './lib/components/display/data-table/no-data-table';
 export * from './lib/components/display/pagination/pagination';
+export * from './lib/components/display/data-table/data-table-model';
 
 // ========== FEEDBACK ==========
 export * from './lib/components/feedback/loader/loader';
@@ -70,6 +71,7 @@ export * from './lib/components/misc/app-svg-icon/lib/angular-svg-icon.module';
 
 export * from './lib/components/misc/breadcrumb/breadcrumb';
 export * from './lib/components/display/data-table/dynamic-renderer';
+export * from './lib/components/display/data-table/data-table-model';
 export * from './lib/components/misc/debounce';
 export * from './lib/components/misc/humanize-form-messages';
 export * from './lib/core/form-errors';

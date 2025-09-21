@@ -11,7 +11,7 @@ import { TableSortEvent } from '../sortable-table';
 import { SearchField } from '../../../forms/text/search-field/search-field';
 import { OverlayStore } from '../../../overlay/overlay';
 import { MobileFiltersOverlay } from './filters-overlay/filters-overlay';
-import { ColumnDef, ColumnNode, ContextMenuActionConfig, TableActionEvent, TableStateEvent } from '../desktop-data-table/desktop-data-table';
+import { TableStateEvent, ColumnNode, TableActionEvent, ColumnDef, ContextMenuActionConfig } from '../data-table-model';
 
 @Component({
   selector: 'ui-mobile-data-table',

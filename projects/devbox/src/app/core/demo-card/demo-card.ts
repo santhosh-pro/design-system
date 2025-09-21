@@ -20,6 +20,7 @@ export interface DocIO {
 
 @Component({
   selector: 'app-demo-card',
+  standalone: true,
   templateUrl: './demo-card.html',
 })
 export class DemoCard {

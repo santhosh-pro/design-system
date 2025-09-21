@@ -16,6 +16,7 @@ import { FormatMonthYearPipe } from './format-month-year-pipe';
 
 @Component({
   selector: 'ui-month-year-picker',
+  standalone: true,
   imports: [
     HumanizeFormMessagesPipe,
     FormatMonthYearPipe,

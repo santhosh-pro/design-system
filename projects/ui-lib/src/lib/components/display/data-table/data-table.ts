@@ -5,7 +5,8 @@ import { MobileDataTable } from './mobile-data-table/mobile-data-table';
 import { PaginationEvent } from '../pagination/pagination';
 import { TableSortEvent } from './sortable-table';
 import { BaseControlValueAccessor } from '../../../core/base-control-value-accessor';
-import { ColumnNode, DesktopDataTable, TableActionEvent, TableStateEvent } from './desktop-data-table/desktop-data-table';
+import { DesktopDataTable } from './desktop-data-table/desktop-data-table';
+import { ColumnNode, TableActionEvent, TableStateEvent } from './data-table-model';
 
 @Component({
   selector: 'ui-data-table',

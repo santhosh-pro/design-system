@@ -10,6 +10,7 @@ export interface DocIO {
 
 @Component({
   selector: 'app-doc-io-list',
+  standalone: true,
   imports: [],
   templateUrl: './doc-io-list.html',
 })

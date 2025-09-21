@@ -28,6 +28,7 @@ import { BaseControlValueAccessor } from '../../../../core/base-control-value-ac
 import { DynamicRenderer } from './../dynamic-renderer';
 import { ContextMenuButtonAction } from '../../../overlay/context-menu-button/context-menu-button';
 import { SortableTable, TableSortEvent } from './../sortable-table';
+import { ColumnDef, ColumnGroup, ColumnNode, HeaderCell, TableActionEvent, TableStateEvent, ContextMenuActionConfig, BadgeConfigProperty } from '../data-table-model';
 import { SearchField } from '../../../forms/text/search-field/search-field';
 import { resolveTemplateWithObject } from '../../../../core/template-resolver';
 import { TableCellRenderer } from './../table-cell-renderer/table-cell-renderer';
@@ -43,14 +44,14 @@ interface RowSelectionEvent {
 @Component({
   selector: 'ui-desktop-data-table',
   imports: [
-     CommonModule,
-        ReactiveFormsModule,
-        DynamicRenderer,
-        // Header and controls
-        SortableTable,
-        SearchField,
-        Pagination,
-      TableCellRenderer
+    CommonModule,
+    ReactiveFormsModule,
+    DynamicRenderer,
+    // Header and controls
+    SortableTable,
+    SearchField,
+    Pagination,
+    TableCellRenderer
   ],
   templateUrl: './desktop-data-table.html',
 })
@@ -136,20 +137,20 @@ export class DesktopDataTable<T> extends BaseControlValueAccessor<TableStateEven
     if (!this.showLoadingOnlyInitial()) {
       return this.isLoading();
     }
-    
+
     // For initial load only: show loading spinner when isLoading=true AND (no data OR first time)
     return this.isLoading() && (
-      this.data().length === 0 || 
+      this.data().length === 0 ||
       !this.hasEverHadData()
     );
   });
 
   isDataLoading = computed(() => {
     // Show existing data during loading for subsequent loads when showLoadingOnlyInitial=true
-    return this.showLoadingOnlyInitial() && 
-           this.isLoading() && 
-           this.data().length > 0 && 
-           this.hasEverHadData();
+    return this.showLoadingOnlyInitial() &&
+      this.isLoading() &&
+      this.data().length > 0 &&
+      this.hasEverHadData();
   });
 
   isErrorState = computed(() => this.hasError() || this._hasLocalError());
@@ -161,27 +162,27 @@ export class DesktopDataTable<T> extends BaseControlValueAccessor<TableStateEven
     if (!this.columnGroups() || this.columnGroups().length === 0) {
       return 'empty';
     }
-    
+
     // PRIORITY 1: Show initial loading spinner (blocks content)
     if (this.isInitialLoading()) {
       return 'initializing';
     }
-    
+
     // PRIORITY 2: Show data during subsequent loading (no spinner, just data)
     if (this.isDataLoading()) {
       return 'loading';
     }
-    
+
     // PRIORITY 3: Show error state
     if (this.isErrorState()) {
       return 'error';
     }
-    
+
     // PRIORITY 4: Show success with data
     if (this.isSuccess() && this.data().length > 0) {
       return 'success';
     }
-    
+
     // PRIORITY 5: Show empty state
     return 'empty';
   });
@@ -209,7 +210,7 @@ export class DesktopDataTable<T> extends BaseControlValueAccessor<TableStateEven
     effect(() => {
       const dataLength = this.data().length;
       const isLoading = this.isLoading();
-      
+
       // Only mark as having data if we're not currently loading
       // This prevents false positives during initial load
       if (dataLength > 0 && !isLoading && !this.hasEverHadData()) {
@@ -370,7 +371,7 @@ export class DesktopDataTable<T> extends BaseControlValueAccessor<TableStateEven
       paginationEvent: this.paginationEvent,
       tableSortEvent: this.tableSortEvent,
     };
-    
+
     this.emitTableStateChanged(tableStateEvent);
     this.onValueChange(tableStateEvent);
   }
@@ -388,7 +389,7 @@ export class DesktopDataTable<T> extends BaseControlValueAccessor<TableStateEven
       paginationEvent: event,
       tableSortEvent: this.tableSortEvent,
     };
-    
+
     this.pageChange.emit(event);
     this.emitTableStateChanged(tableStateEvent);
     this.onValueChange(tableStateEvent);
@@ -407,7 +408,7 @@ export class DesktopDataTable<T> extends BaseControlValueAccessor<TableStateEven
       tableSortEvent: event,
     };
     if (shouldReset) this.pageNumber.set(1);
-    
+
     this.sortChange.emit(event);
     this.emitTableStateChanged(tableStateEvent);
     this.onValueChange(tableStateEvent);
@@ -428,7 +429,7 @@ export class DesktopDataTable<T> extends BaseControlValueAccessor<TableStateEven
       paginationEvent: this.paginationEvent,
       tableSortEvent: this.tableSortEvent,
     };
-    
+
     this.emitTableStateChanged(tableStateEvent);
     this.onValueChange(tableStateEvent);
   }
@@ -459,15 +460,15 @@ export class DesktopDataTable<T> extends BaseControlValueAccessor<TableStateEven
     const data = { title: 'Advanced filters', template: tpl };
     const openPromise = this.isMobile()
       ? this.overlayStore.openFullScreen(MobileFiltersOverlay, {
-          data,
-          backdropOptions: { showBackdrop: true, blur: true }
-        })
+        data,
+        backdropOptions: { showBackdrop: true, blur: true }
+      })
       : this.overlayStore.openSidePanelRight(MobileFiltersOverlay, {
-          widthInPx: 380,
-          disableClose: false,
-          data,
-          backdropOptions: { showBackdrop: true, blur: true }
-        });
+        widthInPx: 380,
+        disableClose: false,
+        data,
+        backdropOptions: { showBackdrop: true, blur: true }
+      });
     openPromise.then(res => {
       if (res && res.action === 'apply') {
         this.applyFilters.emit();
@@ -738,29 +739,29 @@ export class DesktopDataTable<T> extends BaseControlValueAccessor<TableStateEven
   // Styling & Layout
   getCellClass(column: ColumnDef): string {
     let classes = this.getAlignmentClass(column);
-    
+
     if (column.type === 'actions') {
       classes += ' sticky right-0 z-[40] bg-white shadow-[-2px_0_4px_rgba(0,0,0,0.1)] border-l-2 border-gray-300 w-32 min-w-[128px] max-w-[128px]';
     } else {
       classes += ' ' + this.getColumnWidthClass(column);
     }
-    
+
     return classes;
   }
 
   getHeaderThClass(cell: HeaderCell): string {
     let classes = this.getAlignmentClass(cell.node);
-    
+
     if (!this.isColumnGroup(cell.node) && (cell.node as ColumnDef).type === 'actions') {
       classes += ' sticky right-0 z-[110] bg-gray-100 shadow-[-2px_0_4px_rgba(0,0,0,0.1)] border-l border-gray-300 w-32 min-w-[128px] max-w-[128px]';
     } else {
       classes += ' ' + this.getColumnWidthClass(cell.node);
     }
-    
+
     if (this.isColumnGroup(cell.node) && cell.colspan > 1) {
       classes += ' border-r border-gray-300';
     }
-    
+
     return classes;
   }
 
@@ -868,96 +869,4 @@ export class DesktopDataTable<T> extends BaseControlValueAccessor<TableStateEven
   }
 }
 
-// Types & Interfaces
-export type ColumnNode = ColumnDef | ColumnGroup;
 
-export interface ColumnGroup {
-  title: string;
-  children: ColumnNode[];
-  alignment?: 'left' | 'center' | 'right';
-}
-
-export interface HeaderCell {
-  title: string;
-  colspan: number;
-  rowspan: number;
-  node: ColumnNode;
-  sortKey?: string;
-  alignment?: 'left' | 'center' | 'right';
-}
-
-export interface ColumnDef {
-  title: string;
-  key?: string;
-  displayTemplate?: string;
-  sortKey?: string;
-  alignment?: 'left' | 'center' | 'right';
-  type: 'text' | 'date' | 'badge' | 'custom' | 'actions' | 'checkbox';
-  visible?: boolean | null;
-  component?: Type<any>;
-  textConfig?: TextConfig;
-  dateConfig?: DateConfig;
-  badgeConfig?: BadgeConfig;
-  customConfig?: CustomRendererConfig;
-  actionsConfig?: ActionConfig;
-  formatter?: (value: any) => any;
-  objectFormatter?: (item: any) => any;
-  propertyStyle?: (value: any) => any;
-}
-
-export interface TextConfig {
-  textColorClass?: string;
-}
-
-export interface DateConfig {
-  dateFormat?: string;
-  showIcon?: boolean;
-}
-
-export interface BadgeConfig {
-  properties: BadgeConfigProperty[];
-}
-
-export interface BadgeConfigProperty {
-  data: string;
-  displayText: string;
-  backgroundColorClass?: string;
-  borderColorClass?: string;
-  textColorClass?: string;
-  indicatorColorClass?: string;
-}
-
-export interface CustomRendererConfig {
-  data?: any;
-}
-
-export interface ActionConfig {
-  iconActions?: IconAction[];
-  threeDotMenuActions?: ContextMenuActionConfig[] | ((item: any) => ContextMenuActionConfig[]) | null;
-  textMenuActions?: ContextMenuActionConfig[] | null;
-  components?: Type<any>[];
-}
-
-export interface IconAction {
-  iconPath: string;
-  actionKey: string;
-  label?: string;
-}
-
-export interface ContextMenuActionConfig {
-  iconPath?: string;
-  actionKey: string;
-  label: string;
-}
-
-export interface TableActionEvent {
-  actionKey: string;
-  item: any;
-  data?: any;
-}
-
-export interface TableStateEvent {
-  searchText?: string;
-  paginationEvent?: PaginationEvent;
-  tableSortEvent?: TableSortEvent;
-}

@@ -6,7 +6,7 @@ import { HumanizeFormMessagesPipe } from '../../../misc/humanize-form-messages';
 import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
 import { OverlayStore } from '../../../overlay/overlay';
 import { MultiSelectDataTableDialog } from './multi-select-data-table-dialog/multi-select-data-table-dialog';
-import { ColumnNode, TableStateEvent } from '../../../../components/display/data-table/desktop-data-table/desktop-data-table';
+import { ColumnNode, TableStateEvent } from '../../../../components/display/data-table/data-table-model';
 
 @Component({
   selector: 'ui-multi-select-data-table-field',
