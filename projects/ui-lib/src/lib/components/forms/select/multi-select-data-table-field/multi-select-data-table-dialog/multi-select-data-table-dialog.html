@@ -15,21 +15,21 @@
   </div>
 
   <div class="flex-1 min-h-0 px-5 py-4 overflow-hidden">
-    <div class="h-full overflow-y-auto">
-      <ui-data-table
-        [columnGroups]="dialogData.columns"
-        [data]="dialogData.data"
-        [totalCount]="dialogData.totalCount"
-        [enablePagination]="dialogData.enablePagination"
-        [pageSize]="dialogData.pageSize"
-        [enableSearch]="dialogData.enableSearch"
-        [enableRowSelection]="true"
-        [defaultSelectedKeys]="selectedItems" 
-        [rowSelectionKey]="dialogData.valueProperty"
-        (rowSelectionChange)="onSelectionChange($event)"
-        (stateChange)="onTableStateChanged($event)"
-      ></ui-data-table>
-    </div>
+    <!-- Let the table manage its own internal scroll; no extra scroll wrappers here -->
+    <ui-data-table
+      [columnGroups]="dialogData.columns"
+      [data]="dialogData.data"
+      [totalCount]="dialogData.totalCount"
+      [enablePagination]="dialogData.enablePagination"
+      [pageSize]="dialogData.pageSize"
+      [enableSearch]="dialogData.enableSearch"
+      [enableRowSelection]="true"
+      [defaultSelectedKeys]="selectedItems"
+      [rowSelectionKey]="dialogData.valueProperty"
+      [containerHeight]="'100%'"
+      (rowSelectionChange)="onSelectionChange($event)"
+      (stateChange)="onTableStateChanged($event)"
+    ></ui-data-table>
   </div>
 
   <div class="border-t px-4 py-4 shrink-0">

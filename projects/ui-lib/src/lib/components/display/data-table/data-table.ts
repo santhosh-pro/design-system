@@ -40,6 +40,8 @@ export class DataTable<T> extends BaseControlValueAccessor<TableStateEvent> {
   initialValue = input<TableStateEvent>({ searchText: '' });
   showLoadingOnlyInitial = input<boolean>(true);
   resetPageOnQueryChange = input<boolean>(true);
+  // Optional fixed container height (used by dialogs or constrained layouts)
+  containerHeight = input<string | null>(null);
 
   // Projected filters support
   filtersTemplate = input<TemplateRef<any> | null>(null);

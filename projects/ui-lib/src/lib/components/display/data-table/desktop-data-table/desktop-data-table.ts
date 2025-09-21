@@ -110,6 +110,9 @@ export class DesktopDataTable<T> extends BaseControlValueAccessor<TableStateEven
   // Apply filters action
   applyFilters = output<void>();
 
+  // Allow parent to control container height (e.g., in a dialog). When provided, overrides default viewport-based height.
+  containerHeight = input<string | null>(null);
+
   // Expose current page for two-way binding from parents via [(pageNumber)]
   pageNumber = model<number>(1);
 
