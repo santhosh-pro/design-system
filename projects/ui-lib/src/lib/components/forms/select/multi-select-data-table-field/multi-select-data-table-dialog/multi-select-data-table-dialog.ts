@@ -1,7 +1,8 @@
 import { Component, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
-import { ColumnNode, DataTable, TableStateEvent } from '../../../../display/data-table/data-table';
+import { DataTable } from '../../../../display/data-table/data-table';
+import { ColumnNode, TableStateEvent } from '../../../../../components/display/data-table/desktop-data-table/desktop-data-table';
 
 export interface SelectDialogData<T> {
   title?: string;

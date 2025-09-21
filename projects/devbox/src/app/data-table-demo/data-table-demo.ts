@@ -2,14 +2,15 @@ import { Component, signal } from '@angular/core';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { DemoCard, DemoFile } from '../core/demo-card/demo-card';
 import { DocIoList } from '../core/doc-io-list/doc-io-list';
-import { ColumnDef, ColumnNode, DataTable, TableActionEvent, TableStateEvent, MultiDatePicker, TextField, ResponsiveDataTable, Nav, SideMenuItem, TopMenuItem, Breadcrumb, MonthYearPicker, Button } from 'projects/ui-lib/src/public-api';
 import { CommonModule } from '@angular/common';
 import { ExpandRowDemo } from './expand/expand-row-demo/expand-row-demo';
+import { ColumnNode, ColumnDef, TableStateEvent, TableActionEvent } from 'projects/ui-lib/src/lib/components/display/data-table/desktop-data-table/desktop-data-table';
+import { Button, DataTable, MultiDatePicker, TextField, Nav, Breadcrumb, MonthYearPicker, SideMenuItem, TopMenuItem } from 'projects/ui-lib/src/public-api';
 
 @Component({
   selector: 'app-data-table-demo',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, Button, ResponsiveDataTable, DataTable, DemoCard, DocIoList, MultiDatePicker, TextField, Nav, Breadcrumb, MonthYearPicker],
+  imports: [CommonModule, ReactiveFormsModule, Button, DataTable, DemoCard, DocIoList, MultiDatePicker, TextField, Nav, Breadcrumb, MonthYearPicker],
   templateUrl: './data-table-demo.html',
 })
 export class DataTableDemo {

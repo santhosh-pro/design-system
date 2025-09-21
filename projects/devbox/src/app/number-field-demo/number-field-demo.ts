@@ -1,9 +1,10 @@
 import { CommonModule, DatePipe } from '@angular/common';
 import { Component, inject, signal, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TextareaField, TextField, SearchField, OtpField, PasswordField, NumberField, TextPrefixSelectField, NumberPrefixSelectField, DateField, DatePicker, InputDateFormat, Weekday, Button, MultiSelectDropdownField, DateRangePicker, MultiDatePicker, MultiSelectDataTableField, ColumnDef, SelectDropdownField, MonthYearPicker, Tab, CheckboxGroupField, RadioGroupField } from 'projects/ui-lib/src/public-api';
+import { TextareaField, TextField, SearchField, OtpField, PasswordField, NumberField, TextPrefixSelectField, NumberPrefixSelectField, DateField, DatePicker, InputDateFormat, Weekday, Button, MultiSelectDropdownField, DateRangePicker, MultiDatePicker, MultiSelectDataTableField, SelectDropdownField, MonthYearPicker, Tab, CheckboxGroupField, RadioGroupField } from 'projects/ui-lib/src/public-api';
 
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { ColumnDef } from 'projects/ui-lib/src/lib/components/display/data-table/desktop-data-table/desktop-data-table';
 
 export class ArrayValidators {
   static required(): ValidatorFn {

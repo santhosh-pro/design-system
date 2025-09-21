@@ -11,7 +11,7 @@ import {
   ViewChild,
   ViewContainerRef,
 } from '@angular/core';
-import { TableActionEvent } from './data-table';
+import { TableActionEvent } from './desktop-data-table/desktop-data-table';
 
 @Component({
   standalone: true,

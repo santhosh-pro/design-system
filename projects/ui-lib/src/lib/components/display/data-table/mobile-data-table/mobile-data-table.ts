@@ -7,11 +7,11 @@ import { TableCellRenderer } from '../table-cell-renderer/table-cell-renderer';
 import { DynamicRenderer } from '../dynamic-renderer';
 import { ContextMenuButtonAction } from '../../../overlay/context-menu-button/context-menu-button';
 import { BaseControlValueAccessor } from '../../../../core/base-control-value-accessor';
-import { ColumnNode, ColumnDef, TableActionEvent, TableStateEvent, ContextMenuActionConfig } from '../data-table';
 import { TableSortEvent } from '../sortable-table';
 import { SearchField } from '../../../forms/text/search-field/search-field';
 import { OverlayStore } from '../../../overlay/overlay';
 import { MobileFiltersOverlay } from './filters-overlay/filters-overlay';
+import { ColumnDef, ColumnNode, ContextMenuActionConfig, TableActionEvent, TableStateEvent } from '../desktop-data-table/desktop-data-table';
 
 @Component({
   selector: 'ui-mobile-data-table',

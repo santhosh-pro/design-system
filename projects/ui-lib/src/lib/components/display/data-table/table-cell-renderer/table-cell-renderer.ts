@@ -4,10 +4,10 @@ import { DatePipe } from '@angular/common';
 import { FormControl } from '@angular/forms';
 import { AppSvgIcon } from '../../../../components/misc/app-svg-icon/app-svg-icon';
 import { resolveTemplateWithObject } from '../../../../core/template-resolver';
-import { ColumnDef, TableActionEvent, BadgeConfigProperty, ContextMenuActionConfig } from '../data-table';
 import { DynamicRenderer } from '../dynamic-renderer';
 import { StatusBadge } from '../../../../components/feedback/status-badge/status-badge';
 import { ContextMenuButton, ContextMenuButtonAction } from '../../../../components/overlay/context-menu-button/context-menu-button';
+import { BadgeConfigProperty, ColumnDef, ContextMenuActionConfig, TableActionEvent } from '../desktop-data-table/desktop-data-table';
 
 @Component({
   selector: 'ui-table-cell-renderer',

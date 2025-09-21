@@ -1,7 +1,8 @@
 import { Component, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ColumnDef, MultiSelectDataTableField } from 'projects/ui-lib/src/public-api';
+import {  MultiSelectDataTableField } from 'projects/ui-lib/src/public-api';
+import { ColumnDef } from 'projects/ui-lib/src/lib/components/display/data-table/desktop-data-table/desktop-data-table';
 
 // Sample data interfaces
 interface User {
