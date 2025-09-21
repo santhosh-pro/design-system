@@ -54,6 +54,20 @@ interface RowSelectionEvent {
     TableCellRenderer
   ],
   templateUrl: './desktop-data-table.html',
+  styles: [
+    `
+    /* Align projected form controls and remove extra vertical spacing in table header actions */
+    :host ::ng-deep .ui-table-actions ui-base-input {
+      align-self: end;
+    }
+    :host ::ng-deep .ui-table-actions ui-base-input [data-ui-title] {
+      display: none !important;
+    }
+    :host ::ng-deep .ui-table-actions ui-base-input [data-ui-error] {
+      display: none !important;
+    }
+    `
+  ],
 })
 export class DesktopDataTable<T> extends BaseControlValueAccessor<TableStateEvent> implements OnInit, AfterViewInit, OnDestroy {
 

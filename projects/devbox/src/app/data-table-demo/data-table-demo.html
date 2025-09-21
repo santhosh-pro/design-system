@@ -20,7 +20,10 @@
         </div>
 
           <div table-action>
+            <div class="ui-table-actions flex items-end gap-2 ml-auto justify-end flex-wrap max-w-full overflow-x-auto shrink-0">
+        <ui-month-year-picker [label]="'Select Month and Year'" [width]="'full'"></ui-month-year-picker>
             <ui-button (click)="onAddNew()">Add New</ui-button>
+          </div>
           </div>
       </ui-data-table>
 

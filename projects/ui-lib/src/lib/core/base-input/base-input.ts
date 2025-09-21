@@ -12,6 +12,8 @@ export class BaseInput {
   isRequiredField = input<boolean>(false);
   width = input<'sm' | 'md' | 'lg' | 'xl' | 'xxl' | '3xl' | 'full' | string>('md');
   inputType = input<'text' | 'email' | 'password' | 'number' | 'search' | 'tel' | 'url' | 'file'>('text');
+  // Compact mode hides the projected error slot and reduces vertical spacing (useful in action bars)
+  compact = input<boolean>(false);
 
   // Compute the width class
   widthClass = computed(() => {
