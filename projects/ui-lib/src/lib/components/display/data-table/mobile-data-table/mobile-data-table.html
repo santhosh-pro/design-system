@@ -63,6 +63,7 @@
     <div class="p-8 text-center text-gray-500">No data available</div>
   } @else {
     <!-- Cards list -->
+    @defer (on viewport) {
     <div class="divide-y divide-gray-200">
       @for (item of data(); track $index; let i = $index) {
         <div class="p-3 bg-white" (click)="onRowClicked(item)">
@@ -98,6 +99,7 @@
               <!-- Meta grid (only visible when expanded) -->
               @let details = getExpandableDetailColumns();
               @if (expandedRowIndex === i && details.length > 0) {
+                @defer (on interaction) {
                 <div class="mt-3 grid grid-cols-2 gap-x-4 gap-y-2">
                   @for (col of details; track col.key || $index) {
                     <div class="min-w-0">
@@ -108,6 +110,18 @@
                     </div>
                   }
                 </div>
+                } @placeholder {
+                  <div class="mt-3 animate-pulse">
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-2">
+                      @for (col of details; track col.key || $index) {
+                        <div class="min-w-0">
+                          <div class="h-3 bg-gray-200 rounded mb-1"></div>
+                          <div class="h-4 bg-gray-100 rounded"></div>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
               }
 
               <!-- Expandable -->
@@ -122,9 +136,15 @@
                 </div>
                 @if (expandedRowIndex === i) {
                   @if (expandableComponent()) {
+                    @defer (on interaction) {
                     <div class="mt-3 rounded-xl border border-gray-200 p-3 bg-gray-50">
                       <ui-dynamic-renderer [component]="expandableComponent()" [rowData]="item" (actionPerformed)="onActionPerformed({ actionKey: 'expand', item })"></ui-dynamic-renderer>
                     </div>
+                    } @placeholder {
+                      <div class="mt-3 rounded-xl border border-gray-200 p-3 bg-gray-50 animate-pulse">
+                        <div class="h-16 bg-gray-200 rounded"></div>
+                      </div>
+                    }
                   }
                 }
               }
@@ -133,6 +153,30 @@
         </div>
       }
     </div>
+    } @placeholder {
+      <div class="divide-y divide-gray-200 animate-pulse">
+        @for (i of [1,2,3,4,5]; track i) {
+          <div class="p-3 bg-white">
+            <div class="flex items-start gap-3">
+              @if (enableRowSelection()) {
+                <div class="h-5 w-5 self-center bg-gray-200 rounded"></div>
+              }
+              <div class="flex-1 min-w-0 space-y-2">
+                <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+                <div class="h-3 bg-gray-100 rounded w-1/2"></div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    } @loading {
+      <div class="p-8 flex items-center justify-center">
+        <div class="flex items-center space-x-3">
+          <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600"></div>
+          <span class="text-gray-600">Loading mobile table data...</span>
+        </div>
+      </div>
+    }
   }
     </div>
 
@@ -146,8 +190,12 @@
 
   <!-- Footer: footer component and pagination -->
   <div class="border-t border-gray-200 bg-white px-4 py-3 hidden md:block">
-    @if (footerComponent()) {
-      <ui-dynamic-renderer [component]="footerComponent()" [data]="data()" (actionPerformed)="footerAction.emit($event)"></ui-dynamic-renderer>
+    @defer (on idle) {
+      @if (footerComponent()) {
+        <ui-dynamic-renderer [component]="footerComponent()" [data]="data()" (actionPerformed)="footerAction.emit($event)"></ui-dynamic-renderer>
+      }
+    } @placeholder {
+      <div class="h-6 w-full bg-gray-100 animate-pulse rounded mb-2"></div>
     }
     @if (enablePagination()) {
   <ui-pagination [(pageNumber)]="pageNumber" [(pageSize)]="pageSize" [totalItems]="totalCount()" (pageChange)="onPageChange($event)"></ui-pagination>

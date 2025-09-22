@@ -136,6 +136,7 @@
         @case ('loading') {
         @if (data().length > 0) {
         <!-- Show existing data during subsequent loads -->
+        @defer (on viewport) {
   <tbody class="relative z-0">
           @for (item of data(); track getItemId(item); let i = $index) {
           <tr (click)="onRowClicked(item)"
@@ -187,19 +188,47 @@
           </tr>
 
           <!-- Expanded Row -->
-          @if (expandableComponent() && i === expandedRowIndex()) {
-          <tr class="transition-all duration-700">
-            <td [attr.colspan]="getTotalColspan()">
-              <div class="mx-4 my-4 p-4 bg-gray-50 rounded-lg">
-                <ui-dynamic-renderer [component]="expandableComponent()" [rowData]="item"
-                  (actionPerformed)="onActionPerformed({ actionKey: 'expand', item })">
-                </ui-dynamic-renderer>
-              </div>
-            </td>
-          </tr>
+          @defer (on interaction) {
+            @if (expandableComponent() && i === expandedRowIndex()) {
+            <tr class="transition-all duration-700">
+              <td [attr.colspan]="getTotalColspan()">
+                <div class="mx-4 my-4 p-4 bg-gray-50 rounded-lg">
+                  <ui-dynamic-renderer [component]="expandableComponent()" [rowData]="item"
+                    (actionPerformed)="onActionPerformed({ actionKey: 'expand', item })">
+                  </ui-dynamic-renderer>
+                </div>
+              </td>
+            </tr>
+            }
+          } @placeholder {
+            <tr class="h-12">
+              <td [attr.colspan]="getTotalColspan()" class="px-4 py-2 text-center text-gray-500 italic">
+                Click to load expanded content...
+              </td>
+            </tr>
           }
           }
         </tbody>
+        } @placeholder {
+          <tbody class="relative z-0">
+            @for (i of [1,2,3]; track i) {
+            <tr class="h-12 animate-pulse">
+              @if (expandableComponent()) {
+              <td class="sticky left-0 z-[70] bg-gray-100 w-12 px-2 py-0 h-12 border-r-2 border-gray-300"></td>
+              }
+              @if (enableRowSelection()) {
+              <td class="sticky z-[70] bg-gray-100 w-12 px-2 py-0 h-12 border-r-2 border-gray-300" 
+                  [ngClass]="{ 'left-12': expandableComponent(), 'left-0': !expandableComponent() }"></td>
+              }
+              @for (column of allLeafColumns(); track column.key || $index) {
+              <td class="px-2 py-0 h-12 border-r border-gray-200">
+                <div class="h-4 bg-gray-200 rounded animate-pulse"></div>
+              </td>
+              }
+            </tr>
+            }
+          </tbody>
+        }
         } @else {
   <tbody class="relative z-0">
           <tr class="h-full">
@@ -254,7 +283,8 @@
 
         @case ('success') {
         @if (data().length > 0) {
-        <!-- Success with Data - Same structure as loading case -->
+        <!-- Success with Data - Lazy-loaded table body -->
+        @defer (on viewport) {
   <tbody class="relative z-0">
           @for (item of data(); track getItemId(item); let i = $index) {
           <tr (click)="onRowClicked(item)"
@@ -303,19 +333,58 @@
             }
           </tr>
 
-          @if (expandableComponent() && i === expandedRowIndex()) {
-          <tr class="transition-all duration-700">
-            <td [attr.colspan]="getTotalColspan()">
-              <div class="mx-4 my-4 p-4 bg-gray-50 rounded-lg">
-                <ui-dynamic-renderer [component]="expandableComponent()" [rowData]="item"
-                  (actionPerformed)="onActionPerformed({ actionKey: 'expand', item })">
-                </ui-dynamic-renderer>
-              </div>
-            </td>
-          </tr>
+          @defer (on interaction) {
+            @if (expandableComponent() && i === expandedRowIndex()) {
+            <tr class="transition-all duration-700">
+              <td [attr.colspan]="getTotalColspan()">
+                <div class="mx-4 my-4 p-4 bg-gray-50 rounded-lg">
+                  <ui-dynamic-renderer [component]="expandableComponent()" [rowData]="item"
+                    (actionPerformed)="onActionPerformed({ actionKey: 'expand', item })">
+                  </ui-dynamic-renderer>
+                </div>
+              </td>
+            </tr>
+            }
+          } @placeholder {
+            <tr class="h-12">
+              <td [attr.colspan]="getTotalColspan()" class="px-4 py-2 text-center text-gray-500 italic">
+                Click to load expanded content...
+              </td>
+            </tr>
           }
           }
         </tbody>
+        } @placeholder {
+          <tbody class="relative z-0">
+            @for (i of [1,2,3,4,5]; track i) {
+            <tr class="h-12 animate-pulse">
+              @if (expandableComponent()) {
+              <td class="sticky left-0 z-[70] bg-gray-100 w-12 px-2 py-0 h-12 border-r-2 border-gray-300"></td>
+              }
+              @if (enableRowSelection()) {
+              <td class="sticky z-[70] bg-gray-100 w-12 px-2 py-0 h-12 border-r-2 border-gray-300" 
+                  [ngClass]="{ 'left-12': expandableComponent(), 'left-0': !expandableComponent() }"></td>
+              }
+              @for (column of allLeafColumns(); track column.key || $index) {
+              <td class="px-2 py-0 h-12 border-r border-gray-200">
+                <div class="h-4 bg-gray-200 rounded animate-pulse"></div>
+              </td>
+              }
+            </tr>
+            }
+          </tbody>
+        } @loading {
+          <tbody class="relative z-0">
+            <tr class="h-full">
+              <td [attr.colspan]="getTotalColspan()" class="h-full px-6 py-4 text-center">
+                <div class="flex items-center justify-center">
+                  <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+                  <span class="ml-3 text-gray-600">Loading table data...</span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        }
         } @else {
         <tbody class="relative z-0 flex-1">
           <tr class="h-full">
@@ -373,10 +442,14 @@
 
   <!-- Footer -->
   <div class="border-t-2 border-gray-300 bg-white px-4 py-2 flex-shrink-0">
-    @if (footerComponent()) {
-    <ui-dynamic-renderer [component]="footerComponent()" [data]="data()"
-      (actionPerformed)="onFooterActionPerformed($event)">
-    </ui-dynamic-renderer>
+    @defer (on idle) {
+      @if (footerComponent()) {
+      <ui-dynamic-renderer [component]="footerComponent()" [data]="data()"
+        (actionPerformed)="onFooterActionPerformed($event)">
+      </ui-dynamic-renderer>
+      }
+    } @placeholder {
+      <div class="h-8 w-full bg-gray-100 animate-pulse rounded"></div>
     }
 
   @if (enablePagination()) {
